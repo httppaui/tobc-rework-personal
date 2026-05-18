@@ -189,7 +189,7 @@ p{font-size:15px;line-height:1.75;color:var(--muted)}
 
 /* First-time onboarding */
 .onboard-overlay{position:fixed;inset:0;z-index:400;background:rgba(0,30,29,.55);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;padding:20px}
-.onboard-overlay.open{display:flex}
+.onboard-overlay.open,html.tobc-show-onboard #onboardOverlay{display:flex}
 .onboard-modal{background:var(--white);border-radius:20px;max-width:440px;width:100%;padding:28px;box-shadow:var(--shadow-lg);max-height:90vh;overflow-y:auto}
 .onboard-modal h2{font-size:22px;margin-bottom:8px}
 .onboard-modal>p{color:var(--muted);font-size:14px;margin-bottom:20px}
@@ -244,12 +244,6 @@ p{font-size:15px;line-height:1.75;color:var(--muted)}
 .hero-rating-text{font-size:14px;color:rgba(255,255,255,.9);font-weight:500}
 .hero-rating-text strong{color:#fff}
 .hero-ctas{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:44px}
-.hero-trust{display:flex;align-items:center;gap:0;padding-top:24px;border-top:1px solid rgba(255,255,255,.1)}
-.hero-trust-stat{text-align:center;padding:0 20px;border-right:1px solid rgba(255,255,255,.1)}
-.hero-trust-stat:first-child{padding-left:0}
-.hero-trust-stat:last-child{border-right:none}
-.hero-trust-num{font-family:'Montserrat',sans-serif;font-size:26px;font-weight:700;color:#fff;display:block}
-.hero-trust-label{font-size:11px;color:rgba(255,255,255,.45)}
 .hero-visual{position:relative;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:24px;backdrop-filter:blur(10px)}
 .hero-visual-label{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--teal-400);margin-bottom:14px}
 .mini-course-card{background:#fff;border-radius:12px;overflow:hidden;margin-bottom:10px;box-shadow:var(--shadow-md);cursor:pointer;transition:transform .2s}

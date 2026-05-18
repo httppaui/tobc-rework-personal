@@ -109,6 +109,8 @@ _Add a bullet with **YYYY-MM-DD** when you ship a meaningful UI/UX change (what 
 
 - **2026-05-11 — Bootstrap Icons (no emoji):** Replaced decorative emoji / unicode symbols with Bootstrap Icons (`<i class="bi …">`): nav actions, drawer, hero, steps, course/partner/news/library cards, ratings (star icons), filters/FAQ chevrons, view toggle, pagination, footer + social, help FAB, booking step check/close, course search icons in `.cs-input-wrap`; toasts + role hero CTAs in `tobc.js`. Supporting sizes in `tobc.css`. Files: `tobc.html`, `tobc.css`, `tobc.js`, `UI-UX-PLAN.md`.
 
+- **2026-05-18 — Onboarding overlay reliability:** Show overlay via inline head script + `html.tobc-show-onboard` before deferred JS; init on `DOMContentLoaded` instead of `window.load`; safe `localStorage` helpers; body scroll lock; `?onboard=reset` clears flag for retesting. Files: `tobc.html`, `tobc.css`, `tobc.js`, `UI-UX-PLAN.md`.
+
 ---
 
 ## Appendix A — Code implementation checklist (Agent mode)

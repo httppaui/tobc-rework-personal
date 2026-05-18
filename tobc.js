@@ -189,8 +189,8 @@ function initEscapeKey() {
     const onboard = document.getElementById('onboardOverlay');
     if (onboard?.classList.contains('open')) {
       e.preventDefault();
-      onboard.classList.remove('open');
-      localStorage.setItem('tobc_onboarded_v1', '1');
+      hideOnboarding(onboard);
+      markOnboardingComplete();
       return;
     }
     document.querySelectorAll('.nav-link-wrap.is-dropdown-open').forEach((w) => {
@@ -476,18 +476,69 @@ function enhanceCourseCardDates() {
 }
 
 /* ── Onboarding ── */
+const ONBOARD_KEY = 'tobc_onboarded_v1';
+
+function hasCompletedOnboarding() {
+  try {
+    return localStorage.getItem(ONBOARD_KEY) === '1';
+  } catch {
+    return false;
+  }
+}
+
+function markOnboardingComplete() {
+  try {
+    localStorage.setItem(ONBOARD_KEY, '1');
+  } catch {
+    /* storage blocked */
+  }
+}
+
+function clearOnboardingFlag() {
+  try {
+    localStorage.removeItem(ONBOARD_KEY);
+  } catch {
+    /* storage blocked */
+  }
+}
+
+function showOnboarding(overlay) {
+  overlay.classList.add('open');
+  document.documentElement.classList.add('tobc-show-onboard');
+  document.body.style.overflow = 'hidden';
+}
+
+function hideOnboarding(overlay) {
+  overlay.classList.remove('open');
+  document.documentElement.classList.remove('tobc-show-onboard');
+  document.body.style.overflow = '';
+}
+
 function initOnboarding() {
   const overlay = document.getElementById('onboardOverlay');
   if (!overlay) return;
+
+  const params = new URLSearchParams(location.search);
+  if (params.get('onboard') === 'reset') {
+    clearOnboardingFlag();
+    params.delete('onboard');
+    const qs = params.toString();
+    history.replaceState(null, '', location.pathname + (qs ? `?${qs}` : '') + location.hash);
+  }
+
   const dismiss = () => {
-    overlay.classList.remove('open');
-    localStorage.setItem('tobc_onboarded_v1', '1');
+    hideOnboarding(overlay);
+    markOnboardingComplete();
   };
   document.getElementById('onboardDismiss')?.addEventListener('click', dismiss);
   document.getElementById('onboardSkip')?.addEventListener('click', dismiss);
-  if (!localStorage.getItem('tobc_onboarded_v1')) {
-    overlay.classList.add('open');
+
+  if (hasCompletedOnboarding()) {
+    hideOnboarding(overlay);
+    return;
   }
+
+  showOnboarding(overlay);
 }
 
 function initNavDropdowns() {
@@ -535,7 +586,7 @@ function initNavLogo() {
 }
 
 /* ── Init ── */
-window.addEventListener('load', () => {
+function boot() {
   initHashRouter();
   initEscapeKey();
   renderRolePaths();
@@ -543,7 +594,13 @@ window.addEventListener('load', () => {
   initNavDropdowns();
   initNavLogo();
   initOnboarding();
-  if (localStorage.getItem('tobc_onboarded_v1')) {
+  if (hasCompletedOnboarding()) {
     setTimeout(() => toast('Tip: use the search bar at the top to jump straight to courses.', 'info'), 900);
   }
-});
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', boot);
+} else {
+  boot();
+}
