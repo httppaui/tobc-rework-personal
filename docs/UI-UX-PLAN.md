@@ -252,6 +252,8 @@ _Add a bullet with **YYYY-MM-DD** when you ship a meaningful UI/UX change (what 
 
 - **2026-05-20 — Remove role quick bar:** Dropped Seafarer/Agency/Center shortcut strip below global search; role tabs in nav unchanged. Files: `SiteHeader.tsx`, `assets/styles/main.css`, `UI-UX-PLAN.md`.
 
+- **2026-05-20 — Pagination footer spacing:** Extra margin below course list pagination before footer. Files: `assets/styles/main.css`, `UI-UX-PLAN.md`.
+
 ---
 
 ## Appendix A — Code implementation checklist (Agent mode)

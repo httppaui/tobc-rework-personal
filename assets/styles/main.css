@@ -594,7 +594,7 @@ button.faq-q{width:100%;border:none;background:transparent;font:inherit;text-ali
 .course-card.list-mode .cc-cart-btn,.course-card.list-mode .cc-book-btn{flex-shrink:0}
 
 /* ── Pagination ── */
-.pagination{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:36px;padding-top:28px;border-top:1px solid var(--ghost)}
+.pagination{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:36px;margin-bottom:40px;padding-top:28px;border-top:1px solid var(--ghost)}
 .page-btn{width:38px;height:38px;border:1.5px solid var(--ghost);border-radius:8px;background:#fff;cursor:pointer;font-size:14px;font-weight:500;color:var(--muted);transition:all .18s;display:flex;align-items:center;justify-content:center}
 .page-btn:hover{border-color:var(--teal-400);color:var(--teal-700)}
 .page-btn.active{background:var(--teal-700);border-color:var(--teal-700);color:#fff}

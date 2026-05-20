@@ -1,5 +1,7 @@
 # Deploying TOBC (frontend + API)
 
+**CI/CD (GitHub Actions):** [CI-CD.md](./CI-CD.md)
+
 ## Overview
 
 | Part | Host example | Build / start |
