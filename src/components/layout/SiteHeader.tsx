@@ -24,6 +24,7 @@ export function SiteHeader() {
     openAuthModal,
     isLoggedIn,
     authSessionReady,
+    toast,
   } = useApp();
   const navigate = useNavigate();
   const location = useLocation();
@@ -196,10 +197,11 @@ export function SiteHeader() {
               <button
                 type="button"
                 className="nav-icon-btn"
-                onClick={() => navigateTo('courses')}
-                aria-label="Search courses"
+                aria-label={`Wishlist${wishlistIds.length ? `, ${wishlistIds.length} items` : ''}`}
+                onClick={() => navigateTo('wishlist')}
               >
-                <i className="bi bi-search" aria-hidden />
+                <i className="bi bi-heart" aria-hidden />
+                {wishlistIds.length > 0 && <span className="nav-badge">{wishlistIds.length}</span>}
               </button>
               <button
                 type="button"
@@ -213,20 +215,19 @@ export function SiteHeader() {
               <button
                 type="button"
                 className="nav-icon-btn"
-                aria-label={`Wishlist${wishlistIds.length ? `, ${wishlistIds.length} items` : ''}`}
-                onClick={() => navigateTo('wishlist')}
-              >
-                <i className="bi bi-heart" aria-hidden />
-                {wishlistIds.length > 0 && <span className="nav-badge">{wishlistIds.length}</span>}
-              </button>
-              <button
-                type="button"
-                className="nav-icon-btn"
                 aria-label="Messages"
                 onClick={() => navigateTo('messages')}
               >
                 <i className="bi bi-chat-dots" aria-hidden />
-                <span className="dot" />
+              </button>
+              <button
+                type="button"
+                className="nav-icon-btn"
+                aria-label="Notifications"
+                onClick={() => toast('Notifications coming soon', 'info')}
+              >
+                <i className="bi bi-bell" aria-hidden />
+                <span className="dot" aria-hidden />
               </button>
               <div className="nav-divider" />
               {!authSessionReady ? null : isLoggedIn ? (

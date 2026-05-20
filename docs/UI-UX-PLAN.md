@@ -208,6 +208,8 @@ _Add a bullet with **YYYY-MM-DD** when you ship a meaningful UI/UX change (what 
 
 - **2026-05-20 — Cart checkout layout:** Multi-select checkboxes, search, sticky booking-details summary with line items and total, Book now for selected courses. Files: `CartPage.tsx`, `CartOrderSummary.tsx`, `main.css`, `UI-UX-PLAN.md`.
 
+- **2026-05-20 — Header icon row:** Reordered nav actions to wishlist → cart → messages → notifications (bell); removed header search icon. Files: `SiteHeader.tsx`, `UI-UX-PLAN.md`.
+
 ---
 
 ## Appendix A — Code implementation checklist (Agent mode)
