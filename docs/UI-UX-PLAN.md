@@ -246,6 +246,8 @@ _Add a bullet with **YYYY-MM-DD** when you ship a meaningful UI/UX change (what 
 
 - **2026-05-20 — Footer Partners column:** Heading “Partners”; links for Business Partners and Industry Partners with category filters. Files: `Footer.tsx`, `UI-UX-PLAN.md`.
 
+- **2026-05-20 — Log out confirmation:** Modal confirms sign-out from profile menu and mobile drawer. Files: `LogoutConfirmModal.tsx`, `AppProvider.tsx`, `ProfileMenu.tsx`, `MobileDrawer.tsx`, `Layout.tsx`, `assets/styles/main.css`, `UI-UX-PLAN.md`.
+
 ---
 
 ## Appendix A — Code implementation checklist (Agent mode)

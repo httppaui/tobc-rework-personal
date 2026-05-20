@@ -6,6 +6,7 @@ import { MobileBottomNav } from './MobileBottomNav';
 import { AuthModal } from '../AuthModal';
 import { LegalModal } from '../LegalModal';
 import { AccessibilityModal } from '../AccessibilityModal';
+import { LogoutConfirmModal } from '../LogoutConfirmModal';
 import { BookingModal } from '../BookingModal';
 import { CourseDetailModal } from '../CourseDetailModal';
 import { Onboarding } from '../Onboarding';
@@ -21,6 +22,7 @@ export function Layout() {
     closeAuthModal,
     closeLegalModal,
     closeAccessibilityPanel,
+    closeLogoutConfirm,
     drawerOpen,
     setDrawerOpen,
     helpOpen,
@@ -39,6 +41,7 @@ export function Layout() {
     closeAuthModal,
     closeLegalModal,
     closeAccessibilityPanel,
+    closeLogoutConfirm,
     () => setDrawerOpen(false),
     () => setHelpOpen(false),
   ]);
@@ -56,6 +59,7 @@ export function Layout() {
       <AuthModal />
       <LegalModal />
       <AccessibilityModal />
+      <LogoutConfirmModal />
       <BookingModal />
       <Onboarding />
       <ToastStack />

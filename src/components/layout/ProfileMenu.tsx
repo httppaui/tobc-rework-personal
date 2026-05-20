@@ -11,7 +11,7 @@ function userInitials(name: string): string {
 }
 
 export function ProfileMenu() {
-  const { user, logout, navigateTo, openAccessibilityPanel } = useApp();
+  const { user, openLogoutConfirm, navigateTo, openAccessibilityPanel } = useApp();
   const [open, setOpen] = useState(false);
   const wrapRef = useRef<HTMLDivElement>(null);
 
@@ -87,6 +87,9 @@ export function ProfileMenu() {
           <i className="bi bi-journal-check" aria-hidden />
           Booked Courses
         </button>
+
+        <div className="nav-profile-dropdown-divider" role="separator" />
+
         <button
           type="button"
           className="nav-profile-dropdown-item"
@@ -131,7 +134,7 @@ export function ProfileMenu() {
           type="button"
           className="nav-profile-dropdown-item nav-profile-logout"
           role="menuitem"
-          onClick={() => run(logout)}
+          onClick={() => run(openLogoutConfirm)}
         >
           <i className="bi bi-box-arrow-right" aria-hidden />
           Log out

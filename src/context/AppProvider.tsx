@@ -32,6 +32,10 @@ interface AppContextValue {
   loginWithEmail: (email: string, password: string) => Promise<string | null>;
   registerWithEmail: (name: string, email: string, password: string) => Promise<string | null>;
   logout: () => void;
+  logoutConfirmOpen: boolean;
+  openLogoutConfirm: () => void;
+  closeLogoutConfirm: () => void;
+  confirmLogout: () => void;
   authModalMode: AuthModalMode;
   openAuthModal: (mode?: AuthModalMode) => void;
   closeAuthModal: () => void;
@@ -143,6 +147,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [authModalMode, setAuthModalMode] = useState<AuthModalMode>('login');
   const [legalModal, setLegalModal] = useState<LegalDoc | null>(null);
+  const [logoutConfirmOpen, setLogoutConfirmOpen] = useState(false);
   const [accessibilityOpen, setAccessibilityOpen] = useState(false);
   const [pendingBookCourseId, setPendingBookCourseId] = useState<string | null>(null);
 
@@ -211,13 +216,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
       authModalOpen ||
       courseDetailId !== null ||
       legalModal !== null ||
+      logoutConfirmOpen ||
       accessibilityOpen;
     if (shouldLockScroll) {
       lockBodyScroll();
       return () => unlockBodyScroll();
     }
     unlockBodyScroll();
-  }, [onboardingOpen, booking.open, authModalOpen, courseDetailId, legalModal, accessibilityOpen]);
+  }, [onboardingOpen, booking.open, authModalOpen, courseDetailId, legalModal, logoutConfirmOpen, accessibilityOpen]);
 
   useEffect(() => {
     if (user?.email) {
@@ -421,6 +427,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
     });
   }, [toast]);
 
+  const openLogoutConfirm = useCallback(() => setLogoutConfirmOpen(true), []);
+  const closeLogoutConfirm = useCallback(() => setLogoutConfirmOpen(false), []);
+  const confirmLogout = useCallback(() => {
+    setLogoutConfirmOpen(false);
+    setDrawerOpen(false);
+    logout();
+  }, [logout]);
+
   const startBookNow = useCallback(
     (courseId: string) => {
       setCourseDetailId(null);
@@ -487,6 +501,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
       loginWithEmail,
       registerWithEmail,
       logout,
+      logoutConfirmOpen,
+      openLogoutConfirm,
+      closeLogoutConfirm,
+      confirmLogout,
       authModalMode,
       openAuthModal,
       closeAuthModal,
@@ -538,6 +556,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
       loginWithEmail,
       registerWithEmail,
       logout,
+      logoutConfirmOpen,
+      openLogoutConfirm,
+      closeLogoutConfirm,
+      confirmLogout,
       authModalMode,
       openAuthModal,
       closeAuthModal,

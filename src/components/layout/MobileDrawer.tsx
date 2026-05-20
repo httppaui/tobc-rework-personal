@@ -4,7 +4,7 @@ import type { RoleId } from '../../types';
 import { pageFromPath } from '../../lib/routes';
 
 export function MobileDrawer() {
-  const { drawerOpen, setDrawerOpen, setRole, navigateTo, openAuthModal, isLoggedIn, user, logout, authSessionReady } =
+  const { drawerOpen, setDrawerOpen, setRole, navigateTo, openAuthModal, isLoggedIn, user, openLogoutConfirm, authSessionReady } =
     useApp();
   const page = pageFromPath(useLocation().pathname);
 
@@ -95,7 +95,17 @@ export function MobileDrawer() {
               <button type="button" className="btn btn-secondary" onClick={() => { setDrawerOpen(false); navigateTo('profile'); }}>Profile</button>
               <button type="button" className="btn btn-secondary" onClick={() => { setDrawerOpen(false); navigateTo('booked-courses'); }}>Booked Courses</button>
               <button type="button" className="btn btn-secondary" onClick={() => { setDrawerOpen(false); navigateTo('messages'); }}>Messages</button>
-              <button type="button" className="btn btn-ghost" style={{ justifyContent: 'center' }} onClick={() => { setDrawerOpen(false); logout(); }}>Log out</button>
+              <button
+                type="button"
+                className="btn btn-ghost"
+                style={{ justifyContent: 'center' }}
+                onClick={() => {
+                  setDrawerOpen(false);
+                  openLogoutConfirm();
+                }}
+              >
+                Log out
+              </button>
             </>
           ) : (
             <>
