@@ -3,16 +3,20 @@ import type { BookingState } from '../types';
 type BookingSummaryProps = {
   booking: BookingState;
   showSchedule?: boolean;
+  /** Step 4 review: centered card in modal (see `.booking-modal-body--confirm-review`) */
+  variant?: 'sidebar' | 'confirmReview';
 };
 
-export function BookingSummary({ booking, showSchedule = true }: BookingSummaryProps) {
+export function BookingSummary({ booking, showSchedule = true, variant = 'sidebar' }: BookingSummaryProps) {
   const schedule =
     booking.scheduleDate && booking.scheduleTime
       ? `${booking.scheduleDate} · ${booking.scheduleTime}`
       : booking.scheduleDate || '—';
 
   return (
-    <aside className="booking-summary">
+    <aside
+      className={`booking-summary${variant === 'confirmReview' ? ' booking-summary--confirm-review' : ''}`}
+    >
       <div className="bs-label">Booking Summary</div>
       <div className="bs-course-name">{booking.course}</div>
       <div className="bs-row">

@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { PartnersFilters } from '../components/partners/PartnersFilters';
+import { PARTNER_CITIES, PARTNER_TYPES } from '../data/partnerFilterOptions';
 import { PARTNERS, PARTNERS_TOTAL } from '../data/partners';
 import { useApp } from '../context/AppProvider';
 import {
@@ -16,22 +17,21 @@ function normalizePartnerType(type: string): string {
   return type;
 }
 
-const TYPE_TAB_LABELS: Record<string, string> = {
-  all: 'All Partners',
-  training: 'Training Center',
-  school: 'School',
-  assessment: 'Assessment Center',
-  pdos: 'PDOS Reviewer',
-  others: 'Others',
-};
+type PartnerSortKey = 'name' | 'courses-desc' | 'courses-asc';
 
 export function PartnersPage() {
   const { navigateTo } = useApp();
   const [params] = useSearchParams();
   const [searchQ, setSearchQ] = useState('');
-  const [toolbarType, setToolbarType] = useState(() => params.get('type') ?? 'all');
+  const [toolbarType, setToolbarType] = useState(() => {
+    const raw = params.get('type');
+    return raw ? normalizePartnerType(raw) : 'all';
+  });
+  const [location, setLocation] = useState('');
+  const [sort, setSort] = useState<PartnerSortKey>('name');
   const [sidebar, setSidebar] = useState<PartnerSidebarFilters>(DEFAULT_PARTNER_FILTERS);
   const [filtering, setFiltering] = useState(false);
+  const [view, setView] = useState<'grid' | 'list'>('grid');
 
   useEffect(() => {
     const raw = params.get('type');
@@ -49,16 +49,27 @@ export function PartnersPage() {
     setFiltering(true);
     const t = window.setTimeout(() => setFiltering(false), 220);
     return () => window.clearTimeout(t);
-  }, [searchQ, toolbarType, sidebar]);
+  }, [searchQ, toolbarType, sidebar, sort, location]);
 
-  const filtered = useMemo(
-    () => filterPartners(PARTNERS, { searchQ, toolbarType, sidebar }),
-    [searchQ, toolbarType, sidebar],
-  );
+  const filtered = useMemo(() => {
+    let list = filterPartners(PARTNERS, { searchQ, toolbarType, sidebar });
+    return [...list].sort((a, b) => {
+      switch (sort) {
+        case 'courses-desc':
+          return (b.courses ?? 0) - (a.courses ?? 0);
+        case 'courses-asc':
+          return (a.courses ?? 0) - (b.courses ?? 0);
+        default:
+          return a.name.localeCompare(b.name);
+      }
+    });
+  }, [searchQ, toolbarType, sidebar, sort]);
 
   const clearFilters = () => {
     setSearchQ('');
     setToolbarType('all');
+    setLocation('');
+    setSort('name');
     setSidebar(DEFAULT_PARTNER_FILTERS);
   };
 
@@ -69,7 +80,9 @@ export function PartnersPage() {
     else setToolbarType('all');
   };
 
-  const setTypeTab = (type: string) => {
+  const gridClass = view === 'list' ? 'partners-list-view' : 'partners-grid';
+
+  const setToolbarPartnerType = (type: string) => {
     setToolbarType(type);
     setSidebar((prev) => ({
       ...prev,
@@ -99,24 +112,71 @@ export function PartnersPage() {
         </div>
       </div>
 
-      <div className="partners-filter-bar">
+      <div className="courses-search-bar partners-search-bar">
         <div className="container">
-          <div className="partner-type-tabs">
-            {Object.entries(TYPE_TAB_LABELS).map(([type, label]) => (
-              <button
-                key={type}
-                type="button"
-                className={`partner-type-tab${toolbarType === type ? ' active' : ''}`}
-                onClick={() => setTypeTab(type)}
-              >
-                {label}
-              </button>
-            ))}
+          <div className="courses-search-inner">
+            <div className="cs-input-wrap">
+              <i className="bi bi-search cs-input-icon" aria-hidden />
+              <input
+                className="cs-input"
+                type="search"
+                id="partnerSearchQ"
+                placeholder="Search partner name or keyword…"
+                value={searchQ}
+                onChange={(e) => setSearchQ(e.target.value)}
+                aria-label="Search partners"
+              />
+            </div>
+            <select
+              className="cs-select"
+              id="psType"
+              value={toolbarType}
+              onChange={(e) => setToolbarPartnerType(e.target.value)}
+            >
+              <option value="all">All Partner Types</option>
+              {PARTNER_TYPES.map((t) => (
+                <option key={t.id} value={t.id}>
+                  {t.label}
+                </option>
+              ))}
+            </select>
+            <select
+              className="cs-select"
+              id="psSort"
+              value={sort}
+              onChange={(e) => setSort(e.target.value as PartnerSortKey)}
+              style={{ minWidth: 160 }}
+            >
+              <option value="name">Sort: Partner Name</option>
+              <option value="courses-desc">Most courses listed</option>
+              <option value="courses-asc">Fewest courses listed</option>
+            </select>
+            <select
+              className="cs-select"
+              id="psLoc"
+              value={location}
+              onChange={(e) => {
+                const val = e.target.value;
+                setLocation(val);
+                setSidebar((prev) => ({
+                  ...prev,
+                  cities: val ? [val] : [],
+                }));
+              }}
+              style={{ minWidth: 130 }}
+            >
+              <option value="">All Locations</option>
+              {PARTNER_CITIES.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.label}
+                </option>
+              ))}
+            </select>
           </div>
         </div>
       </div>
 
-      <section className="section" style={{ background: 'var(--paper)' }}>
+      <div className="partners-page-body">
         <div className="container">
           <div className="courses-layout partners-layout">
             <PartnersFilters filters={sidebar} onFiltersChange={handleSidebarChange} onClear={clearFilters} />
@@ -129,21 +189,69 @@ export function PartnersPage() {
                 <div className="results-count">
                   Showing <strong>{filtered.length}</strong> of <strong>{PARTNERS_TOTAL}</strong> partners
                 </div>
-                <div className="cs-input-wrap" style={{ maxWidth: 260 }}>
-                  <i className="bi bi-search cs-input-icon" aria-hidden />
-                  <input
-                    className="cs-input"
-                    type="search"
-                    placeholder="Search partners…"
-                    value={searchQ}
-                    onChange={(e) => setSearchQ(e.target.value)}
-                  />
+                <div className="results-header-actions">
+                  <div className="view-toggle">
+                    <button
+                      type="button"
+                      className={`view-btn${view === 'grid' ? ' active' : ''}`}
+                      title="Grid view"
+                      aria-pressed={view === 'grid'}
+                      onClick={() => setView('grid')}
+                    >
+                      <i className="bi bi-grid-3x3-gap-fill" aria-hidden />
+                    </button>
+                    <button
+                      type="button"
+                      className={`view-btn${view === 'list' ? ' active' : ''}`}
+                      title="List view"
+                      aria-pressed={view === 'list'}
+                      onClick={() => setView('list')}
+                    >
+                      <i className="bi bi-list-ul" aria-hidden />
+                    </button>
+                  </div>
                 </div>
               </div>
 
+              {!filtering && filtered.length > 0 ? (
+                <div className={gridClass} id="partnersGrid">
+                  {filtered.map((p) => (
+                    <article
+                      key={p.id}
+                      className={`partner-card${view === 'list' ? ' list-mode' : ''}`}
+                      data-type={p.type}
+                    >
+                      <div className="partner-card-main">
+                        <div className="partner-card-logo">
+                          <i className={`bi ${p.icon}`} aria-hidden />
+                        </div>
+                        <div className="partner-card-info">
+                          <h3>{p.name}</h3>
+                          <p>{p.description}</p>
+                        </div>
+                      </div>
+                      <div className="partner-card-meta">
+                        <span className={`badge ${p.badgeClass}`}>{p.typeLabel}</span>
+                        {p.courses ? (
+                          <span className="badge badge-green">{p.courses} Courses</span>
+                        ) : null}
+                      </div>
+                      <button type="button" className="btn btn-secondary btn--sm partner-visit-btn">
+                        Visit Site →
+                      </button>
+                    </article>
+                  ))}
+                </div>
+              ) : null}
+
               {filtering ? (
-                <ResultsSkeleton variant="partners" count={6} />
-              ) : filtered.length === 0 ? (
+                <ResultsSkeleton
+                  variant={view === 'list' ? 'partners-list' : 'partners'}
+                  count={6}
+                />
+              ) : null}
+
+              {!filtering && filtered.length === 0 ? (
                 <EmptyResults
                   iconClass="bi-building"
                   title="No partners match your filters"
@@ -151,43 +259,19 @@ export function PartnersPage() {
                   actionLabel="Clear all filters"
                   onAction={clearFilters}
                 />
-              ) : (
-                <>
-                  <div className="partners-grid" id="partnersGrid">
-                    {filtered.map((p) => (
-                      <article key={p.id} className="partner-card" data-type={p.type}>
-                        <div style={{ display: 'flex', gap: 14, alignItems: 'flex-start' }}>
-                          <div className="partner-card-logo">
-                            <i className={`bi ${p.icon}`} aria-hidden />
-                          </div>
-                          <div className="partner-card-info">
-                            <h3>{p.name}</h3>
-                            <p>{p.description}</p>
-                          </div>
-                        </div>
-                        <div className="partner-card-meta">
-                          <span className={`badge ${p.badgeClass}`}>{p.typeLabel}</span>
-                          {p.courses ? (
-                            <span className="badge badge-green">{p.courses} Courses</span>
-                          ) : null}
-                        </div>
-                        <button type="button" className="btn btn-secondary btn--sm partner-visit-btn">
-                          Visit Site →
-                        </button>
-                      </article>
-                    ))}
-                  </div>
-                  <div style={{ textAlign: 'center', marginTop: 32 }}>
-                    <button type="button" className="btn btn-secondary">
-                      Load More Partners
-                    </button>
-                  </div>
-                </>
-              )}
+              ) : null}
+
+              {!filtering && filtered.length > 0 ? (
+                <div className="partners-load-more">
+                  <button type="button" className="btn btn-secondary">
+                    Load More Partners
+                  </button>
+                </div>
+              ) : null}
             </div>
           </div>
         </div>
-      </section>
+      </div>
 
       <div className="cta-banner">
         <div className="container">

@@ -2,6 +2,7 @@ import { useCallback, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useApp } from '../../context/AppProvider';
 import { NavDropdown, NavDropdownItem } from './NavDropdown';
+import { NotificationBell } from './NotificationBell';
 import { ProfileMenu } from './ProfileMenu';
 import type { RoleId } from '../../types';
 import { ROLE_PATHS } from '../../data/rolePaths';
@@ -24,7 +25,6 @@ export function SiteHeader() {
     openAuthModal,
     isLoggedIn,
     authSessionReady,
-    toast,
   } = useApp();
   const navigate = useNavigate();
   const location = useLocation();
@@ -93,6 +93,9 @@ export function SiteHeader() {
         break;
       case 'faq':
         document.getElementById('faq-section')?.scrollIntoView({ behavior: 'smooth' });
+        break;
+      case 'bookings':
+        navigateTo('booked-courses');
         break;
       default:
         break;
@@ -220,15 +223,7 @@ export function SiteHeader() {
               >
                 <i className="bi bi-chat-dots" aria-hidden />
               </button>
-              <button
-                type="button"
-                className="nav-icon-btn"
-                aria-label="Notifications"
-                onClick={() => toast('Notifications coming soon', 'info')}
-              >
-                <i className="bi bi-bell" aria-hidden />
-                <span className="dot" aria-hidden />
-              </button>
+              <NotificationBell />
               <div className="nav-divider" />
               {!authSessionReady ? null : isLoggedIn ? (
                 <ProfileMenu />

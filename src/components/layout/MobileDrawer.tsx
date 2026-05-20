@@ -93,7 +93,7 @@ export function MobileDrawer() {
             <>
               <p style={{ fontSize: 13, color: 'var(--muted)', marginBottom: 4 }}>Signed in as {user?.name}</p>
               <button type="button" className="btn btn-secondary" onClick={() => { setDrawerOpen(false); navigateTo('profile'); }}>Profile</button>
-              <button type="button" className="btn btn-secondary" onClick={() => { setDrawerOpen(false); navigateTo('bookings'); }}>My Bookings</button>
+              <button type="button" className="btn btn-secondary" onClick={() => { setDrawerOpen(false); navigateTo('booked-courses'); }}>Booked Courses</button>
               <button type="button" className="btn btn-secondary" onClick={() => { setDrawerOpen(false); navigateTo('messages'); }}>Messages</button>
               <button type="button" className="btn btn-ghost" style={{ justifyContent: 'center' }} onClick={() => { setDrawerOpen(false); logout(); }}>Log out</button>
             </>

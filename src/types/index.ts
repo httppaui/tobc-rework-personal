@@ -9,6 +9,7 @@ export type PageId =
   | 'cart'
   | 'messages'
   | 'bookings'
+  | 'booked-courses'
   | 'profile'
   | 'settings'
   | 'help';
@@ -35,6 +36,14 @@ export interface ToastItem {
 }
 
 export type BookingStep = 1 | 2 | 3 | 4;
+
+export interface AppNotification {
+  id: string;
+  title: string;
+  body: string;
+  createdAt: string;
+  read: boolean;
+}
 
 export interface BookingState {
   open: boolean;

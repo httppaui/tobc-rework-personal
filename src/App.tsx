@@ -10,6 +10,7 @@ import { WishlistPage } from './pages/WishlistPage';
 import { CartPage } from './pages/CartPage';
 import { MessagesPage } from './pages/MessagesPage';
 import { BookingsPage } from './pages/BookingsPage';
+import { BookedCoursesPage } from './pages/BookedCoursesPage';
 import { ProfilePage } from './pages/ProfilePage';
 import { SettingsPage } from './pages/SettingsPage';
 import { HelpCenterPage } from './pages/HelpCenterPage';
@@ -30,6 +31,7 @@ export default function App() {
         <Route path="cart" element={<CartPage />} />
         <Route path="messages" element={<MessagesPage />} />
         <Route path="bookings" element={<BookingsPage />} />
+        <Route path="booked-courses" element={<BookedCoursesPage />} />
         <Route path="profile" element={<ProfilePage />} />
         <Route path="settings" element={<SettingsPage />} />
         <Route path="help" element={<HelpCenterPage />} />

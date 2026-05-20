@@ -82,8 +82,8 @@ export const HELP_CATEGORIES: HelpCategory[] = [
         id: 'bookings-4',
         question: 'Where can I see my bookings?',
         answer:
-          'Sign in and open My Bookings from the header profile menu or footer. You will see confirmation references and course details for submissions made while logged in.',
-        keywords: ['my bookings', 'confirmation'],
+          'Sign in and open Booked Courses from the profile menu (after Profile). You can also use My Bookings in the footer — both show confirmation references and schedules for courses you booked while logged in.',
+        keywords: ['my bookings', 'confirmation', 'booked courses'],
       },
     ],
   },

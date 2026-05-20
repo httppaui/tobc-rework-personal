@@ -11,6 +11,7 @@ export const PAGE_PATHS: Record<PageId, string> = {
   cart: '/cart',
   messages: '/messages',
   bookings: '/bookings',
+  'booked-courses': '/booked-courses',
   profile: '/profile',
   settings: '/settings',
   help: '/help',

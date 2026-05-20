@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import type { Course } from '../data/courses';
 import { CartOrderSummary } from '../components/cart/CartOrderSummary';
+import { ShelfPageHero } from '../components/layout/ShelfPageHero';
 import { useApp } from '../context/AppProvider';
 import { getCourseById } from '../lib/courseCatalog';
 
@@ -66,6 +67,8 @@ export function CartPage() {
     }
   };
 
+  const selectedCount = selectedIds.filter((id) => cartIds.includes(id)).length;
+
   const handleBookNow = () => {
     const ids = selectedIds.filter((id) => cartIds.includes(id));
     if (ids.length === 0) {
@@ -78,21 +81,36 @@ export function CartPage() {
     startBookNow(ids[0]);
   };
 
-  return (
-    <section className="section cart-page">
-      <div className="container">
-        <nav className="breadcrumb" aria-label="Breadcrumb">
-          <button type="button" onClick={() => navigateTo('home')}>
-            Home
-          </button>
-          <span className="sep">/</span>
-          <span className="current" aria-current="page">
-            Cart
-          </span>
-        </nav>
-        <h1 className="page-title">My Cart</h1>
-        <p className="page-lede">Select courses to book, then review your order summary.</p>
+  const handleRemoveSelected = () => {
+    const ids = selectedIds.filter((id) => cartIds.includes(id));
+    if (ids.length === 0) {
+      toast('Select at least one course to remove', 'error');
+      return;
+    }
+    ids.forEach((id) => removeFromCart(id));
+    setSelectedIds((prev) => prev.filter((id) => !ids.includes(id)));
+    toast(ids.length === 1 ? 'Removed from cart' : `Removed ${ids.length} courses from cart`, 'success');
+  };
 
+  const cartStatus =
+    courses.length > 0 ? (
+      <div className="chat-status-pill" role="status">
+        <span className="chat-status-dot" aria-hidden />
+        {courses.length} course{courses.length === 1 ? '' : 's'} in cart
+        {selectedCount > 0 ? ` · ${selectedCount} selected` : ''}
+      </div>
+    ) : undefined;
+
+  return (
+    <div className="cart-page">
+      <ShelfPageHero
+        breadcrumbLabel="Cart"
+        title="My Cart"
+        description="Select courses to book, then review your order summary."
+        status={cartStatus}
+      />
+      <div className="shelf-page-body">
+        <div className="container">
         {courses.length === 0 ? (
           <div className="empty-shelf">
             <i className="bi bi-cart3" aria-hidden />
@@ -116,15 +134,28 @@ export function CartPage() {
                   aria-label="Search cart"
                 />
               </div>
-              <label className="cart-select-all">
-                <input
-                  type="checkbox"
-                  checked={allFilteredSelected}
-                  onChange={toggleSelectAllFiltered}
-                  disabled={filteredCourses.length === 0}
-                />
-                <span>Select all{searchQ.trim() ? ' shown' : ''}</span>
-              </label>
+              <div className="cart-toolbar-actions">
+                <label className="cart-select-all">
+                  <input
+                    type="checkbox"
+                    checked={allFilteredSelected}
+                    onChange={toggleSelectAllFiltered}
+                    disabled={filteredCourses.length === 0}
+                  />
+                  <span>Select all{searchQ.trim() ? ' shown' : ''}</span>
+                </label>
+                <div className="cart-bulk-actions">
+                  <button
+                    type="button"
+                    className="btn btn-secondary btn--sm"
+                    onClick={handleRemoveSelected}
+                    disabled={selectedCount === 0}
+                  >
+                    Remove selected
+                    {selectedCount > 0 ? ` (${selectedCount})` : ''}
+                  </button>
+                </div>
+              </div>
             </div>
 
             <div className="cart-layout">
@@ -162,13 +193,6 @@ export function CartPage() {
                               >
                                 View
                               </button>
-                              <button
-                                type="button"
-                                className="btn-ghost-inline"
-                                onClick={() => removeFromCart(course.id)}
-                              >
-                                Remove
-                              </button>
                             </div>
                           </article>
                         </li>
@@ -187,7 +211,8 @@ export function CartPage() {
             </div>
           </>
         )}
+        </div>
       </div>
-    </section>
+    </div>
   );
 }

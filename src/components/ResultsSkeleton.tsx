@@ -1,4 +1,4 @@
-type SkeletonVariant = 'courses-grid' | 'courses-list' | 'partners';
+type SkeletonVariant = 'courses-grid' | 'courses-list' | 'partners' | 'partners-list';
 
 type ResultsSkeletonProps = {
   variant: SkeletonVariant;
@@ -6,11 +6,15 @@ type ResultsSkeletonProps = {
 };
 
 export function ResultsSkeleton({ variant, count = 6 }: ResultsSkeletonProps) {
-  if (variant === 'partners') {
+  if (variant === 'partners' || variant === 'partners-list') {
+    const listClass = variant === 'partners-list' ? 'partners-list-view' : 'partners-grid';
     return (
-      <div className="partners-grid results-skeleton" aria-busy="true" aria-label="Loading partners">
+      <div className={`${listClass} results-skeleton`} aria-busy="true" aria-label="Loading partners">
         {Array.from({ length: count }, (_, i) => (
-          <div key={i} className="skeleton-partner-card" />
+          <div
+            key={i}
+            className={`skeleton-partner-card${variant === 'partners-list' ? ' skeleton-partner-card--list' : ''}`}
+          />
         ))}
       </div>
     );

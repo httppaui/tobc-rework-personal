@@ -82,6 +82,15 @@ export function ProfileMenu() {
           type="button"
           className="nav-profile-dropdown-item"
           role="menuitem"
+          onClick={() => run(() => navigateTo('booked-courses'))}
+        >
+          <i className="bi bi-journal-check" aria-hidden />
+          Booked Courses
+        </button>
+        <button
+          type="button"
+          className="nav-profile-dropdown-item"
+          role="menuitem"
           onClick={() => run(() => navigateTo('settings'))}
         >
           <i className="bi bi-gear" aria-hidden />

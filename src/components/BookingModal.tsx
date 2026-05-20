@@ -14,11 +14,21 @@ const BOOKING_STEPS: { num: BookingStep; icon: string; label: string }[] = [
 ];
 
 export function BookingModal() {
-  const { booking, closeBooking, updateBooking, toast, navigateTo, isLoggedIn, openAuthModal } = useApp();
+  const {
+    booking,
+    closeBooking,
+    updateBooking,
+    toast,
+    navigateTo,
+    isLoggedIn,
+    openAuthModal,
+    addNotification,
+  } = useApp();
   const [submitting, setSubmitting] = useState(false);
   if (!booking.open) return null;
 
   const step = booking.step;
+  const confirmationComplete = step === 4 && !!booking.confirmationId;
 
   const goStep = (next: BookingStep) => updateBooking({ step: next });
 
@@ -52,34 +62,48 @@ export function BookingModal() {
         openAuthModal('login');
         return;
       }
-      setSubmitting(true);
-      const result = await createBooking({
-        courseId: booking.courseId,
-        courseTitle: booking.course,
-        provider: booking.provider,
-        location: booking.location,
-        price: booking.price,
-        category: booking.category,
-        scheduleDate: booking.scheduleDate,
-        scheduleTime: booking.scheduleTime,
-        firstName: booking.firstName,
-        lastName: booking.lastName,
-        srb: booking.srb,
-        mobile: booking.mobile,
-        email: booking.email,
-        paymentProofName: booking.paymentProofName,
-        paymentProofDataUrl: booking.paymentProofDataUrl,
-      });
-      setSubmitting(false);
-      if (!result.ok) {
-        toast(result.error, 'error');
-        return;
-      }
-      updateBooking({ confirmationId: result.booking.id, step: 4 });
-      toast('Booking submitted!', 'success');
+      goStep(4);
       return;
     }
     goStep((step + 1) as BookingStep);
+  };
+
+  const onConfirmBooking = async () => {
+    if (!isLoggedIn) {
+      toast('Please log in to confirm your booking', 'error');
+      openAuthModal('login');
+      return;
+    }
+    setSubmitting(true);
+    const result = await createBooking({
+      courseId: booking.courseId,
+      courseTitle: booking.course,
+      provider: booking.provider,
+      location: booking.location,
+      price: booking.price,
+      category: booking.category,
+      scheduleDate: booking.scheduleDate,
+      scheduleTime: booking.scheduleTime,
+      firstName: booking.firstName,
+      lastName: booking.lastName,
+      srb: booking.srb,
+      mobile: booking.mobile,
+      email: booking.email,
+      paymentProofName: booking.paymentProofName,
+      paymentProofDataUrl: booking.paymentProofDataUrl,
+    });
+    setSubmitting(false);
+    if (!result.ok) {
+      toast(result.error, 'error');
+      return;
+    }
+    const ref = result.booking.id;
+    updateBooking({ confirmationId: ref, step: 4 });
+    addNotification(
+      'Booking confirmed',
+      `${booking.course} · ${booking.scheduleDate} · Ref ${ref}. We will email you once the center verifies payment.`,
+    );
+    toast('Booking confirmed!', 'success');
   };
 
   const onBack = () => {
@@ -103,6 +127,8 @@ export function BookingModal() {
     reader.readAsDataURL(file);
   };
 
+  const showPriceStrip = step !== 4 || !confirmationComplete;
+
   return (
     <div
       className="booking-overlay open"
@@ -114,7 +140,7 @@ export function BookingModal() {
       <div className="booking-modal" role="dialog" aria-modal="true" aria-labelledby="bModalTitle">
         <div className="booking-modal-head">
           <div className="booking-modal-head-start">
-            {step > 1 && step < 4 && (
+            {step > 1 && !(step === 4 && confirmationComplete) && (
               <button type="button" className="booking-modal-back" onClick={onBack} aria-label="Go back">
                 <i className="bi bi-arrow-left" aria-hidden />
               </button>
@@ -125,7 +151,7 @@ export function BookingModal() {
             <i className="bi bi-x-lg" aria-hidden />
           </button>
         </div>
-        {step < 4 && (
+        {showPriceStrip && (
           <div className="booking-price-strip" aria-live="polite">
             <span className="booking-price-strip-course">{booking.course || 'Selected course'}</span>
             <strong className="booking-price-strip-amount">{booking.price || '—'}</strong>
@@ -137,6 +163,8 @@ export function BookingModal() {
         <nav className="booking-steps-bar" aria-label="Booking progress">
           <ol className="booking-steps-track">
             {BOOKING_STEPS.flatMap((s, i) => {
+              const stepDone = confirmationComplete && s.num === 4 ? true : step > s.num;
+              const stepActive = !stepDone && step === s.num;
               const items: ReactNode[] = [];
               if (i > 0) {
                 items.push(
@@ -150,11 +178,11 @@ export function BookingModal() {
               items.push(
                 <li
                   key={s.num}
-                  className={`bs-step ${step === s.num ? 'active' : step > s.num ? 'done' : 'pending'}`}
-                  aria-current={step === s.num ? 'step' : undefined}
+                  className={`bs-step ${stepActive ? 'active' : stepDone ? 'done' : 'pending'}`}
+                  aria-current={stepActive ? 'step' : undefined}
                 >
                   <span className="bs-step-num">
-                    {step > s.num ? <i className="bi bi-check-lg" aria-hidden /> : s.num}
+                    {stepDone ? <i className="bi bi-check-lg" aria-hidden /> : s.num}
                   </span>
                   <span className="bs-step-icon" aria-hidden>
                     <i className={`bi ${s.icon}`} />
@@ -167,7 +195,11 @@ export function BookingModal() {
           </ol>
         </nav>
 
-        <div className="booking-modal-body">
+        <div
+          className={`booking-modal-body${confirmationComplete ? ' booking-modal-body--confirmation-success' : ''}${
+            step === 4 && !confirmationComplete ? ' booking-modal-body--confirm-review' : ''
+          }`}
+        >
           <div className="booking-form-section">
             {step === 1 && (
               <>
@@ -290,7 +322,16 @@ export function BookingModal() {
               </>
             )}
 
-            {step === 4 && (
+            {step === 4 && !confirmationComplete && (
+              <div className="booking-confirm-review">
+                <h4>Confirm your booking</h4>
+                <p className="booking-confirm-review-lede">
+                  Review your booking summary, then confirm to submit your request to the training center.
+                </p>
+              </div>
+            )}
+
+            {step === 4 && confirmationComplete && (
               <div className="booking-confirmation">
                 <div className="booking-confirmation-icon">
                   <i className="bi bi-check-circle-fill" aria-hidden />
@@ -307,22 +348,59 @@ export function BookingModal() {
             )}
           </div>
 
-          {step < 4 && <BookingSummary booking={booking} showSchedule={step >= 2} />}
+          {step < 4 || !confirmationComplete ? (
+            <BookingSummary
+              booking={booking}
+              showSchedule={step >= 2}
+              variant={step === 4 && !confirmationComplete ? 'confirmReview' : 'sidebar'}
+            />
+          ) : null}
         </div>
 
         <div className="booking-modal-footer">
-          {step === 4 ? (
+          {step === 4 && confirmationComplete ? (
             <>
               <span />
+              <div className="booking-footer-confirm-actions">
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  onClick={() => {
+                    closeBooking();
+                    navigateTo('courses');
+                  }}
+                >
+                  Browse courses
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-primary"
+                  onClick={() => {
+                    closeBooking();
+                    navigateTo('booked-courses');
+                  }}
+                >
+                  View booked courses
+                </button>
+              </div>
+            </>
+          ) : step === 4 && !confirmationComplete ? (
+            <>
+              <div className="booking-footer-left">
+                <button type="button" className="btn btn-secondary" onClick={closeBooking}>
+                  Cancel
+                </button>
+                <button type="button" className="btn btn-secondary" onClick={onBack}>
+                  <i className="bi bi-arrow-left" aria-hidden /> Back
+                </button>
+              </div>
               <button
                 type="button"
                 className="btn btn-primary"
-                onClick={() => {
-                  closeBooking();
-                  navigateTo('courses');
-                }}
+                onClick={() => void onConfirmBooking()}
+                disabled={submitting}
               >
-                Back to courses
+                Confirm booking
               </button>
             </>
           ) : (
@@ -338,7 +416,7 @@ export function BookingModal() {
                 )}
               </div>
               <button type="button" className="btn btn-primary" onClick={() => void onNext()} disabled={submitting}>
-                {step === 3 ? 'Submit booking' : 'Next'}{' '}
+                {step === 3 ? 'Continue' : 'Next'}{' '}
                 <i className="bi bi-arrow-right" aria-hidden />
               </button>
             </>

@@ -72,6 +72,16 @@ export function CourseCard({ course, listMode }: { course: Course; listMode?: bo
   const seatsLabel =
     course.availability === 'open' ? 'Open enrollment' : `${course.seats} seats left`;
 
+  const statusBadges = (
+    <>
+      <div className="cc-badges-left">
+        <span className={categoryBadgeClass(course.category)}>{course.category}</span>
+        {course.id === 'achievers' && <span className="badge badge-amber">Non-STCW</span>}
+      </div>
+      <span className={avail.className}>{avail.label}</span>
+    </>
+  );
+
   return (
     <article
       className={`course-card${listMode ? ' list-mode' : ''}`}
@@ -85,15 +95,7 @@ export function CourseCard({ course, listMode }: { course: Course; listMode?: bo
         <div className="cc-emoji">
           <i className={`bi ${course.icon}`} aria-hidden />
         </div>
-        <div className="cc-badges">
-          <div className="cc-badges-left">
-            <span className={categoryBadgeClass(course.category)}>{course.category}</span>
-            {course.id === 'achievers' && (
-              <span className="badge badge-amber">Non-STCW</span>
-            )}
-          </div>
-          <span className={avail.className}>{avail.label}</span>
-        </div>
+        {!listMode ? <div className="cc-badges">{statusBadges}</div> : null}
         <button
           type="button"
           className={`cc-wishlist-btn${inWishlist ? ' is-active' : ''}`}
@@ -105,35 +107,78 @@ export function CourseCard({ course, listMode }: { course: Course; listMode?: bo
         </button>
       </div>
       <div className="course-card-body">
-        <div className="cc-title">{course.title}</div>
-        <div className="cc-provider">{course.provider}</div>
-        <div className="cc-rating" aria-label="Rating 4.7 out of 5 from 186 reviews">
-          <span className="cc-stars" aria-hidden>
-            {[1, 2, 3, 4, 5].map((i) => (
-              <i key={i} className="bi bi-star-fill" />
-            ))}
-          </span>
-          <span className="cc-rating-val">4.7</span>
-          <span className="cc-rating-n">(186)</span>
-        </div>
-        <div className="cc-toolbar">
-          <button type="button" className="cc-desc-btn" onClick={openDetail}>
-            <i className="bi bi-card-text" aria-hidden />
-            View description
-          </button>
-        </div>
-        <div className="cc-meta">
-          <span className="cc-meta-item">
-            <i className="bi bi-clock cc-meta-ico" aria-hidden /> {course.duration}
-          </span>
-          <span className="cc-meta-item">
-            <i className="bi bi-geo-alt cc-meta-ico" aria-hidden /> {course.location}
-          </span>
-          <span className="cc-meta-item">
-            <i className="bi bi-calendar3 cc-meta-ico" aria-hidden />{' '}
-            {course.dates.split('–')[0]?.trim() ?? course.dates}
-          </span>
-        </div>
+        {listMode ? (
+          <>
+            <div className="cc-list-row cc-list-row--head">
+              <div className="cc-title">{course.title}</div>
+              <div className="cc-badges cc-badges--list">{statusBadges}</div>
+            </div>
+            <div className="cc-list-row cc-list-row--sub">
+              <div className="cc-provider">{course.provider}</div>
+              <div className="cc-rating" aria-label="Rating 4.7 out of 5 from 186 reviews">
+                <span className="cc-stars" aria-hidden>
+                  {[1, 2, 3, 4, 5].map((i) => (
+                    <i key={i} className="bi bi-star-fill" />
+                  ))}
+                </span>
+                <span className="cc-rating-val">4.7</span>
+                <span className="cc-rating-n">(186)</span>
+              </div>
+            </div>
+            <div className="cc-list-row cc-list-row--meta">
+              <div className="cc-toolbar">
+                <button type="button" className="cc-desc-btn" onClick={openDetail}>
+                  <i className="bi bi-card-text" aria-hidden />
+                  View description
+                </button>
+              </div>
+              <div className="cc-meta">
+                <span className="cc-meta-item">
+                  <i className="bi bi-clock cc-meta-ico" aria-hidden /> {course.duration}
+                </span>
+                <span className="cc-meta-item">
+                  <i className="bi bi-geo-alt cc-meta-ico" aria-hidden /> {course.location}
+                </span>
+                <span className="cc-meta-item">
+                  <i className="bi bi-calendar3 cc-meta-ico" aria-hidden />{' '}
+                  {course.dates.split('–')[0]?.trim() ?? course.dates}
+                </span>
+              </div>
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="cc-title">{course.title}</div>
+            <div className="cc-provider">{course.provider}</div>
+            <div className="cc-rating" aria-label="Rating 4.7 out of 5 from 186 reviews">
+              <span className="cc-stars" aria-hidden>
+                {[1, 2, 3, 4, 5].map((i) => (
+                  <i key={i} className="bi bi-star-fill" />
+                ))}
+              </span>
+              <span className="cc-rating-val">4.7</span>
+              <span className="cc-rating-n">(186)</span>
+            </div>
+            <div className="cc-toolbar">
+              <button type="button" className="cc-desc-btn" onClick={openDetail}>
+                <i className="bi bi-card-text" aria-hidden />
+                View description
+              </button>
+            </div>
+            <div className="cc-meta">
+              <span className="cc-meta-item">
+                <i className="bi bi-clock cc-meta-ico" aria-hidden /> {course.duration}
+              </span>
+              <span className="cc-meta-item">
+                <i className="bi bi-geo-alt cc-meta-ico" aria-hidden /> {course.location}
+              </span>
+              <span className="cc-meta-item">
+                <i className="bi bi-calendar3 cc-meta-ico" aria-hidden />{' '}
+                {course.dates.split('–')[0]?.trim() ?? course.dates}
+              </span>
+            </div>
+          </>
+        )}
         <div className="seats-bar">
           <div className="seats-track">
             <div

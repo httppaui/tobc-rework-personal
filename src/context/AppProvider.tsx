@@ -8,12 +8,12 @@ import {
   type ReactNode,
 } from 'react';
 import { useNavigate } from 'react-router-dom';
-import type { AuthModalMode, AuthUser, BookingState, LegalDoc, RoleId, ToastItem } from '../types';
+import type { AuthModalMode, AuthUser, AppNotification, BookingState, LegalDoc, RoleId, ToastItem } from '../types';
 import { getCourseById } from '../lib/courseCatalog';
 import { PAGE_PATHS } from '../lib/routes';
 import { fetchCurrentUser, loginAccount, logoutAccount, registerAccount } from '../lib/authApi';
 import { fetchCart, fetchWishlist, saveCartApi, saveWishlistApi } from '../lib/listsApi';
-import { loadCart, loadWishlist, saveCart, saveWishlist } from '../lib/storage';
+import { loadCart, loadNotifications, loadWishlist, saveCart, saveNotifications, saveWishlist } from '../lib/storage';
 import { lockBodyScroll, unlockBodyScroll } from '../lib/scrollLock';
 import { applyA11yPrefs, loadA11yPrefs } from '../lib/accessibility';
 
@@ -70,6 +70,10 @@ interface AppContextValue {
   completeOnboarding: () => void;
   skipOnboarding: () => void;
   updateSessionUser: (user: AuthUser) => void;
+  notifications: AppNotification[];
+  unreadNotificationCount: number;
+  addNotification: (title: string, body: string) => void;
+  markAllNotificationsRead: () => void;
 }
 
 const AppContext = createContext<AppContextValue | null>(null);
@@ -135,6 +139,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [courseDetailId, setCourseDetailId] = useState<string | null>(null);
   const [wishlistIds, setWishlistIds] = useState<string[]>(() => loadWishlist());
   const [cartIds, setCartIds] = useState<string[]>(() => loadCart());
+  const [notifications, setNotifications] = useState<AppNotification[]>(() => loadNotifications());
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [authModalMode, setAuthModalMode] = useState<AuthModalMode>('login');
   const [legalModal, setLegalModal] = useState<LegalDoc | null>(null);
@@ -436,6 +441,31 @@ export function AppProvider({ children }: { children: ReactNode }) {
     [openBooking, user],
   );
 
+  const addNotification = useCallback((title: string, body: string) => {
+    const item: AppNotification = {
+      id: `n-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`,
+      title,
+      body,
+      createdAt: new Date().toISOString(),
+      read: false,
+    };
+    setNotifications((prev) => {
+      const next = [item, ...prev].slice(0, 40);
+      saveNotifications(next);
+      return next;
+    });
+  }, []);
+
+  const markAllNotificationsRead = useCallback(() => {
+    setNotifications((prev) => {
+      const next = prev.map((n) => ({ ...n, read: true }));
+      saveNotifications(next);
+      return next;
+    });
+  }, []);
+
+  const unreadNotificationCount = notifications.filter((n) => !n.read).length;
+
   const completeOnboarding = useCallback(() => {
     try {
       sessionStorage.setItem(ONBOARD_SESSION_KEY, '1');
@@ -495,6 +525,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
       completeOnboarding,
       skipOnboarding,
       updateSessionUser,
+      notifications,
+      unreadNotificationCount,
+      addNotification,
+      markAllNotificationsRead,
     }),
     [
       role,
@@ -540,6 +574,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
       completeOnboarding,
       skipOnboarding,
       updateSessionUser,
+      notifications,
+      unreadNotificationCount,
+      addNotification,
+      markAllNotificationsRead,
     ],
   );
 

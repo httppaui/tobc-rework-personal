@@ -210,6 +210,30 @@ _Add a bullet with **YYYY-MM-DD** when you ship a meaningful UI/UX change (what 
 
 - **2026-05-20 — Header icon row:** Reordered nav actions to wishlist → cart → messages → notifications (bell); removed header search icon. Files: `SiteHeader.tsx`, `UI-UX-PLAN.md`.
 
+- **2026-05-20 — Booked Courses page:** Profile menu item after Profile; `/booked-courses` lists account bookings with search; booking confirmation links here; `/bookings` redirects. Files: `BookedCoursesPage.tsx`, `BookingsPage.tsx`, `ProfileMenu.tsx`, `BookingModal.tsx`, `App.tsx`, `routes.ts`, `types`, `main.css`, `helpCenter.ts`, `MobileDrawer.tsx`, `UI-UX-PLAN.md`.
+
+- **2026-05-20 — Booking confirmation + notifications:** Step 4 split into review (summary + Confirm booking) vs success; API submit on Confirm; centered success block; header bell opens persisted notification list (badge, mark read on open); confirmation adds in-app notification. Files: `BookingModal.tsx`, `SiteHeader.tsx`, `NotificationBell.tsx`, `AppProvider.tsx` (context), `storage.ts`, `types/index.ts`, `assets/styles/main.css`, `UI-UX-PLAN.md`.
+
+- **2026-05-20 — Booking summary (confirm step):** Centered Booking Summary + intro on step 4 review; summary rows use grid so labels (e.g. Training Center) stay one column and values wrap right-aligned (fixes stray “Training/Center” split). Files: `BookingSummary.tsx`, `BookingModal.tsx`, `assets/styles/main.css`, `UI-UX-PLAN.md`.
+
+- **2026-05-20 — Wishlist & cart selection:** Per-item checkboxes, select all, bulk Remove selected and Book now (wishlist toolbar; cart toolbar + existing order summary). Files: `WishlistPage.tsx`, `CartPage.tsx`, `assets/styles/main.css`, `UI-UX-PLAN.md`.
+
+- **2026-05-20 — Cart booking details (multi):** Collapsible course rows in order summary — title only by default; tap to expand training center through course fee. Files: `CartOrderSummary.tsx`, `assets/styles/main.css`, `UI-UX-PLAN.md`.
+
+- **2026-05-20 — Cart & Wishlist heroes:** Dark teal page hero (breadcrumb on dark, title, lede, status pill) matching Live chat; content in `shelf-page-body`. Files: `ShelfPageHero.tsx`, `CartPage.tsx`, `WishlistPage.tsx`, `assets/styles/main.css`, `UI-UX-PLAN.md`.
+
+- **2026-05-20 — Live chat page polish:** Ivory page/body background; inbox + chat shell stay white; removed orange inset on active thread (teal-50 highlight). Files: `assets/styles/main.css`, `UI-UX-PLAN.md`.
+
+- **2026-05-20 — Partners page background:** Main content area (filters + grid) uses white instead of ivory. Files: `PartnersPage.tsx`, `assets/styles/main.css`, `UI-UX-PLAN.md`.
+
+- **2026-05-20 — Partners search toolbar:** Sticky bar matches Courses (search + partner type, sort, location dropdowns); removed type tab row and duplicate results search. Files: `PartnersPage.tsx`, `assets/styles/main.css`, `UI-UX-PLAN.md`.
+
+- **2026-05-20 — Partners grid/list toggle:** View toggle in results header; list layout for partner cards; skeleton variant for list. Files: `PartnersPage.tsx`, `ResultsSkeleton.tsx`, `assets/styles/main.css`, `UI-UX-PLAN.md`.
+
+- **2026-05-20 — Course list badges:** Category/availability badges move to upper-right of white body in list view (not on teal strip). Files: `CourseCard.tsx`, `assets/styles/main.css`, `UI-UX-PLAN.md`.
+
+- **2026-05-20 — Course list card density:** Title+badges, provider+rating, description+meta rows; tighter padding and sidebar width. Files: `CourseCard.tsx`, `assets/styles/main.css`, `UI-UX-PLAN.md`.
+
 ---
 
 ## Appendix A — Code implementation checklist (Agent mode)
