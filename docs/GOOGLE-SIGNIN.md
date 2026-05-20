@@ -292,4 +292,4 @@ User clicks Google button
 
 - `.env.example` — template for local env  
 - `package.json` — dependency `@react-oauth/google`  
-- `UI-UX-PLAN.md` — implementation log entry for Google Sign-In  
+- [UI-UX-PLAN.md](./UI-UX-PLAN.md) — implementation log entry for Google Sign-In  

@@ -65,7 +65,9 @@ Frontend output is in `dist/`. The API is not bundled into `dist/`—deploy it s
 
 Google Sign-In is optional later; see **[docs/GOOGLE-SIGNIN.md](docs/GOOGLE-SIGNIN.md)**.
 
-**What to build next:** see **[docs/ROADMAP.md](docs/ROADMAP.md)**. **Deploy:** **[docs/DEPLOY.md](docs/DEPLOY.md)**.
+**Project overview (requirements, architecture, phases, sync workflow):** **[docs/PROJECT.md](docs/PROJECT.md)**.
+
+**UI/UX plan:** **[docs/UI-UX-PLAN.md](docs/UI-UX-PLAN.md)**. **What to build next:** **[docs/ROADMAP.md](docs/ROADMAP.md)**. **Deploy:** **[docs/DEPLOY.md](docs/DEPLOY.md)**.
 
 ## Project structure
 

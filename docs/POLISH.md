@@ -1,6 +1,6 @@
 # TOBC — Site polish plan
 
-Polish work you can do **before deploy** (localhost with `npm run dev`). Check items off here and mirror key UX wins in [UI-UX-PLAN.md](../UI-UX-PLAN.md).
+Polish work you can do **before deploy** (localhost with `npm run dev`). Check items off here and mirror key UX wins in [UI-UX-PLAN.md](./UI-UX-PLAN.md).
 
 **Related:** [ROADMAP.md](./ROADMAP.md) (features & deploy) · [DEPLOY.md](./DEPLOY.md)
 
@@ -67,7 +67,7 @@ Polish work you can do **before deploy** (localhost with `npm run dev`). Check i
 2. Test at **375px**, **768px**, **1280px**.
 3. Run core flows: browse → filter → book → account.
 4. Fix only what confuses or looks broken.
-5. Update this file + **Implementation log** in UI-UX-PLAN.md.
+5. Update this file + **Implementation log** in [UI-UX-PLAN.md](./UI-UX-PLAN.md).
 
 ---
 

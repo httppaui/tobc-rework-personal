@@ -2,7 +2,9 @@
 
 This file is the **source of truth** for UI/UX direction for the TOBC site (**React + TypeScript + Tailwind** in `src/`, Vite entry `index.html`).
 
-**Auto-sync:** Cursor applies [`.cursor/rules/tobc-ui-ux-sync.mdc`](.cursor/rules/tobc-ui-ux-sync.mdc) when those files are in context — the agent should update this doc (checklists + **Implementation log**) after material UI/UX edits. True filesystem watchers are not used; the rule drives habit in-agent.
+**Full project overview:** [PROJECT.md](./PROJECT.md) (requirements, stack, architecture, phases, doc-sync workflow).
+
+**Auto-sync:** Cursor applies [`.cursor/rules/tobc-ui-ux-sync.mdc`](../.cursor/rules/tobc-ui-ux-sync.mdc) when those files are in context — the agent should update this doc (checklists + **Implementation log**) after material UI/UX edits. True filesystem watchers are not used; the rule drives habit in-agent.
 
 ---
 
@@ -189,6 +191,8 @@ _Add a bullet with **YYYY-MM-DD** when you ship a meaningful UI/UX change (what 
 - **2026-05-19 — Live chat page:** `/messages` inbox + chat UI (bubbles, quick replies, typing demo); header message icon and Help FAB link here. Files: `MessagesPage.tsx`, `chatSupport.ts`, `App.tsx`, `routes.ts`, `SiteHeader.tsx`, `HelpFab.tsx`, `main.css`, `UI-UX-PLAN.md`.
 
 - **2026-05-19 — Scroll jump fix:** Chat scroll contained to message pane; modal scroll lock preserves position; removed global smooth scroll on focus/hash links. Files: `scrollLock.ts`, `AppProvider.tsx`, `MessagesPage.tsx`, `main.css`, `Footer.tsx`, `SiteHeader.tsx`, `CoursesPage.tsx`, `UI-UX-PLAN.md`.
+
+- **2026-05-20 — Docs:** Moved `UI-UX-PLAN.md` to `docs/UI-UX-PLAN.md`; updated cross-links and Cursor sync rule. Files: `docs/UI-UX-PLAN.md`, `docs/PROJECT.md`, `docs/ROADMAP.md`, `docs/POLISH.md`, `.cursor/rules/tobc-ui-ux-sync.mdc`, `README.md`.
 
 ---
 

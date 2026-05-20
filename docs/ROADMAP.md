@@ -2,7 +2,7 @@
 
 Living backlog for what to build or polish next. Update this file when priorities change or items ship (move to **Done** with date).
 
-**Related docs:** [README.md](../README.md) · [UI-UX-PLAN.md](../UI-UX-PLAN.md) · [POLISH.md](./POLISH.md) · [GOOGLE-SIGNIN.md](./GOOGLE-SIGNIN.md)
+**Related docs:** [PROJECT.md](./PROJECT.md) · [README.md](../README.md) · [UI-UX-PLAN.md](./UI-UX-PLAN.md) · [POLISH.md](./POLISH.md) · [GOOGLE-SIGNIN.md](./GOOGLE-SIGNIN.md)
 
 ---
 
@@ -116,7 +116,7 @@ Living backlog for what to build or polish next. Update this file when prioritie
 
 ## Tier 3 — Polish & trust
 
-From [UI-UX-PLAN.md](../UI-UX-PLAN.md) — not blocking MVP, but improves perceived quality.
+From [UI-UX-PLAN.md](./UI-UX-PLAN.md) — not blocking MVP, but improves perceived quality.
 
 | Item | Notes |
 |------|--------|
@@ -186,4 +186,4 @@ _Add a dated line when an item is completed._
 
 1. Pick the next unchecked box from **Tier 1** unless you’re explicitly doing polish only.
 2. When you ship something, check the box and add a row under **Done**.
-3. For UI-visible work, also append one line to **Implementation log** in [UI-UX-PLAN.md](../UI-UX-PLAN.md).
+3. For UI-visible work, also append one line to **Implementation log** in [UI-UX-PLAN.md](./UI-UX-PLAN.md).
