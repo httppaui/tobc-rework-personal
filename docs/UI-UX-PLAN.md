@@ -194,6 +194,8 @@ _Add a bullet with **YYYY-MM-DD** when you ship a meaningful UI/UX change (what 
 
 - **2026-05-20 — Docs:** Moved `UI-UX-PLAN.md` to `docs/UI-UX-PLAN.md`; updated cross-links and Cursor sync rule. Files: `docs/UI-UX-PLAN.md`, `docs/PROJECT.md`, `docs/ROADMAP.md`, `docs/POLISH.md`, `.cursor/rules/tobc-ui-ux-sync.mdc`, `README.md`.
 
+- **2026-05-20 — Booking stepper (compact teal):** Smaller circles/icons; teal bar + white elements; gap circle→icon; orange active step with pulsing outer ring (`prefers-reduced-motion` safe). Files: `BookingModal.tsx`, `assets/styles/main.css`, `UI-UX-PLAN.md`.
+
 - **2026-05-20 — Phase A polish (POLISH.md):** Courses zero-results via `EmptyResults` (“Clear all filters”); `ResultsSkeleton` on Courses/Partners filter; removed noisy info toasts (role switch, search, Opening…); home hero/banner primary `btn-primary` + secondary `btn-secondary`. Files: `CoursesPage.tsx`, `PartnersPage.tsx`, `HomePage.tsx`, `SiteHeader.tsx`, `ResultsSkeleton.tsx`, `LibraryPage.tsx`, `Footer.tsx`, `AboutPage.tsx`, `assets/styles/main.css`, `POLISH.md`, `UI-UX-PLAN.md`.
 
 ---

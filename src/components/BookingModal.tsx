@@ -1,4 +1,4 @@
-import { type ChangeEvent, useState } from 'react';
+import { type ChangeEvent, type ReactNode, useState } from 'react';
 import { BookingSummary } from './BookingSummary';
 import { useApp } from '../context/AppProvider';
 import { createBooking } from '../lib/bookingsApi';
@@ -6,11 +6,11 @@ import type { BookingStep } from '../types';
 
 const TIME_SLOTS = ['08:00 AM', '10:00 AM', '01:00 PM', '03:00 PM', '06:00 PM'];
 
-const STEP_LABELS: { num: BookingStep; label: string }[] = [
-  { num: 1, label: 'Select\nSchedule' },
-  { num: 2, label: 'Your\nDetails' },
-  { num: 3, label: 'Review &\nPayment' },
-  { num: 4, label: 'Confirmation' },
+const BOOKING_STEPS: { num: BookingStep; icon: string; label: string }[] = [
+  { num: 1, icon: 'bi-calendar2-check', label: 'Select Schedule' },
+  { num: 2, icon: 'bi-person-vcard', label: 'Your Details' },
+  { num: 3, icon: 'bi-credit-card', label: 'Review & Pay' },
+  { num: 4, icon: 'bi-patch-check-fill', label: 'Confirmation' },
 ];
 
 export function BookingModal() {
@@ -134,30 +134,38 @@ export function BookingModal() {
         <p className="booking-trust-strip" role="note">
           MARINA-accredited providers · Secure checkout
         </p>
-        <div className="booking-steps-bar">
-          {STEP_LABELS.map((s, i) => (
-            <div key={s.num} style={{ display: 'contents' }}>
-              {i > 0 && (
-                <div className={`bs-line${step > s.num - 1 ? ' done' : ''}`} />
-              )}
-              <div
-                className={`bs-step ${step === s.num ? 'active' : step > s.num ? 'done' : 'pending'}`}
-              >
-                <div className="bs-step-num">
-                  {step > s.num ? <i className="bi bi-check-lg" aria-hidden /> : s.num}
-                </div>
-                <div className="bs-step-label">
-                  {s.label.split('\n').map((line, j) => (
-                    <span key={line}>
-                      {j > 0 && <br />}
-                      {line}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
+        <nav className="booking-steps-bar" aria-label="Booking progress">
+          <ol className="booking-steps-track">
+            {BOOKING_STEPS.flatMap((s, i) => {
+              const items: ReactNode[] = [];
+              if (i > 0) {
+                items.push(
+                  <li
+                    key={`conn-${s.num}`}
+                    className={`bs-connector${step >= s.num ? ' done' : ''}`}
+                    aria-hidden
+                  />,
+                );
+              }
+              items.push(
+                <li
+                  key={s.num}
+                  className={`bs-step ${step === s.num ? 'active' : step > s.num ? 'done' : 'pending'}`}
+                  aria-current={step === s.num ? 'step' : undefined}
+                >
+                  <span className="bs-step-num">
+                    {step > s.num ? <i className="bi bi-check-lg" aria-hidden /> : s.num}
+                  </span>
+                  <span className="bs-step-icon" aria-hidden>
+                    <i className={`bi ${s.icon}`} />
+                  </span>
+                  <span className="bs-step-label">{s.label}</span>
+                </li>,
+              );
+              return items;
+            })}
+          </ol>
+        </nav>
 
         <div className="booking-modal-body">
           <div className="booking-form-section">
