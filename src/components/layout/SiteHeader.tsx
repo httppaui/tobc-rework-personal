@@ -168,7 +168,7 @@ export function SiteHeader() {
                 onCancelClose={cancelDropdownClose}
                 onMainClick={() => goTo(PAGE_PATHS.partners)}
               >
-                <PartnersNavMenu onNavigate={goTo} />
+                <PartnersNavMenu onNavigate={goTo} menuOpen={openDropdown === 'partners'} />
               </NavDropdown>
               <button type="button" className={navClass('about')} onClick={() => navigateTo('about')}>
                 About Us
@@ -271,9 +271,12 @@ export function SiteHeader() {
           <button type="button" className="btn btn-primary btn--sm" id="globalSearchBtn" onClick={runGlobalSearch}>
             Search courses
           </button>
-          <span className="global-search-hint">
-            Fills the course search on the Courses page, then runs the search.
-          </span>
+          <div className="global-search-hint-row" aria-live="polite">
+            <span className="global-search-scope">Searches courses only.</span>
+            <span className="global-search-hint-detail">
+              Fills the course search on the Courses page, then runs the search.
+            </span>
+          </div>
         </div>
       </div>
 
@@ -282,7 +285,11 @@ export function SiteHeader() {
           <span className="role-quick-label" id="roleQuickLabel">
             {ROLE_PATHS[role].label}
           </span>
-          <nav className="role-quick-links" id="navRolePaths" aria-label="Shortcuts for your role">
+          <nav
+            className="role-quick-links"
+            id="navRolePaths"
+            aria-labelledby="roleQuickLabel"
+          >
             {ROLE_PATHS[role].links.map((link) => (
               <button
                 key={link.label}

@@ -1,6 +1,7 @@
 const CART_KEY = 'tobc_cart_v1';
 const WISHLIST_KEY = 'tobc_wishlist_v1';
 const NOTIFICATIONS_KEY = 'tobc_notifications_v1';
+const BOOKING_PRIMER_KEY = 'tobc_booking_primer_seen_v1';
 
 /** Stored notification row (see types AppNotification) */
 export type StoredNotification = {
@@ -71,6 +72,22 @@ export function loadNotifications(): StoredNotification[] {
 export function saveNotifications(items: StoredNotification[]) {
   try {
     localStorage.setItem(NOTIFICATIONS_KEY, JSON.stringify(items.slice(0, 40)));
+  } catch {
+    /* ignore */
+  }
+}
+
+export function hasSeenBookingPrimer(): boolean {
+  try {
+    return localStorage.getItem(BOOKING_PRIMER_KEY) === '1';
+  } catch {
+    return false;
+  }
+}
+
+export function setBookingPrimerSeen() {
+  try {
+    localStorage.setItem(BOOKING_PRIMER_KEY, '1');
   } catch {
     /* ignore */
   }

@@ -248,6 +248,8 @@ _Add a bullet with **YYYY-MM-DD** when you ship a meaningful UI/UX change (what 
 
 - **2026-05-20 — Log out confirmation:** Modal confirms sign-out from profile menu and mobile drawer. Files: `LogoutConfirmModal.tsx`, `AppProvider.tsx`, `ProfileMenu.tsx`, `MobileDrawer.tsx`, `Layout.tsx`, `assets/styles/main.css`, `UI-UX-PLAN.md`.
 
+- **2026-05-20 — UX polish (search scope, chrome density, partners mega-menu, booking primer):** Global search line “Searches courses only”; compact laptop chrome (shorter nav, tighter bars, horizontal role shortcuts); Partners dropdown two-column mega-menu with tap targets for categories; one-time “How booking works” modal before first book/login. Files: `SiteHeader.tsx`, `PartnersNavMenu.tsx`, `BookingFlowPrimerModal.tsx`, `AppProvider.tsx`, `storage.ts`, `Layout.tsx`, `assets/styles/main.css`, `UI-UX-PLAN.md`.
+
 ---
 
 ## Appendix A — Code implementation checklist (Agent mode)

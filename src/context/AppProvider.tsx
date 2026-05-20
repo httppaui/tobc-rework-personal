@@ -13,7 +13,16 @@ import { getCourseById } from '../lib/courseCatalog';
 import { PAGE_PATHS } from '../lib/routes';
 import { fetchCurrentUser, loginAccount, logoutAccount, registerAccount } from '../lib/authApi';
 import { fetchCart, fetchWishlist, saveCartApi, saveWishlistApi } from '../lib/listsApi';
-import { loadCart, loadNotifications, loadWishlist, saveCart, saveNotifications, saveWishlist } from '../lib/storage';
+import {
+  hasSeenBookingPrimer,
+  loadCart,
+  loadNotifications,
+  loadWishlist,
+  saveCart,
+  saveNotifications,
+  saveWishlist,
+  setBookingPrimerSeen,
+} from '../lib/storage';
 import { lockBodyScroll, unlockBodyScroll } from '../lib/scrollLock';
 import { applyA11yPrefs, loadA11yPrefs } from '../lib/accessibility';
 
@@ -78,6 +87,8 @@ interface AppContextValue {
   unreadNotificationCount: number;
   addNotification: (title: string, body: string) => void;
   markAllNotificationsRead: () => void;
+  bookingPrimerOpen: boolean;
+  dismissBookingPrimer: () => void;
 }
 
 const AppContext = createContext<AppContextValue | null>(null);
@@ -150,6 +161,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [logoutConfirmOpen, setLogoutConfirmOpen] = useState(false);
   const [accessibilityOpen, setAccessibilityOpen] = useState(false);
   const [pendingBookCourseId, setPendingBookCourseId] = useState<string | null>(null);
+  const [bookingPrimerOpen, setBookingPrimerOpen] = useState(false);
+  const [primerPendingCourseId, setPrimerPendingCourseId] = useState<string | null>(null);
 
   const isLoggedIn = !!user;
 
@@ -217,13 +230,23 @@ export function AppProvider({ children }: { children: ReactNode }) {
       courseDetailId !== null ||
       legalModal !== null ||
       logoutConfirmOpen ||
+      bookingPrimerOpen ||
       accessibilityOpen;
     if (shouldLockScroll) {
       lockBodyScroll();
       return () => unlockBodyScroll();
     }
     unlockBodyScroll();
-  }, [onboardingOpen, booking.open, authModalOpen, courseDetailId, legalModal, logoutConfirmOpen, accessibilityOpen]);
+  }, [
+    onboardingOpen,
+    booking.open,
+    authModalOpen,
+    courseDetailId,
+    legalModal,
+    logoutConfirmOpen,
+    bookingPrimerOpen,
+    accessibilityOpen,
+  ]);
 
   useEffect(() => {
     if (user?.email) {
@@ -371,6 +394,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const completeAuth = useCallback(
     (authUser: AuthUser) => {
+      const pending = pendingBookCourseId;
       setUser(authUser);
       setAuthModalOpen(false);
       setOnboardingOpen(false);
@@ -380,7 +404,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
         /* ignore */
       }
       void syncListsForUser(true);
-      const pending = pendingBookCourseId;
       const successMessage = pending
         ? 'Signed in — continuing your booking…'
         : authModalMode === 'register'
@@ -388,6 +411,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
           : 'Welcome back! You are now logged in.';
       toast(successMessage, 'success');
       setPendingBookCourseId(null);
+      if (!hasSeenBookingPrimer()) {
+        setPrimerPendingCourseId(pending ?? null);
+        setBookingPrimerOpen(true);
+        return;
+      }
       if (pending) {
         openBooking(bookingFromCourseId(pending, 1));
       }
@@ -435,6 +463,16 @@ export function AppProvider({ children }: { children: ReactNode }) {
     logout();
   }, [logout]);
 
+  const dismissBookingPrimer = useCallback(() => {
+    setBookingPrimerSeen();
+    const pid = primerPendingCourseId;
+    setBookingPrimerOpen(false);
+    setPrimerPendingCourseId(null);
+    if (pid) {
+      openBooking(bookingFromCourseId(pid, 1));
+    }
+  }, [openBooking, primerPendingCourseId]);
+
   const startBookNow = useCallback(
     (courseId: string) => {
       setCourseDetailId(null);
@@ -448,6 +486,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
         setPendingBookCourseId(courseId);
         setAuthModalMode('book');
         setAuthModalOpen(true);
+        return;
+      }
+      if (!hasSeenBookingPrimer()) {
+        setPrimerPendingCourseId(courseId);
+        setBookingPrimerOpen(true);
         return;
       }
       openBooking(bookingFromCourseId(courseId, 1));
@@ -547,6 +590,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
       unreadNotificationCount,
       addNotification,
       markAllNotificationsRead,
+      bookingPrimerOpen,
+      dismissBookingPrimer,
     }),
     [
       role,
@@ -600,6 +645,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
       unreadNotificationCount,
       addNotification,
       markAllNotificationsRead,
+      bookingPrimerOpen,
+      dismissBookingPrimer,
     ],
   );
 
