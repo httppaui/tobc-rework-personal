@@ -17,7 +17,6 @@ export function SiteHeader() {
   const {
     role,
     setRole,
-    toast,
     setDrawerOpen,
     navigateTo,
     cartIds,
@@ -76,13 +75,11 @@ export function SiteHeader() {
     navigate(PAGE_PATHS.courses);
     if (q) {
       navigate(`${PAGE_PATHS.courses}?q=${encodeURIComponent(q)}`);
-      toast(q ? `Searching courses for “${q}”` : 'Showing all courses', 'info');
     }
   };
 
   const switchRole = (next: RoleId) => {
     setRole(next);
-    toast(`Viewing: ${ROLE_PATHS[next].label}`, 'success');
   };
 
   const rolePathAction = (action: string) => {
@@ -97,7 +94,7 @@ export function SiteHeader() {
         document.getElementById('faq-section')?.scrollIntoView({ behavior: 'smooth' });
         break;
       default:
-        toast('Opening…', 'info');
+        break;
     }
   };
 

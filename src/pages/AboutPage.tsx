@@ -2,7 +2,7 @@ import { AboutPuzzle } from '../components/AboutPuzzle';
 import { useApp } from '../context/AppProvider';
 
 export function AboutPage() {
-  const { navigateTo, toast } = useApp();
+  const { navigateTo } = useApp();
 
   return (
     <>
@@ -51,7 +51,7 @@ export function AboutPage() {
               </div>
               <h3>For Manning Agencies</h3>
               <p>Bulk-book courses for your crew and track compliance deadlines.</p>
-              <button type="button" className="btn btn-primary btn--sm" style={{ marginTop: 12 }} onClick={() => toast('Opening Agency Portal…', 'info')}>
+              <button type="button" className="btn btn-secondary btn--sm" style={{ marginTop: 12 }} disabled>
                 Agency Portal
               </button>
             </div>
@@ -61,7 +61,7 @@ export function AboutPage() {
               </div>
               <h3>For Training Centers</h3>
               <p>List courses, manage schedules, and reach active seafarers.</p>
-              <button type="button" className="btn btn-primary btn--sm" style={{ marginTop: 12 }} onClick={() => toast('Opening Provider Portal…', 'info')}>
+              <button type="button" className="btn btn-secondary btn--sm" style={{ marginTop: 12 }} disabled>
                 List Your Courses
               </button>
             </div>

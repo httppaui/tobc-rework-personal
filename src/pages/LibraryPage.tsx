@@ -9,7 +9,7 @@ const RESOURCES = [
 ];
 
 export function LibraryPage() {
-  const { navigateTo, toast } = useApp();
+  const { navigateTo } = useApp();
   const [tab, setTab] = useState('all');
   const list = tab === 'all' ? RESOURCES : RESOURCES.filter((r) => r.type === tab);
 
@@ -46,7 +46,7 @@ export function LibraryPage() {
           ) : (
           <div className="library-grid">
             {list.map((r) => (
-              <article key={r.title} className="lib-card" onClick={() => toast('Opening document…', 'info')} onKeyDown={(e) => e.key === 'Enter' && toast('Opening document…', 'info')} role="button" tabIndex={0}>
+              <article key={r.title} className="lib-card">
                 <div className="lib-card-img">
                   <i className="bi bi-file-earmark-text-fill" aria-hidden />
                 </div>

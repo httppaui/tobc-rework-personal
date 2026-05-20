@@ -2,6 +2,8 @@ import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useApp } from '../context/AppProvider';
 import { CourseCard } from '../components/CourseCard';
+import { EmptyResults } from '../components/EmptyResults';
+import { ResultsSkeleton } from '../components/ResultsSkeleton';
 import { CoursesFilters } from '../components/courses/CoursesFilters';
 import { COURSES, COURSES_TOTAL } from '../data/courses';
 import {
@@ -27,7 +29,7 @@ function normalizeFilter(param: string | null): string {
 }
 
 export function CoursesPage() {
-  const { navigateTo, toast } = useApp();
+  const { navigateTo } = useApp();
   const [params] = useSearchParams();
   const [view, setView] = useState<'grid' | 'list'>('grid');
   const [searchQ, setSearchQ] = useState(() => params.get('q') ?? '');
@@ -103,7 +105,6 @@ export function CoursesPage() {
     setSort('name');
     setSidebar(DEFAULT_SIDEBAR_FILTERS);
     setCurrentPage(1);
-    toast('All filters cleared', 'info');
   };
 
   const handleSidebarChange = (next: SidebarFilters) => {
@@ -265,28 +266,32 @@ export function CoursesPage() {
               </div>
             </div>
 
+            {!filtering && filtered.length > 0 ? (
             <div className={gridClass} id="coursesGrid">
               {pageCourses.map((c) => (
                 <CourseCard key={c.id} course={c} listMode={view === 'list'} />
               ))}
             </div>
+            ) : null}
 
-            <div
-              className="no-results"
-              id="noResults"
-              style={{ display: filtered.length === 0 ? 'block' : 'none' }}
-            >
-              <div className="icon">
-                <i className="bi bi-search" aria-hidden />
-              </div>
-              <h3>No courses found</h3>
-              <p>Try adjusting your filters or search terms.</p>
-              <button type="button" className="btn btn-primary" style={{ marginTop: 12 }} onClick={clearFilters}>
-                Clear Filters
-              </button>
-            </div>
+            {filtering ? (
+              <ResultsSkeleton
+                variant={view === 'list' ? 'courses-list' : 'courses-grid'}
+                count={PAGE_SIZE}
+              />
+            ) : null}
 
-            {filtered.length > 0 && (
+            {!filtering && filtered.length === 0 ? (
+              <EmptyResults
+                iconClass="bi-search"
+                title="No courses found"
+                description="Try adjusting your filters or search terms."
+                actionLabel="Clear all filters"
+                onAction={clearFilters}
+              />
+            ) : null}
+
+            {!filtering && filtered.length > 0 ? (
               <div className="pagination">
                 <button
                   type="button"
@@ -328,7 +333,7 @@ export function CoursesPage() {
                   <i className="bi bi-chevron-double-right" aria-hidden />
                 </button>
               </div>
-            )}
+            ) : null}
           </div>
         </div>
       </div>

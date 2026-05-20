@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppProvider';
+import { PAGE_PATHS } from '../lib/routes';
 import { HERO_VALUE_PROPS } from '../data/rolePaths';
 import type { RoleId } from '../types';
 import { CourseCard } from '../components/CourseCard';
@@ -7,22 +9,20 @@ import { COURSES } from '../data/courses';
 
 function HeroCTAs({
   role,
-  navigateTo,
-  openAuthModal,
-  toast,
+  onPrimary,
+  onSecondary,
 }: {
   role: RoleId;
-  navigateTo: (p: 'courses') => void;
-  openAuthModal: (mode: 'register') => void;
-  toast: (m: string, t?: 'info' | 'success') => void;
+  onPrimary: () => void;
+  onSecondary: () => void;
 }) {
   if (role === 'agency') {
     return (
       <>
-        <button type="button" className="btn btn-amber btn--lg" onClick={() => toast('Opening agency portal…', 'info')}>
+        <button type="button" className="btn btn-primary btn--lg" onClick={onPrimary}>
           <i className="bi bi-people-fill" aria-hidden /> Bulk-book for my crew
         </button>
-        <button type="button" className="btn btn-ghost btn--lg" onClick={() => toast('Opening agency portal…', 'info')}>
+        <button type="button" className="btn btn-secondary btn--lg" onClick={onSecondary}>
           Agency dashboard →
         </button>
       </>
@@ -31,10 +31,10 @@ function HeroCTAs({
   if (role === 'center') {
     return (
       <>
-        <button type="button" className="btn btn-amber btn--lg" onClick={() => toast('Opening training center portal…', 'success')}>
+        <button type="button" className="btn btn-primary btn--lg" onClick={onPrimary}>
           <i className="bi bi-mortarboard-fill" aria-hidden /> Publish courses on TOBC
         </button>
-        <button type="button" className="btn btn-ghost btn--lg" onClick={() => toast('Opening provider portal…', 'info')}>
+        <button type="button" className="btn btn-secondary btn--lg" onClick={onSecondary}>
           Provider console →
         </button>
       </>
@@ -42,10 +42,10 @@ function HeroCTAs({
   }
   return (
     <>
-      <button type="button" className="btn btn-amber btn--lg" onClick={() => navigateTo('courses')}>
+      <button type="button" className="btn btn-primary btn--lg" onClick={onPrimary}>
         <i className="bi bi-search" aria-hidden /> Find a course &amp; schedule
       </button>
-      <button type="button" className="btn btn-ghost btn--lg" onClick={() => openAuthModal('register')}>
+      <button type="button" className="btn btn-secondary btn--lg" onClick={onSecondary}>
         Create account
       </button>
     </>
@@ -53,7 +53,8 @@ function HeroCTAs({
 }
 
 export function HomePage() {
-  const { role, navigateTo, openCourseDetail, openAuthModal, toast } = useApp();
+  const { role, navigateTo, openCourseDetail, openAuthModal } = useApp();
+  const navigate = useNavigate();
   const [homeQ, setHomeQ] = useState('');
   const [openFaq, setOpenFaq] = useState<number | null>(null);
 
@@ -79,8 +80,9 @@ export function HomePage() {
   }, []);
 
   const runHomeSearch = () => {
-    navigateTo('courses');
-    if (homeQ.trim()) toast(`Searching for “${homeQ.trim()}”`, 'info');
+    const q = homeQ.trim();
+    navigate(q ? `${PAGE_PATHS.courses}?q=${encodeURIComponent(q)}` : PAGE_PATHS.courses);
+    window.scrollTo({ top: 0, behavior: 'auto' });
   };
 
   return (
@@ -117,7 +119,11 @@ export function HomePage() {
                 seafarers, manning agencies, and training providers.
               </p>
               <div className="hero-ctas" id="heroCTAs">
-                <HeroCTAs role={role} navigateTo={navigateTo} openAuthModal={openAuthModal} toast={toast} />
+                <HeroCTAs
+                  role={role}
+                  onPrimary={() => navigateTo('courses')}
+                  onSecondary={() => openAuthModal('register')}
+                />
               </div>
             </div>
             <div className="hero-visual">
@@ -378,10 +384,10 @@ export function HomePage() {
             Join 12,400+ seafarers who trust TOBC. Register free and find your next course in minutes.
           </p>
           <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
-            <button type="button" className="btn btn-amber btn--lg" onClick={() => openAuthModal('register')}>
+            <button type="button" className="btn btn-primary btn--lg" onClick={() => openAuthModal('register')}>
               Create Free Account →
             </button>
-            <button type="button" className="btn btn-ghost btn--lg" onClick={() => navigateTo('courses')}>
+            <button type="button" className="btn btn-secondary btn--lg" onClick={() => navigateTo('courses')}>
               Browse Courses
             </button>
           </div>

@@ -1,7 +1,7 @@
 import { useApp } from '../../context/AppProvider';
 
 export function Footer() {
-  const { navigateTo, openAuthModal, openLegalModal, toast } = useApp();
+  const { navigateTo, openAuthModal, openLegalModal } = useApp();
 
   return (
     <footer className="footer">
@@ -59,7 +59,7 @@ export function Footer() {
             <button type="button" onClick={() => navigateTo('bookings')}>
               My Bookings
             </button>
-            <button type="button" onClick={() => toast('Opening Certificates…', 'info')}>
+            <button type="button" disabled title="Coming soon">
               My Certificates
             </button>
             <button type="button" onClick={() => openAuthModal('register')}>

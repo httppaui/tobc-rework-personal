@@ -9,6 +9,7 @@ import {
   type PartnerSidebarFilters,
 } from '../lib/partnerFilters';
 import { EmptyResults } from '../components/EmptyResults';
+import { ResultsSkeleton } from '../components/ResultsSkeleton';
 
 function normalizePartnerType(type: string): string {
   if (type === 'review') return 'pdos';
@@ -25,7 +26,7 @@ const TYPE_TAB_LABELS: Record<string, string> = {
 };
 
 export function PartnersPage() {
-  const { navigateTo, toast } = useApp();
+  const { navigateTo } = useApp();
   const [params] = useSearchParams();
   const [searchQ, setSearchQ] = useState('');
   const [toolbarType, setToolbarType] = useState(() => params.get('type') ?? 'all');
@@ -59,7 +60,6 @@ export function PartnersPage() {
     setSearchQ('');
     setToolbarType('all');
     setSidebar(DEFAULT_PARTNER_FILTERS);
-    toast('All filters cleared', 'info');
   };
 
   const handleSidebarChange = (next: PartnerSidebarFilters) => {
@@ -141,55 +141,48 @@ export function PartnersPage() {
                 </div>
               </div>
 
-              <div className="partners-grid" id="partnersGrid">
-                {filtered.map((p) => (
-                  <article key={p.id} className="partner-card" data-type={p.type}>
-                    <div style={{ display: 'flex', gap: 14, alignItems: 'flex-start' }}>
-                      <div className="partner-card-logo">
-                        <i className={`bi ${p.icon}`} aria-hidden />
-                      </div>
-                      <div className="partner-card-info">
-                        <h3>{p.name}</h3>
-                        <p>{p.description}</p>
-                      </div>
-                    </div>
-                    <div className="partner-card-meta">
-                      <span className={`badge ${p.badgeClass}`}>{p.typeLabel}</span>
-                      {p.courses ? (
-                        <span className="badge badge-green">{p.courses} Courses</span>
-                      ) : null}
-                    </div>
-                    <button
-                      type="button"
-                      className="btn btn-secondary btn--sm partner-visit-btn"
-                      onClick={() => toast(`Opening ${p.name}…`, 'info')}
-                    >
-                      Visit Site →
-                    </button>
-                  </article>
-                ))}
-              </div>
-
-              {filtered.length === 0 && (
+              {filtering ? (
+                <ResultsSkeleton variant="partners" count={6} />
+              ) : filtered.length === 0 ? (
                 <EmptyResults
                   iconClass="bi-building"
                   title="No partners match your filters"
                   description="Try clearing filters or broadening your search."
-                  actionLabel="Clear filters"
+                  actionLabel="Clear all filters"
                   onAction={clearFilters}
                 />
-              )}
-
-              {filtered.length > 0 && (
-                <div style={{ textAlign: 'center', marginTop: 32 }}>
-                  <button
-                    type="button"
-                    className="btn btn-primary"
-                    onClick={() => toast('Loading more partners…', 'info')}
-                  >
-                    Load More Partners
-                  </button>
-                </div>
+              ) : (
+                <>
+                  <div className="partners-grid" id="partnersGrid">
+                    {filtered.map((p) => (
+                      <article key={p.id} className="partner-card" data-type={p.type}>
+                        <div style={{ display: 'flex', gap: 14, alignItems: 'flex-start' }}>
+                          <div className="partner-card-logo">
+                            <i className={`bi ${p.icon}`} aria-hidden />
+                          </div>
+                          <div className="partner-card-info">
+                            <h3>{p.name}</h3>
+                            <p>{p.description}</p>
+                          </div>
+                        </div>
+                        <div className="partner-card-meta">
+                          <span className={`badge ${p.badgeClass}`}>{p.typeLabel}</span>
+                          {p.courses ? (
+                            <span className="badge badge-green">{p.courses} Courses</span>
+                          ) : null}
+                        </div>
+                        <button type="button" className="btn btn-secondary btn--sm partner-visit-btn">
+                          Visit Site →
+                        </button>
+                      </article>
+                    ))}
+                  </div>
+                  <div style={{ textAlign: 'center', marginTop: 32 }}>
+                    <button type="button" className="btn btn-secondary">
+                      Load More Partners
+                    </button>
+                  </div>
+                </>
               )}
             </div>
           </div>
@@ -207,8 +200,7 @@ export function PartnersPage() {
           </p>
           <button
             type="button"
-            className="btn btn-amber btn--lg"
-            onClick={() => toast('Opening partner registration…', 'success')}
+            className="btn btn-primary btn--lg"
           >
             Apply as Partner →
           </button>

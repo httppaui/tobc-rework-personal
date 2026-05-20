@@ -200,7 +200,16 @@ p{font-size:15px;line-height:1.75;color:var(--muted)}
 .btn-secondary.is-loading::after,.btn-amber.is-loading::after{border:2px solid rgba(0,85,94,.25);border-top-color:var(--teal-700)}
 @keyframes spin{to{transform:rotate(360deg)}}
 .courses-results-panel{position:relative;min-height:120px}
-.courses-results-panel.is-filtering::after{content:'Updating results…';position:absolute;inset:0;background:rgba(255,255,255,.72);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;color:var(--teal-800);z-index:3;border-radius:12px}
+.courses-results-panel.is-filtering{pointer-events:none}
+.results-skeleton{pointer-events:none}
+.skeleton-course-card,.skeleton-partner-card{border-radius:14px;background:linear-gradient(90deg,var(--ghost) 25%,var(--paper) 50%,var(--ghost) 75%);background-size:200% 100%;animation:shimmer 1.2s infinite}
+.skeleton-course-card{height:180px}
+.skeleton-course-card--list{height:128px}
+.skeleton-partner-card{min-height:168px}
+html.tobc-reduced-motion .skeleton-course-card,html.tobc-reduced-motion .skeleton-partner-card{animation:none;background:var(--ghost)}
+@media (prefers-reduced-motion:reduce){
+  .skeleton-course-card,.skeleton-partner-card{animation:none;background:var(--ghost)}
+}
 .partner-logo-marquee{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:8px}
 .partner-logo-pill{font-size:12px;font-weight:600;color:var(--muted);background:var(--white);border:1px solid var(--ghost);padding:8px 14px;border-radius:8px}
 

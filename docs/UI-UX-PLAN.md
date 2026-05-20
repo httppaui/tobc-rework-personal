@@ -37,7 +37,7 @@ This file is the **source of truth** for UI/UX direction for the TOBC site (**Re
 |------|--------|--------|
 | Spacing + type scale tokens in `:root` | [x] | Added `--space-1` … `--space-6` (use incrementally in CSS). |
 | Migrate inline styles → `tobc.css` classes | ☐ | Drawer, mobile rows, etc. |
-| One primary CTA per major region | ☐ | Teal reserved for book / register / search |
+| One primary CTA per major region | [x] | Home hero + bottom CTA: teal primary, secondary outline (Phase A) |
 | List/grid course cards: rhythm, whitespace, image ratio | ☐ | List layout fixed; keep tuning |
 | Optional: SVG icon set instead of emoji for chrome | [x] | **Bootstrap Icons** (CDN) replace emoji across chrome, cards, toasts, FAB, footer social (`tobc.html` / `tobc.css` / `tobc.js`). |
 
@@ -71,7 +71,7 @@ This file is the **source of truth** for UI/UX direction for the TOBC site (**Re
 | Item | Status | Notes |
 |------|--------|--------|
 | Toasts: avoid noise on trivial toggles (e.g. grid/list) | [x] | Removed grid/list view toasts (`setView`). |
-| Loading: skeleton or pulse during filter | ☐ | Beyond “Updating results…” overlay |
+| Loading: skeleton or pulse during filter | [x] | Card shimmer on Courses & Partners filter/search (`ResultsSkeleton`) |
 | Trust: one MARINA / verification strip near booking | [x] | `.booking-trust-strip` under booking breadcrumb. |
 
 ---
@@ -193,6 +193,8 @@ _Add a bullet with **YYYY-MM-DD** when you ship a meaningful UI/UX change (what 
 - **2026-05-19 — Scroll jump fix:** Chat scroll contained to message pane; modal scroll lock preserves position; removed global smooth scroll on focus/hash links. Files: `scrollLock.ts`, `AppProvider.tsx`, `MessagesPage.tsx`, `main.css`, `Footer.tsx`, `SiteHeader.tsx`, `CoursesPage.tsx`, `UI-UX-PLAN.md`.
 
 - **2026-05-20 — Docs:** Moved `UI-UX-PLAN.md` to `docs/UI-UX-PLAN.md`; updated cross-links and Cursor sync rule. Files: `docs/UI-UX-PLAN.md`, `docs/PROJECT.md`, `docs/ROADMAP.md`, `docs/POLISH.md`, `.cursor/rules/tobc-ui-ux-sync.mdc`, `README.md`.
+
+- **2026-05-20 — Phase A polish (POLISH.md):** Courses zero-results via `EmptyResults` (“Clear all filters”); `ResultsSkeleton` on Courses/Partners filter; removed noisy info toasts (role switch, search, Opening…); home hero/banner primary `btn-primary` + secondary `btn-secondary`. Files: `CoursesPage.tsx`, `PartnersPage.tsx`, `HomePage.tsx`, `SiteHeader.tsx`, `ResultsSkeleton.tsx`, `LibraryPage.tsx`, `Footer.tsx`, `AboutPage.tsx`, `assets/styles/main.css`, `POLISH.md`, `UI-UX-PLAN.md`.
 
 ---
 

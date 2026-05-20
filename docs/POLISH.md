@@ -10,10 +10,10 @@ Polish work you can do **before deploy** (localhost with `npm run dev`). Check i
 
 | # | Task | Status |
 |---|------|--------|
-| A1 | **Courses empty state** — zero results message + “Clear all filters” | ☐ |
-| A2 | **Loading skeletons** — Courses & Partners filter/search (card shimmer) | ☐ |
-| A3 | **Toast noise** — remove info toasts for role switch, every search, “Opening…” | ☐ |
-| A4 | **Home hero CTAs** — one primary teal action; others secondary | ☐ |
+| A1 | **Courses empty state** — zero results message + “Clear all filters” | [x] |
+| A2 | **Loading skeletons** — Courses & Partners filter/search (card shimmer) | [x] |
+| A3 | **Toast noise** — remove info toasts for role switch, every search, “Opening…” | [x] |
+| A4 | **Home hero CTAs** — one primary teal action; others secondary | [x] |
 
 ---
 
@@ -76,3 +76,4 @@ Polish work you can do **before deploy** (localhost with `npm run dev`). Check i
 | Date | Summary |
 |------|---------|
 | 2026-05-19 | Phase C: empty states (News/Library), booking price strip + mobile back, legal modals (cookie/disclaimer/refund), accessibility panel |
+| 2026-05-20 | Phase A: Courses `EmptyResults` + clear all filters; `ResultsSkeleton` on Courses/Partners; reduced toast noise; home hero teal primary CTAs |
