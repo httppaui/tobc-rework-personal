@@ -116,6 +116,7 @@ p{font-size:15px;line-height:1.75;color:var(--muted)}
 .badge-outline{background:transparent;border:1px solid var(--teal-400);color:var(--teal-700)}
 .badge-white{background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.2)}
 .badge-purple{background:#ede9fe;color:#5b21b6}
+.course-card .badge,.partner-card .badge,.course-detail-modal .badge{font-size:9px;padding:2px 7px;border-radius:14px;letter-spacing:.05em;gap:3px;line-height:1.25}
 
 /* ═══════════════════════════════════════
    NAVBAR
@@ -147,6 +148,18 @@ p{font-size:15px;line-height:1.75;color:var(--muted)}
 .nav-link-wrap.is-dropdown-open .nav-dropdown{opacity:1;pointer-events:all;transform:translateY(0)}
 .nav-dropdown a,.nav-dropdown button{display:block;width:100%;padding:9px 14px;font-size:14px;font-weight:500;color:var(--ink-700);border-radius:6px;transition:all .15s;background:none;border:none;text-align:left;cursor:pointer}
 .nav-dropdown a:hover,.nav-dropdown button:hover{background:var(--teal-50);color:var(--teal-700)}
+.nav-dropdown-partners{display:flex;flex-direction:column;gap:2px;min-width:0;padding:0}
+.nav-dropdown-branch{position:relative}
+.nav-dropdown-branch-label{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;padding:9px 14px;font-size:14px;font-weight:600;color:var(--ink-700);border-radius:6px;cursor:default;user-select:none}
+.nav-dropdown-branch-label .bi{font-size:12px;color:var(--muted);flex-shrink:0}
+.nav-dropdown-branch:hover>.nav-dropdown-branch-label,.nav-dropdown-branch:focus-within>.nav-dropdown-branch-label{background:var(--teal-50);color:var(--teal-700)}
+.nav-dropdown-branch:hover>.nav-dropdown-branch-label .bi,.nav-dropdown-branch:focus-within>.nav-dropdown-branch-label .bi{color:var(--teal-600)}
+.nav-dropdown-submenu{position:absolute;left:calc(100% - 6px);top:0;min-width:220px;max-width:min(320px,70vw);max-height:min(70vh,420px);overflow-y:auto;background:#fff;border:1px solid var(--ghost);border-radius:var(--radius);box-shadow:var(--shadow-lg);padding:6px;opacity:0;pointer-events:none;transform:translateX(-4px);transition:opacity .16s,transform .16s;z-index:510}
+.nav-dropdown-submenu::before{content:'';position:absolute;right:100%;top:0;width:10px;height:100%}
+.nav-dropdown-branch:hover>.nav-dropdown-submenu,.nav-dropdown-branch:focus-within>.nav-dropdown-submenu{opacity:1;pointer-events:all;transform:translateX(0)}
+.nav-dropdown-submenu .nav-dropdown-branch-label{font-weight:500}
+.nav-dropdown-submenu button{font-size:13px;padding:8px 12px;white-space:normal;line-height:1.35}
+.nav-link-wrap.is-dropdown-open .nav-dropdown:has(.nav-dropdown-partners){min-width:200px;padding:6px}
 .nav-actions{display:flex;align-items:center;gap:8px;justify-self:end;flex-shrink:0;height:100%;position:relative;z-index:2;padding-left:4px}
 .nav-icon-btn{width:40px;height:40px;display:flex;align-items:center;justify-content:center;border-radius:8px;border:none;background:transparent;color:var(--muted);font-size:18px;cursor:pointer;transition:all .18s;position:relative;flex-shrink:0}
 .nav-icon-btn:hover{background:var(--ghost);color:var(--teal-700)}
@@ -521,8 +534,8 @@ button.faq-q{width:100%;border:none;background:transparent;font:inherit;text-ali
 .course-card-img{height:148px;display:flex;align-items:center;justify-content:center;font-size:42px;position:relative;overflow:hidden}
 .cc-img-bg{position:absolute;inset:0}
 .cc-emoji{position:relative;z-index:1}
-.cc-badges{position:absolute;top:10px;left:10px;right:10px;display:flex;justify-content:space-between;z-index:2;gap:6px}
-.cc-badges-left{display:flex;gap:6px}
+.cc-badges{position:absolute;top:10px;left:10px;right:10px;display:flex;justify-content:space-between;z-index:2;gap:5px}
+.cc-badges-left{display:flex;gap:5px}
 .cc-wishlist-btn{position:absolute;bottom:10px;right:10px;z-index:3;width:36px;height:36px;border-radius:50%;border:none;background:rgba(255,255,255,.95);color:var(--ink-700);display:inline-flex;align-items:center;justify-content:center;cursor:pointer;font-size:17px;box-shadow:0 2px 8px rgba(0,0,0,.18);transition:transform .18s,background .18s,color .18s}
 .cc-wishlist-btn:hover{transform:scale(1.06);background:#fff}
 .cc-wishlist-btn.is-active{color:var(--red)}
@@ -568,8 +581,8 @@ button.faq-q{width:100%;border:none;background:transparent;font:inherit;text-ali
 .cc-list-row{display:flex;align-items:center;gap:10px;min-width:0;width:100%}
 .cc-list-row--head{align-items:flex-start;gap:12px}
 .cc-list-row--head .cc-title{flex:1;min-width:0;margin-bottom:0}
-.cc-list-row--head .cc-badges--list{position:static;flex-shrink:0;display:flex;align-items:center;gap:6px;flex-wrap:wrap;justify-content:flex-end;max-width:46%;padding-right:2px}
-.cc-list-row--head .cc-badges--list .cc-badges-left{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.cc-list-row--head .cc-badges--list{position:static;flex-shrink:0;display:flex;align-items:center;gap:5px;flex-wrap:wrap;justify-content:flex-end;max-width:46%;padding-right:2px}
+.cc-list-row--head .cc-badges--list .cc-badges-left{display:flex;gap:5px;flex-wrap:wrap;justify-content:flex-end}
 .cc-list-row--head .cc-badges--list .badge-white{background:var(--teal-100);color:var(--teal-800);border:1px solid var(--teal-200)}
 .cc-list-row--sub{gap:12px}
 .cc-list-row--sub .cc-provider{flex:1;min-width:0;margin-bottom:0}
@@ -613,22 +626,28 @@ button.faq-q{width:100%;border:none;background:transparent;font:inherit;text-ali
 .partner-type-tab:hover:not(.active){border-color:var(--teal-400);color:var(--teal-700)}
 .partners-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
 .partners-list-view{display:flex;flex-direction:column;gap:14px;min-width:0;width:100%}
-.partner-card{background:#fff;border:1px solid var(--ghost);border-radius:14px;padding:24px;transition:all .25s;display:flex;flex-direction:column;gap:14px;cursor:pointer}
+.partner-card{background:#fff;border:1px solid var(--ghost);border-radius:14px;padding:24px;transition:all .25s;display:flex;flex-direction:column;gap:14px}
 .partner-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-md);border-color:var(--teal-100)}
 .partner-card-main{display:flex;gap:14px;align-items:flex-start}
 .partner-card-logo{width:64px;height:64px;background:var(--teal-50);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0}
 .partner-card-info{flex:1;min-width:0}
-.partner-card-info h3{font-size:15px;margin-bottom:4px;color:var(--ink)}
+.partner-card-name{font-size:15px;margin-bottom:4px;color:var(--ink);line-height:1.35}
+.partner-card-info .partner-card-name{margin-bottom:4px}
 .partner-card-info p{font-size:13px;line-height:1.5;color:var(--muted)}
-.partner-card-meta{display:flex;gap:8px;flex-wrap:wrap}
-.partner-card.list-mode{flex-direction:row;align-items:center;flex-wrap:wrap;gap:14px 16px;padding:18px 20px}
+.partner-card-meta{display:flex;gap:5px;flex-wrap:wrap}
+.partner-card.list-mode{flex-direction:row;align-items:center;flex-wrap:nowrap;gap:12px;padding:10px 18px 10px 12px}
 .partner-card.list-mode:hover{transform:none}
-.partner-card.list-mode .partner-card-main{flex:1;min-width:min(0,100%)}
-.partner-card.list-mode .partner-card-meta{flex-shrink:0;margin:0}
-.partner-card.list-mode .partner-visit-btn{flex-shrink:0;margin-left:auto}
-.skeleton-partner-card--list{min-height:96px;width:100%}
+.partner-card.list-mode .partner-card-logo{width:56px;height:56px;font-size:22px;flex-shrink:0}
+.partner-card.list-mode .partner-card-content{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px;justify-content:center}
+.partner-card.list-mode .partner-card-name{margin:0;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.partner-list-actions{flex-shrink:0;display:flex;flex-direction:column;align-items:flex-end;justify-content:center;gap:8px}
+.partner-card-badges--list{display:flex;align-items:center;gap:5px;flex-wrap:wrap;justify-content:flex-end}
+.partner-card-desc{font-size:13px;line-height:1.45;color:var(--muted);margin:0;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
+.partner-visit-btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;flex-shrink:0}
+.partner-card:not(.list-mode) .partner-visit-btn{margin-top:auto;align-self:flex-start}
+.partner-card.list-mode .partner-visit-btn{margin:0;width:auto;min-width:108px}
+.skeleton-partner-card--list{min-height:88px;width:100%}
 .partners-load-more{text-align:center;margin-top:32px}
-.partner-visit-btn{margin-top:auto;align-self:flex-start}
 
 /* ═══════════════════════════════════════
    ██████  ABOUT PAGE

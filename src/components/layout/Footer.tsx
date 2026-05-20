@@ -70,21 +70,18 @@ export function Footer() {
             </button>
           </div>
           <div className="footer-col">
-            <h4>Business Partners</h4>
-            <button type="button" onClick={() => navigateTo('partners')}>
-              Training Centers
+            <h4>Partners</h4>
+            <button
+              type="button"
+              onClick={() => navigate(`${PAGE_PATHS.partners}?category=business`)}
+            >
+              Business Partners
             </button>
-            <button type="button" onClick={() => navigateTo('partners')}>
-              Assessment Centers
-            </button>
-            <button type="button" onClick={() => navigateTo('partners')}>
-              PDOS Providers
-            </button>
-            <button type="button" onClick={() => navigateTo('partners')}>
-              Review Centers
-            </button>
-            <button type="button" onClick={() => navigateTo('partners')}>
-              Schools
+            <button
+              type="button"
+              onClick={() => navigate(`${PAGE_PATHS.partners}?category=industry`)}
+            >
+              Industry Partners
             </button>
           </div>
           <div className="footer-col">

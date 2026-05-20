@@ -1,6 +1,7 @@
 import type { Partner } from '../data/partners';
 
 export type PartnerSidebarFilters = {
+  categories: string[];
   professions: string[];
   types: string[];
   othersSpecify: string;
@@ -10,6 +11,7 @@ export type PartnerSidebarFilters = {
 };
 
 export const DEFAULT_PARTNER_FILTERS: PartnerSidebarFilters = {
+  categories: [],
   professions: [],
   types: [],
   othersSpecify: '',
@@ -29,27 +31,43 @@ function matchesList(selected: string[], value: string): boolean {
 
 export function filterPartners(
   partners: Partner[],
-  opts: { searchQ: string; toolbarType: string; sidebar: PartnerSidebarFilters },
+  opts: {
+    searchQ: string;
+    toolbarCategory: string;
+    toolbarType: string;
+    sidebar: PartnerSidebarFilters;
+  },
 ): Partner[] {
   const q = opts.searchQ.trim().toLowerCase();
   const { sidebar } = opts;
 
   return partners.filter((p) => {
-    if (opts.toolbarType && opts.toolbarType !== 'all' && p.type !== opts.toolbarType) return false;
+    if (opts.toolbarCategory && opts.toolbarCategory !== 'all' && p.category !== opts.toolbarCategory) {
+      return false;
+    }
+    if (
+      opts.toolbarType &&
+      opts.toolbarType !== 'all' &&
+      p.category === 'business' &&
+      p.type !== opts.toolbarType
+    ) {
+      return false;
+    }
+    if (!matchesList(sidebar.categories, p.category)) return false;
     if (!matchesList(sidebar.professions, p.profession)) return false;
-    if (!matchesList(sidebar.types, p.type)) return false;
+    if (p.category === 'business' && !matchesList(sidebar.types, p.type)) return false;
     if (!matchesList(sidebar.countries, p.country)) return false;
     if (!matchesList(sidebar.regions, p.region)) return false;
     if (!matchesList(sidebar.cities, p.city)) return false;
 
-    if (sidebar.types.includes('others') && sidebar.othersSpecify.trim()) {
+    if (sidebar.types.includes('others') && sidebar.othersSpecify.trim() && p.category === 'business') {
       const needle = sidebar.othersSpecify.trim().toLowerCase();
       const hay = `${p.othersSpecify ?? ''} ${p.typeLabel} ${p.name}`.toLowerCase();
       if (!hay.includes(needle)) return false;
     }
 
     if (q) {
-      const hay = `${p.name} ${p.description} ${p.typeLabel}`.toLowerCase();
+      const hay = `${p.name} ${p.description} ${p.typeLabel} ${p.categoryLabel}`.toLowerCase();
       if (!hay.includes(q)) return false;
     }
 

@@ -230,9 +230,21 @@ _Add a bullet with **YYYY-MM-DD** when you ship a meaningful UI/UX change (what 
 
 - **2026-05-20 — Partners grid/list toggle:** View toggle in results header; list layout for partner cards; skeleton variant for list. Files: `PartnersPage.tsx`, `ResultsSkeleton.tsx`, `assets/styles/main.css`, `UI-UX-PLAN.md`.
 
+- **2026-05-20 — Partners categories:** Business vs Industry partners; business sub-types (training, assessment, PDOS, review, schools, others); hero “Our Partners”; toolbar and sidebar category filters. Files: `partners.ts`, `partnerFilterOptions.ts`, `partnerFilters.ts`, `PartnersFilters.tsx`, `PartnersPage.tsx`, `UI-UX-PLAN.md`.
+
 - **2026-05-20 — Course list badges:** Category/availability badges move to upper-right of white body in list view (not on teal strip). Files: `CourseCard.tsx`, `assets/styles/main.css`, `UI-UX-PLAN.md`.
 
 - **2026-05-20 — Course list card density:** Title+badges, provider+rating, description+meta rows; tighter padding and sidebar width. Files: `CourseCard.tsx`, `assets/styles/main.css`, `UI-UX-PLAN.md`.
+
+- **2026-05-20 — Partner list badges:** Category/type badges stacked above Visit Site in list view right column. Files: `PartnerCard.tsx`, `assets/styles/main.css`, `UI-UX-PLAN.md`.
+
+- **2026-05-20 — Partner Visit Site button:** Toast on click; natural pill width in list view; Bootstrap icon. Files: `PartnerCard.tsx`, `assets/styles/main.css`, `UI-UX-PLAN.md`.
+
+- **2026-05-20 — Course/partner badge size:** Slightly smaller pills on course cards, partner cards, and course detail modal. Files: `assets/styles/main.css`, `UI-UX-PLAN.md`.
+
+- **2026-05-20 — Partners nav dropdown:** Two-level flyout (Business / Industry); business types and industry partner links; `?partner=` deep link. Files: `PartnersNavMenu.tsx`, `partnersNav.ts`, `SiteHeader.tsx`, `PartnersPage.tsx`, `assets/styles/main.css`, `UI-UX-PLAN.md`.
+
+- **2026-05-20 — Footer Partners column:** Heading “Partners”; links for Business Partners and Industry Partners with category filters. Files: `Footer.tsx`, `UI-UX-PLAN.md`.
 
 ---
 

@@ -1,9 +1,10 @@
 import { useState, type ReactNode } from 'react';
 import {
   COUNTRIES_BY_CONTINENT,
+  PARTNER_BUSINESS_TYPES,
+  PARTNER_CATEGORIES,
   PARTNER_CITIES,
   PARTNER_PROFESSIONS,
-  PARTNER_TYPES,
   PHILIPPINES_REGIONS,
 } from '../../data/partnerFilterOptions';
 import { PARTNERS } from '../../data/partners';
@@ -54,7 +55,15 @@ function FilterCheckbox({ label, count, checked, onChange }: FilterCheckboxProps
   );
 }
 
-function countBy(key: 'profession' | 'type' | 'country' | 'region' | 'city', value: string): number {
+function countByCategory(value: string): number {
+  return PARTNERS.filter((p) => p.category === value).length;
+}
+
+function countByBusinessType(value: string): number {
+  return PARTNERS.filter((p) => p.category === 'business' && p.type === value).length;
+}
+
+function countBy(key: 'profession' | 'country' | 'region' | 'city', value: string): number {
   return PARTNERS.filter((p) => p[key] === value).length;
 }
 
@@ -80,7 +89,50 @@ export function PartnersFilters({ filters, onFiltersChange, onClear }: PartnersF
         </div>
 
         <div className="sidebar-filters-scroll">
-          <FilterGroup title="Profession" defaultOpen>
+          <FilterGroup title="Partner Category" defaultOpen>
+            {PARTNER_CATEGORIES.map(({ id, label }) => (
+              <FilterCheckbox
+                key={id}
+                label={label}
+                count={countByCategory(id)}
+                checked={filters.categories.includes(id)}
+                onChange={(checked) =>
+                  patch({ categories: toggleInList(filters.categories, id, checked) })
+                }
+              />
+            ))}
+          </FilterGroup>
+
+          <FilterGroup title="Business Partner Type" defaultOpen>
+            {PARTNER_BUSINESS_TYPES.map(({ id, label }) => (
+              <FilterCheckbox
+                key={id}
+                label={label}
+                count={countByBusinessType(id) || undefined}
+                checked={filters.types.includes(id)}
+                onChange={(checked) =>
+                  patch({ types: toggleInList(filters.types, id, checked) })
+                }
+              />
+            ))}
+            {filters.types.includes('others') && (
+              <div className="filter-others-specify">
+                <label className="visually-hidden" htmlFor="partnerOthersSpecify">
+                  Specify other business partner type
+                </label>
+                <input
+                  id="partnerOthersSpecify"
+                  type="text"
+                  className="price-input"
+                  placeholder="Specify other type…"
+                  value={filters.othersSpecify}
+                  onChange={(e) => patch({ othersSpecify: e.target.value })}
+                />
+              </div>
+            )}
+          </FilterGroup>
+
+          <FilterGroup title="Profession">
             {PARTNER_PROFESSIONS.map(({ id, label }) => (
               <FilterCheckbox
                 key={id}
@@ -92,35 +144,6 @@ export function PartnersFilters({ filters, onFiltersChange, onClear }: PartnersF
                 }
               />
             ))}
-          </FilterGroup>
-
-          <FilterGroup title="Partner Type" defaultOpen>
-            {PARTNER_TYPES.map(({ id, label }) => (
-              <FilterCheckbox
-                key={id}
-                label={label}
-                count={countBy('type', id)}
-                checked={filters.types.includes(id)}
-                onChange={(checked) =>
-                  patch({ types: toggleInList(filters.types, id, checked) })
-                }
-              />
-            ))}
-            {filters.types.includes('others') && (
-              <div className="filter-others-specify">
-                <label className="visually-hidden" htmlFor="partnerOthersSpecify">
-                  Specify other partner type
-                </label>
-                <input
-                  id="partnerOthersSpecify"
-                  type="text"
-                  className="price-input"
-                  placeholder="e.g. Manning Agency, Supplier…"
-                  value={filters.othersSpecify}
-                  onChange={(e) => patch({ othersSpecify: e.target.value })}
-                />
-              </div>
-            )}
           </FilterGroup>
 
           <FilterGroup title="Country" scroll="lg">

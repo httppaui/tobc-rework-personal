@@ -1,7 +1,12 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { PartnerCard } from '../components/partners/PartnerCard';
 import { PartnersFilters } from '../components/partners/PartnersFilters';
-import { PARTNER_CITIES, PARTNER_TYPES } from '../data/partnerFilterOptions';
+import {
+  PARTNER_BUSINESS_TYPES,
+  PARTNER_CATEGORIES,
+  PARTNER_CITIES,
+} from '../data/partnerFilterOptions';
 import { PARTNERS, PARTNERS_TOTAL } from '../data/partners';
 import { useApp } from '../context/AppProvider';
 import {
@@ -13,7 +18,7 @@ import { EmptyResults } from '../components/EmptyResults';
 import { ResultsSkeleton } from '../components/ResultsSkeleton';
 
 function normalizePartnerType(type: string): string {
-  if (type === 'review') return 'pdos';
+  if (type === 'review') return 'review';
   return type;
 }
 
@@ -23,6 +28,7 @@ export function PartnersPage() {
   const { navigateTo } = useApp();
   const [params] = useSearchParams();
   const [searchQ, setSearchQ] = useState('');
+  const [toolbarCategory, setToolbarCategory] = useState(() => params.get('category') ?? 'all');
   const [toolbarType, setToolbarType] = useState(() => {
     const raw = params.get('type');
     return raw ? normalizePartnerType(raw) : 'all';
@@ -34,14 +40,36 @@ export function PartnersPage() {
   const [view, setView] = useState<'grid' | 'list'>('grid');
 
   useEffect(() => {
+    const cat = params.get('category');
     const raw = params.get('type');
+    const partnerId = params.get('partner');
+    if (cat === 'business' || cat === 'industry') {
+      setToolbarCategory(cat);
+      setSidebar((prev) => ({
+        ...prev,
+        categories: prev.categories.length ? prev.categories : [cat],
+      }));
+    }
     if (raw) {
       const type = normalizePartnerType(raw);
       setToolbarType(type);
+      setToolbarCategory((c) => (c === 'all' ? 'business' : c));
       setSidebar((prev) => ({
         ...prev,
         types: prev.types.length ? prev.types : [type],
       }));
+    }
+    if (partnerId) {
+      const match = PARTNERS.find((p) => p.id === partnerId);
+      if (match) {
+        setToolbarCategory('industry');
+        setToolbarType('all');
+        setSidebar((prev) => ({
+          ...prev,
+          categories: ['industry'],
+          types: [],
+        }));
+      }
     }
   }, [params]);
 
@@ -49,10 +77,14 @@ export function PartnersPage() {
     setFiltering(true);
     const t = window.setTimeout(() => setFiltering(false), 220);
     return () => window.clearTimeout(t);
-  }, [searchQ, toolbarType, sidebar, sort, location]);
+  }, [searchQ, toolbarCategory, toolbarType, sidebar, sort, location]);
 
   const filtered = useMemo(() => {
-    let list = filterPartners(PARTNERS, { searchQ, toolbarType, sidebar });
+    const partnerId = params.get('partner');
+    let list = filterPartners(PARTNERS, { searchQ, toolbarCategory, toolbarType, sidebar });
+    if (partnerId) {
+      list = list.filter((p) => p.id === partnerId);
+    }
     return [...list].sort((a, b) => {
       switch (sort) {
         case 'courses-desc':
@@ -63,10 +95,11 @@ export function PartnersPage() {
           return a.name.localeCompare(b.name);
       }
     });
-  }, [searchQ, toolbarType, sidebar, sort]);
+  }, [searchQ, toolbarCategory, toolbarType, sidebar, sort, params]);
 
   const clearFilters = () => {
     setSearchQ('');
+    setToolbarCategory('all');
     setToolbarType('all');
     setLocation('');
     setSort('name');
@@ -75,21 +108,47 @@ export function PartnersPage() {
 
   const handleSidebarChange = (next: PartnerSidebarFilters) => {
     setSidebar(next);
-    if (next.types.length === 1) setToolbarType(next.types[0]);
-    else if (next.types.length === 0) setToolbarType('all');
-    else setToolbarType('all');
+    if (next.categories.length === 1) setToolbarCategory(next.categories[0]);
+    else if (next.categories.length === 0) setToolbarCategory('all');
+    else setToolbarCategory('all');
+
+    if (next.types.length === 1) {
+      setToolbarType(next.types[0]);
+      if (toolbarCategory === 'industry') setToolbarCategory('business');
+    } else if (next.types.length === 0) {
+      setToolbarType('all');
+    } else {
+      setToolbarType('all');
+    }
   };
 
   const gridClass = view === 'list' ? 'partners-list-view' : 'partners-grid';
+
+  const setToolbarPartnerCategory = (category: string) => {
+    setToolbarCategory(category);
+    setSidebar((prev) => ({
+      ...prev,
+      categories: category === 'all' ? [] : [category],
+      types: category === 'industry' ? [] : prev.types,
+      othersSpecify: category === 'industry' ? '' : prev.othersSpecify,
+    }));
+    if (category === 'industry') setToolbarType('all');
+  };
 
   const setToolbarPartnerType = (type: string) => {
     setToolbarType(type);
     setSidebar((prev) => ({
       ...prev,
+      categories: prev.categories.length ? prev.categories : ['business'],
       types: type === 'all' ? [] : [type],
       othersSpecify: type === 'others' ? prev.othersSpecify : '',
     }));
+    if (toolbarCategory === 'all' || toolbarCategory === 'industry') {
+      setToolbarCategory('business');
+    }
   };
+
+  const businessTypeFilterDisabled = toolbarCategory === 'industry';
 
   return (
     <>
@@ -104,10 +163,10 @@ export function PartnersPage() {
               Partners
             </span>
           </nav>
-          <h1>Our Industry Partners</h1>
+          <h1>Our Partners</h1>
           <p>
-            84+ MARINA-accredited training centers, assessment centers, manning agencies, and industry
-            organizations on TOBC.
+            Business partners — training centers, assessment and PDOS providers, review centers, and
+            schools. Industry partners — unions, agencies, clinics, and maritime organizations.
           </p>
         </div>
       </div>
@@ -129,12 +188,28 @@ export function PartnersPage() {
             </div>
             <select
               className="cs-select"
+              id="psCategory"
+              value={toolbarCategory}
+              onChange={(e) => setToolbarPartnerCategory(e.target.value)}
+            >
+              <option value="all">All Partners</option>
+              {PARTNER_CATEGORIES.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.label}
+                </option>
+              ))}
+            </select>
+            <select
+              className="cs-select"
               id="psType"
               value={toolbarType}
+              disabled={businessTypeFilterDisabled}
+              aria-disabled={businessTypeFilterDisabled}
               onChange={(e) => setToolbarPartnerType(e.target.value)}
+              title={businessTypeFilterDisabled ? 'Applies to business partners only' : undefined}
             >
-              <option value="all">All Partner Types</option>
-              {PARTNER_TYPES.map((t) => (
+              <option value="all">All Business Types</option>
+              {PARTNER_BUSINESS_TYPES.map((t) => (
                 <option key={t.id} value={t.id}>
                   {t.label}
                 </option>
@@ -216,30 +291,7 @@ export function PartnersPage() {
               {!filtering && filtered.length > 0 ? (
                 <div className={gridClass} id="partnersGrid">
                   {filtered.map((p) => (
-                    <article
-                      key={p.id}
-                      className={`partner-card${view === 'list' ? ' list-mode' : ''}`}
-                      data-type={p.type}
-                    >
-                      <div className="partner-card-main">
-                        <div className="partner-card-logo">
-                          <i className={`bi ${p.icon}`} aria-hidden />
-                        </div>
-                        <div className="partner-card-info">
-                          <h3>{p.name}</h3>
-                          <p>{p.description}</p>
-                        </div>
-                      </div>
-                      <div className="partner-card-meta">
-                        <span className={`badge ${p.badgeClass}`}>{p.typeLabel}</span>
-                        {p.courses ? (
-                          <span className="badge badge-green">{p.courses} Courses</span>
-                        ) : null}
-                      </div>
-                      <button type="button" className="btn btn-secondary btn--sm partner-visit-btn">
-                        Visit Site →
-                      </button>
-                    </article>
+                    <PartnerCard key={p.id} partner={p} listMode={view === 'list'} />
                   ))}
                 </div>
               ) : null}
@@ -280,12 +332,9 @@ export function PartnersPage() {
           </span>
           <h2 style={{ color: '#fff', marginBottom: 10 }}>Become a TOBC Partner</h2>
           <p style={{ color: 'rgba(255,255,255,.88)', margin: '0 auto 24px', maxWidth: 460 }}>
-            List your training center and reach 12,400+ active seafarers.
+            List your training center or organization and reach 12,400+ active seafarers.
           </p>
-          <button
-            type="button"
-            className="btn btn-primary btn--lg"
-          >
+          <button type="button" className="btn btn-primary btn--lg">
             Apply as Partner →
           </button>
         </div>

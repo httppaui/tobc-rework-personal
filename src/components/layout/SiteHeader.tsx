@@ -2,6 +2,7 @@ import { useCallback, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useApp } from '../../context/AppProvider';
 import { NavDropdown, NavDropdownItem } from './NavDropdown';
+import { PartnersNavMenu } from './PartnersNavMenu';
 import { NotificationBell } from './NotificationBell';
 import { ProfileMenu } from './ProfileMenu';
 import type { RoleId } from '../../types';
@@ -167,11 +168,7 @@ export function SiteHeader() {
                 onCancelClose={cancelDropdownClose}
                 onMainClick={() => goTo(PAGE_PATHS.partners)}
               >
-                <NavDropdownItem label="Training Centers" onSelect={() => goTo(`${PAGE_PATHS.partners}?type=training`)} />
-                <NavDropdownItem label="Assessment Centers" onSelect={() => goTo(`${PAGE_PATHS.partners}?type=assessment`)} />
-                <NavDropdownItem label="Review Centers" onSelect={() => goTo(`${PAGE_PATHS.partners}?type=review`)} />
-                <NavDropdownItem label="Schools" onSelect={() => goTo(`${PAGE_PATHS.partners}?type=school`)} />
-                <NavDropdownItem label="PDOS Providers" onSelect={() => goTo(`${PAGE_PATHS.partners}?type=pdos`)} />
+                <PartnersNavMenu onNavigate={goTo} />
               </NavDropdown>
               <button type="button" className={navClass('about')} onClick={() => navigateTo('about')}>
                 About Us
