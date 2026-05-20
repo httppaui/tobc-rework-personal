@@ -206,6 +206,8 @@ _Add a bullet with **YYYY-MM-DD** when you ship a meaningful UI/UX change (what 
 
 - **2026-05-20 — Orange CTA accents:** Primary buttons, section eyebrows, bottom CTA banner, help FAB/panel header, scroll-top accent, footer social hover use `--brand-orange`. Files: `assets/styles/main.css`, `HomePage.tsx`, `UI-UX-PLAN.md`.
 
+- **2026-05-20 — Cart checkout layout:** Multi-select checkboxes, search, sticky booking-details summary with line items and total, Book now for selected courses. Files: `CartPage.tsx`, `CartOrderSummary.tsx`, `main.css`, `UI-UX-PLAN.md`.
+
 ---
 
 ## Appendix A — Code implementation checklist (Agent mode)
