@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useApp } from '../context/AppProvider';
+import { EmptyResults } from '../components/EmptyResults';
 
 const RESOURCES = [
   { type: 'stcw', title: 'STCW 2010 Manila Amendments — Full Text', tags: [['STCW', 'teal'], ['PDF', 'outline']] },
@@ -34,6 +35,15 @@ export function LibraryPage() {
               </button>
             ))}
           </div>
+          {list.length === 0 ? (
+            <EmptyResults
+              iconClass="bi-journal-bookmark"
+              title="No resources in this category"
+              description="Browse all resources or try another filter."
+              actionLabel="Show all resources"
+              onAction={() => setTab('all')}
+            />
+          ) : (
           <div className="library-grid">
             {list.map((r) => (
               <article key={r.title} className="lib-card" onClick={() => toast('Opening document…', 'info')} onKeyDown={(e) => e.key === 'Enter' && toast('Opening document…', 'info')} role="button" tabIndex={0}>
@@ -54,6 +64,7 @@ export function LibraryPage() {
               </article>
             ))}
           </div>
+          )}
         </div>
       </section>
     </>

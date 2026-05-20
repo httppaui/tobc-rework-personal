@@ -8,6 +8,7 @@ import {
   filterPartners,
   type PartnerSidebarFilters,
 } from '../lib/partnerFilters';
+import { EmptyResults } from '../components/EmptyResults';
 
 function normalizePartnerType(type: string): string {
   if (type === 'review') return 'pdos';
@@ -170,16 +171,13 @@ export function PartnersPage() {
               </div>
 
               {filtered.length === 0 && (
-                <div className="no-results" style={{ display: 'block' }}>
-                  <div className="icon">
-                    <i className="bi bi-search" aria-hidden />
-                  </div>
-                  <h3>No partners match your filters</h3>
-                  <p>Try clearing filters or broadening your search.</p>
-                  <button type="button" className="btn btn-primary btn--sm" onClick={clearFilters}>
-                    Clear filters
-                  </button>
-                </div>
+                <EmptyResults
+                  iconClass="bi-building"
+                  title="No partners match your filters"
+                  description="Try clearing filters or broadening your search."
+                  actionLabel="Clear filters"
+                  onAction={clearFilters}
+                />
               )}
 
               {filtered.length > 0 && (

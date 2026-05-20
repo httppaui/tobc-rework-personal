@@ -8,6 +8,10 @@ import { NewsPage } from './pages/NewsPage';
 import { LibraryPage } from './pages/LibraryPage';
 import { WishlistPage } from './pages/WishlistPage';
 import { CartPage } from './pages/CartPage';
+import { MessagesPage } from './pages/MessagesPage';
+import { BookingsPage } from './pages/BookingsPage';
+import { ProfilePage } from './pages/ProfilePage';
+import { SettingsPage } from './pages/SettingsPage';
 import { PAGE_PATHS } from './lib/routes';
 
 export default function App() {
@@ -23,6 +27,10 @@ export default function App() {
         <Route path="library" element={<LibraryPage />} />
         <Route path="wishlist" element={<WishlistPage />} />
         <Route path="cart" element={<CartPage />} />
+        <Route path="messages" element={<MessagesPage />} />
+        <Route path="bookings" element={<BookingsPage />} />
+        <Route path="profile" element={<ProfilePage />} />
+        <Route path="settings" element={<SettingsPage />} />
         <Route path="*" element={<Navigate to={PAGE_PATHS.home} replace />} />
       </Route>
     </Routes>

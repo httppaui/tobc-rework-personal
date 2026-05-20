@@ -1,5 +1,7 @@
 import { FormEvent, useEffect, useState } from 'react';
 import { useApp } from '../context/AppProvider';
+import { checkApiHealth } from '../lib/authApi';
+import { isPasswordValid, PASSWORD_RULES, passwordValidationError } from '../lib/passwordRules';
 import type { AuthModalMode } from '../types';
 
 const AUTH_COPY: Record<AuthModalMode, { title: string; body: string }> = {
@@ -17,12 +19,105 @@ const AUTH_COPY: Record<AuthModalMode, { title: string; body: string }> = {
   },
 };
 
+function PasswordRequirementsPopover({
+  password,
+  visible,
+  popoverId,
+}: {
+  password: string;
+  visible: boolean;
+  popoverId: string;
+}) {
+  if (!visible) return null;
+
+  return (
+    <div
+      id={popoverId}
+      className="auth-password-rules-popover"
+      role="status"
+      aria-live="polite"
+    >
+      <p className="auth-password-rules-title">Password must include:</p>
+      <ul className="auth-password-rules">
+        {PASSWORD_RULES.map((rule) => {
+          const met = rule.test(password);
+          return (
+            <li key={rule.id} className={met ? 'is-met' : ''}>
+              <i className={`bi ${met ? 'bi-check-circle-fill' : 'bi-circle'}`} aria-hidden />
+              {rule.label}
+            </li>
+          );
+        })}
+      </ul>
+    </div>
+  );
+}
+
+function PasswordField({
+  id,
+  label,
+  value,
+  onChange,
+  autoComplete,
+  placeholder,
+  showRules = false,
+}: {
+  id: string;
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  autoComplete: string;
+  placeholder: string;
+  showRules?: boolean;
+}) {
+  const [visible, setVisible] = useState(false);
+  const [rulesOpen, setRulesOpen] = useState(false);
+  const popoverId = `${id}-rules`;
+
+  return (
+    <div className="auth-field auth-field-password">
+      <label htmlFor={id}>{label}</label>
+      <div className="auth-password-input-wrap">
+        <input
+          id={id}
+          type={visible ? 'text' : 'password'}
+          autoComplete={autoComplete}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          onFocus={() => showRules && setRulesOpen(true)}
+          onBlur={() => setRulesOpen(false)}
+          placeholder={placeholder}
+          required
+          aria-describedby={showRules && rulesOpen ? popoverId : undefined}
+        />
+        <button
+          type="button"
+          className="auth-password-toggle"
+          onClick={() => setVisible((v) => !v)}
+          aria-label={visible ? 'Hide password' : 'Show password'}
+          tabIndex={-1}
+        >
+          <i className={`bi ${visible ? 'bi-eye-slash' : 'bi-eye'}`} aria-hidden />
+        </button>
+        {showRules && (
+          <PasswordRequirementsPopover
+            password={value}
+            visible={rulesOpen}
+            popoverId={popoverId}
+          />
+        )}
+      </div>
+    </div>
+  );
+}
+
 export function AuthModal() {
   const {
     authModalOpen,
     authModalMode,
     closeAuthModal,
     openAuthModal,
+    openLegalModal,
     loginWithEmail,
     registerWithEmail,
   } = useApp();
@@ -32,8 +127,10 @@ export function AuthModal() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [fieldError, setFieldError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [apiOnline, setApiOnline] = useState<boolean | null>(null);
 
   useEffect(() => {
     if (!authModalOpen) return;
@@ -41,19 +138,39 @@ export function AuthModal() {
     setEmail('');
     setPassword('');
     setConfirmPassword('');
+    setAgreedToTerms(false);
     setFieldError(null);
     setSubmitting(false);
+    setApiOnline(null);
+    void checkApiHealth().then(setApiOnline);
   }, [authModalOpen, authModalMode]);
 
   if (!authModalOpen) return null;
 
   const copy = AUTH_COPY[authModalMode];
+  const registerPasswordOk = !isRegister || (isPasswordValid(password) && password === confirmPassword);
+  const canSubmit = agreedToTerms && apiOnline !== false && !submitting && registerPasswordOk;
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setFieldError(null);
 
+    if (!agreedToTerms) {
+      setFieldError('Please agree to the Terms of Use and Privacy Policy to continue.');
+      return;
+    }
+
+    if (apiOnline === false) {
+      setFieldError('Auth server is offline. Run npm run dev in the project folder (starts API on port 3001).');
+      return;
+    }
+
     if (isRegister) {
+      const passwordErr = passwordValidationError(password);
+      if (passwordErr) {
+        setFieldError(passwordErr);
+        return;
+      }
       if (password !== confirmPassword) {
         setFieldError('Passwords do not match.');
         return;
@@ -88,6 +205,12 @@ export function AuthModal() {
         </div>
         <div className="auth-modal-body">
           <p>{copy.body}</p>
+          {apiOnline === false && (
+            <p className="auth-api-status is-error" role="status">
+              Cannot reach the auth API. Stop the dev server, then run <strong>npm run dev</strong> again
+              (needs both web and api). Check the terminal for <strong>[api]</strong> listening on port 3001.
+            </p>
+          )}
           <form className="auth-form" onSubmit={handleSubmit} noValidate>
             {isRegister && (
               <div className="auth-field">
@@ -115,40 +238,68 @@ export function AuthModal() {
                 required
               />
             </div>
-            <div className="auth-field">
-              <label htmlFor="authPassword">Password</label>
-              <input
-                id="authPassword"
-                type="password"
-                autoComplete={isRegister ? 'new-password' : 'current-password'}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder={isRegister ? 'At least 6 characters' : 'Your password'}
-                minLength={isRegister ? 6 : undefined}
-                required
-              />
-            </div>
+            <PasswordField
+              id="authPassword"
+              label="Password"
+              value={password}
+              onChange={setPassword}
+              autoComplete={isRegister ? 'new-password' : 'current-password'}
+              placeholder={isRegister ? 'Create a strong password' : 'Your password'}
+              showRules={isRegister}
+            />
             {isRegister && (
-              <div className="auth-field">
-                <label htmlFor="authConfirm">Confirm password</label>
-                <input
-                  id="authConfirm"
-                  type="password"
-                  autoComplete="new-password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  placeholder="Re-enter password"
-                  minLength={6}
-                  required
-                />
-              </div>
+              <PasswordField
+                id="authConfirm"
+                label="Confirm password"
+                value={confirmPassword}
+                onChange={setConfirmPassword}
+                autoComplete="new-password"
+                placeholder="Re-enter password"
+              />
             )}
+            <label className="auth-terms">
+              <input
+                type="checkbox"
+                checked={agreedToTerms}
+                onChange={(e) => {
+                  setAgreedToTerms(e.target.checked);
+                  if (e.target.checked) setFieldError(null);
+                }}
+              />
+              <span>
+                I agree to the{' '}
+                <button
+                  type="button"
+                  className="legal-doc-link"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    openLegalModal('terms');
+                  }}
+                >
+                  Terms of Use
+                </button>{' '}
+                and{' '}
+                <button
+                  type="button"
+                  className="legal-doc-link"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    openLegalModal('privacy');
+                  }}
+                >
+                  Privacy Policy
+                </button>
+                .
+              </span>
+            </label>
             {fieldError && (
               <p className="auth-form-error" role="alert">
                 {fieldError}
               </p>
             )}
-            <button type="submit" className="btn btn-primary auth-submit" disabled={submitting}>
+            <button type="submit" className="btn btn-primary auth-submit" disabled={!canSubmit}>
               {submitting
                 ? 'Please wait…'
                 : isRegister
@@ -174,9 +325,6 @@ export function AuthModal() {
               </button>
             </p>
           )}
-          <p className="auth-modal-note">
-            By continuing, you agree to our Terms of Use and Privacy Policy.
-          </p>
         </div>
       </div>
     </div>

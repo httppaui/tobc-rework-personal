@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useApp } from '../context/AppProvider';
+import { EmptyResults } from '../components/EmptyResults';
 
 const ARTICLES = [
   { cat: 'company', title: 'TOBC & Nautilus Pacific Formalize Partnership Through MOA', date: 'Mar 2, 2026', grad: 'linear-gradient(135deg,#003d3b,#007a75)' },
@@ -34,6 +35,15 @@ export function NewsPage() {
               </button>
             ))}
           </div>
+          {list.length === 0 ? (
+            <EmptyResults
+              iconClass="bi-newspaper"
+              title="No articles in this category"
+              description="Try another news category or check back later for updates."
+              actionLabel="Show all news"
+              onAction={() => setTab('all')}
+            />
+          ) : (
           <div className="news-full-grid">
             {list.map((a) => (
               <article key={a.title} className="news-full-card">
@@ -52,6 +62,7 @@ export function NewsPage() {
               </article>
             ))}
           </div>
+          )}
         </div>
       </section>
     </>

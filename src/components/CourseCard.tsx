@@ -20,7 +20,19 @@ function categoryBadgeClass(category: string) {
 }
 
 export function CourseCard({ course, listMode }: { course: Course; listMode?: boolean }) {
-  const { openCourseDetail, startBookNow } = useApp();
+  const {
+    openCourseDetail,
+    startBookNow,
+    addToWishlist,
+    removeFromWishlist,
+    addToCart,
+    removeFromCart,
+    isInWishlist,
+    isInCart,
+  } = useApp();
+
+  const inWishlist = isInWishlist(course.id);
+  const inCart = isInCart(course.id);
 
   const openDetail = (e?: MouseEvent) => {
     e?.stopPropagation();
@@ -30,6 +42,18 @@ export function CourseCard({ course, listMode }: { course: Course; listMode?: bo
   const book = (e?: MouseEvent) => {
     e?.stopPropagation();
     startBookNow(course.id);
+  };
+
+  const toggleWishlist = (e: MouseEvent) => {
+    e.stopPropagation();
+    if (inWishlist) removeFromWishlist(course.id);
+    else addToWishlist(course.id);
+  };
+
+  const toggleCart = (e: MouseEvent) => {
+    e.stopPropagation();
+    if (inCart) removeFromCart(course.id);
+    else addToCart(course.id);
   };
 
   const seatsPct =
@@ -70,9 +94,20 @@ export function CourseCard({ course, listMode }: { course: Course; listMode?: bo
           </div>
           <span className={avail.className}>{avail.label}</span>
         </div>
+        <button
+          type="button"
+          className={`cc-wishlist-btn${inWishlist ? ' is-active' : ''}`}
+          aria-label={inWishlist ? 'Remove from wishlist' : 'Add to wishlist'}
+          aria-pressed={inWishlist}
+          onClick={toggleWishlist}
+        >
+          <i className={`bi ${inWishlist ? 'bi-heart-fill' : 'bi-heart'}`} aria-hidden />
+        </button>
       </div>
       <div className="course-card-body">
-        <div className="cc-rating">
+        <div className="cc-title">{course.title}</div>
+        <div className="cc-provider">{course.provider}</div>
+        <div className="cc-rating" aria-label="Rating 4.7 out of 5 from 186 reviews">
           <span className="cc-stars" aria-hidden>
             {[1, 2, 3, 4, 5].map((i) => (
               <i key={i} className="bi bi-star-fill" />
@@ -81,8 +116,12 @@ export function CourseCard({ course, listMode }: { course: Course; listMode?: bo
           <span className="cc-rating-val">4.7</span>
           <span className="cc-rating-n">(186)</span>
         </div>
-        <div className="cc-title">{course.title}</div>
-        <div className="cc-provider">{course.provider}</div>
+        <div className="cc-toolbar">
+          <button type="button" className="cc-desc-btn" onClick={openDetail}>
+            <i className="bi bi-card-text" aria-hidden />
+            View description
+          </button>
+        </div>
         <div className="cc-meta">
           <span className="cc-meta-item">
             <i className="bi bi-clock cc-meta-ico" aria-hidden /> {course.duration}
@@ -120,18 +159,29 @@ export function CourseCard({ course, listMode }: { course: Course; listMode?: bo
             {course.price}
             <span className="cc-price-sub"> /person</span>
           </div>
-          <button
-            type="button"
-            className="cc-book-btn"
-            style={
-              course.price === 'FREE'
-                ? { background: 'var(--amber)', color: 'var(--ink)' }
-                : undefined
-            }
-            onClick={book}
-          >
-            <span className="cc-cta-line1">Book now</span>
-          </button>
+          <div className="cc-footer-actions">
+            <button
+              type="button"
+              className={`cc-cart-btn${inCart ? ' is-active' : ''}`}
+              aria-label={inCart ? 'Remove from cart' : 'Add to cart'}
+              aria-pressed={inCart}
+              onClick={toggleCart}
+            >
+              <i className={`bi ${inCart ? 'bi-cart-check-fill' : 'bi-cart-plus'}`} aria-hidden />
+            </button>
+            <button
+              type="button"
+              className="cc-book-btn"
+              style={
+                course.price === 'FREE'
+                  ? { background: 'var(--amber)', color: 'var(--ink)' }
+                  : undefined
+              }
+              onClick={book}
+            >
+              <span className="cc-cta-line1">Book now</span>
+            </button>
+          </div>
         </div>
       </div>
     </article>

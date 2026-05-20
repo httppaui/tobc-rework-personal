@@ -1,6 +1,7 @@
-import { type ChangeEvent } from 'react';
+import { type ChangeEvent, useState } from 'react';
 import { BookingSummary } from './BookingSummary';
 import { useApp } from '../context/AppProvider';
+import { createBooking } from '../lib/bookingsApi';
 import type { BookingStep } from '../types';
 
 const TIME_SLOTS = ['08:00 AM', '10:00 AM', '01:00 PM', '03:00 PM', '06:00 PM'];
@@ -13,7 +14,8 @@ const STEP_LABELS: { num: BookingStep; label: string }[] = [
 ];
 
 export function BookingModal() {
-  const { booking, closeBooking, updateBooking, toast, navigateTo } = useApp();
+  const { booking, closeBooking, updateBooking, toast, navigateTo, isLoggedIn, openAuthModal } = useApp();
+  const [submitting, setSubmitting] = useState(false);
   if (!booking.open) return null;
 
   const step = booking.step;
@@ -42,11 +44,38 @@ export function BookingModal() {
     return true;
   };
 
-  const onNext = () => {
+  const onNext = async () => {
     if (!validateStep()) return;
     if (step === 3) {
-      const id = `TOBC-${Date.now().toString(36).toUpperCase()}`;
-      updateBooking({ confirmationId: id, step: 4 });
+      if (!isLoggedIn) {
+        toast('Please log in to submit your booking', 'error');
+        openAuthModal('login');
+        return;
+      }
+      setSubmitting(true);
+      const result = await createBooking({
+        courseId: booking.courseId,
+        courseTitle: booking.course,
+        provider: booking.provider,
+        location: booking.location,
+        price: booking.price,
+        category: booking.category,
+        scheduleDate: booking.scheduleDate,
+        scheduleTime: booking.scheduleTime,
+        firstName: booking.firstName,
+        lastName: booking.lastName,
+        srb: booking.srb,
+        mobile: booking.mobile,
+        email: booking.email,
+        paymentProofName: booking.paymentProofName,
+        paymentProofDataUrl: booking.paymentProofDataUrl,
+      });
+      setSubmitting(false);
+      if (!result.ok) {
+        toast(result.error, 'error');
+        return;
+      }
+      updateBooking({ confirmationId: result.booking.id, step: 4 });
       toast('Booking submitted!', 'success');
       return;
     }
@@ -84,11 +113,24 @@ export function BookingModal() {
     >
       <div className="booking-modal" role="dialog" aria-modal="true" aria-labelledby="bModalTitle">
         <div className="booking-modal-head">
-          <h3 id="bModalTitle">Book Course</h3>
+          <div className="booking-modal-head-start">
+            {step > 1 && step < 4 && (
+              <button type="button" className="booking-modal-back" onClick={onBack} aria-label="Go back">
+                <i className="bi bi-arrow-left" aria-hidden />
+              </button>
+            )}
+            <h3 id="bModalTitle">Book Course</h3>
+          </div>
           <button type="button" onClick={closeBooking} aria-label="Close booking">
             <i className="bi bi-x-lg" aria-hidden />
           </button>
         </div>
+        {step < 4 && (
+          <div className="booking-price-strip" aria-live="polite">
+            <span className="booking-price-strip-course">{booking.course || 'Selected course'}</span>
+            <strong className="booking-price-strip-amount">{booking.price || '—'}</strong>
+          </div>
+        )}
         <p className="booking-trust-strip" role="note">
           MARINA-accredited providers · Secure checkout
         </p>
@@ -287,7 +329,7 @@ export function BookingModal() {
                   </button>
                 )}
               </div>
-              <button type="button" className="btn btn-primary" onClick={onNext}>
+              <button type="button" className="btn btn-primary" onClick={() => void onNext()} disabled={submitting}>
                 {step === 3 ? 'Submit booking' : 'Next'}{' '}
                 <i className="bi bi-arrow-right" aria-hidden />
               </button>

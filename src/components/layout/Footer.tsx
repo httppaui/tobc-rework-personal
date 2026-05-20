@@ -1,7 +1,7 @@
 import { useApp } from '../../context/AppProvider';
 
 export function Footer() {
-  const { navigateTo, openAuthModal, toast } = useApp();
+  const { navigateTo, openAuthModal, openLegalModal, toast } = useApp();
 
   return (
     <footer className="footer">
@@ -37,16 +37,16 @@ export function Footer() {
               +63 917 878 0320 / +63 2 53104815
             </div>
             <div className="footer-social">
-              <a className="footer-soc-btn" href="#" aria-label="Facebook">
+              <a className="footer-soc-btn" href="#" aria-label="Facebook" onClick={(e) => e.preventDefault()}>
                 <i className="bi bi-facebook" aria-hidden />
               </a>
-              <a className="footer-soc-btn" href="#" aria-label="Instagram">
+              <a className="footer-soc-btn" href="#" aria-label="Instagram" onClick={(e) => e.preventDefault()}>
                 <i className="bi bi-instagram" aria-hidden />
               </a>
-              <a className="footer-soc-btn" href="#" aria-label="LinkedIn">
+              <a className="footer-soc-btn" href="#" aria-label="LinkedIn" onClick={(e) => e.preventDefault()}>
                 <i className="bi bi-linkedin" aria-hidden />
               </a>
-              <a className="footer-soc-btn" href="#" aria-label="TikTok">
+              <a className="footer-soc-btn" href="#" aria-label="TikTok" onClick={(e) => e.preventDefault()}>
                 <i className="bi bi-tiktok" aria-hidden />
               </a>
             </div>
@@ -56,7 +56,7 @@ export function Footer() {
             <button type="button" onClick={() => navigateTo('courses')}>
               Browse Courses
             </button>
-            <button type="button" onClick={() => toast('Opening My Bookings…', 'info')}>
+            <button type="button" onClick={() => navigateTo('bookings')}>
               My Bookings
             </button>
             <button type="button" onClick={() => toast('Opening Certificates…', 'info')}>
@@ -86,11 +86,21 @@ export function Footer() {
           </div>
           <div className="footer-col">
             <h4>Legal</h4>
-            <a href="#">Terms of Use</a>
-            <a href="#">Privacy Policy</a>
-            <a href="#">Cookie Policy</a>
-            <a href="#">Disclaimer</a>
-            <a href="#">Refund Policy</a>
+            <button type="button" onClick={() => openLegalModal('terms')}>
+              Terms of Use
+            </button>
+            <button type="button" onClick={() => openLegalModal('privacy')}>
+              Privacy Policy
+            </button>
+            <button type="button" onClick={() => openLegalModal('cookie')}>
+              Cookie Policy
+            </button>
+            <button type="button" onClick={() => openLegalModal('disclaimer')}>
+              Disclaimer
+            </button>
+            <button type="button" onClick={() => openLegalModal('refund')}>
+              Refund Policy
+            </button>
           </div>
           <div className="footer-col">
             <h4>Company</h4>
@@ -103,9 +113,15 @@ export function Footer() {
             <button type="button" onClick={() => navigateTo('news')}>
               News & Updates
             </button>
-            <a href="#">Careers</a>
-            <a href="#">Help Center</a>
-            <a href="#">Contact Us</a>
+            <button type="button" onClick={() => openLegalModal('careers')}>
+              Careers
+            </button>
+            <button type="button" onClick={() => navigateTo('messages')}>
+              Help Center
+            </button>
+            <button type="button" onClick={() => openLegalModal('contact')}>
+              Contact Us
+            </button>
           </div>
         </div>
         <div className="footer-bottom">

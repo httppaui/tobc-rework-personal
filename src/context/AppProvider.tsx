@@ -8,11 +8,14 @@ import {
   type ReactNode,
 } from 'react';
 import { useNavigate } from 'react-router-dom';
-import type { AuthModalMode, AuthUser, BookingState, RoleId, ToastItem } from '../types';
+import type { AuthModalMode, AuthUser, BookingState, LegalDoc, RoleId, ToastItem } from '../types';
 import { getCourseById } from '../lib/courseCatalog';
 import { PAGE_PATHS } from '../lib/routes';
 import { fetchCurrentUser, loginAccount, logoutAccount, registerAccount } from '../lib/authApi';
+import { fetchCart, fetchWishlist, saveCartApi, saveWishlistApi } from '../lib/listsApi';
 import { loadCart, loadWishlist, saveCart, saveWishlist } from '../lib/storage';
+import { lockBodyScroll, unlockBodyScroll } from '../lib/scrollLock';
+import { applyA11yPrefs, loadA11yPrefs } from '../lib/accessibility';
 
 /** Guest guide dismissed for this browser tab session only */
 const ONBOARD_SESSION_KEY = 'tobc_guest_onboard_dismissed';
@@ -25,6 +28,7 @@ interface AppContextValue {
   setRole: (role: RoleId) => void;
   user: AuthUser | null;
   isLoggedIn: boolean;
+  authSessionReady: boolean;
   loginWithEmail: (email: string, password: string) => Promise<string | null>;
   registerWithEmail: (name: string, email: string, password: string) => Promise<string | null>;
   logout: () => void;
@@ -32,6 +36,12 @@ interface AppContextValue {
   openAuthModal: (mode?: AuthModalMode) => void;
   closeAuthModal: () => void;
   authModalOpen: boolean;
+  legalModal: LegalDoc | null;
+  openLegalModal: (doc: LegalDoc) => void;
+  closeLegalModal: () => void;
+  accessibilityOpen: boolean;
+  openAccessibilityPanel: () => void;
+  closeAccessibilityPanel: () => void;
   navigateTo: (page: keyof typeof PAGE_PATHS) => void;
   toasts: ToastItem[];
   toast: (message: string, type?: ToastItem['type']) => void;
@@ -59,6 +69,7 @@ interface AppContextValue {
   onboardingOpen: boolean;
   completeOnboarding: () => void;
   skipOnboarding: () => void;
+  updateSessionUser: (user: AuthUser) => void;
 }
 
 const AppContext = createContext<AppContextValue | null>(null);
@@ -115,6 +126,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [role, setRoleState] = useState<RoleId>('seafarer');
   const setRole = useCallback((r: RoleId) => setRoleState(r), []);
   const [user, setUser] = useState<AuthUser | null>(null);
+  const [authSessionReady, setAuthSessionReady] = useState(false);
   const [toasts, setToasts] = useState<ToastItem[]>([]);
   const [booking, setBooking] = useState<BookingState>(defaultBooking);
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -125,37 +137,82 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [cartIds, setCartIds] = useState<string[]>(() => loadCart());
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [authModalMode, setAuthModalMode] = useState<AuthModalMode>('login');
+  const [legalModal, setLegalModal] = useState<LegalDoc | null>(null);
+  const [accessibilityOpen, setAccessibilityOpen] = useState(false);
   const [pendingBookCourseId, setPendingBookCourseId] = useState<string | null>(null);
 
   const isLoggedIn = !!user;
 
-  useEffect(() => {
-    let cancelled = false;
-    fetchCurrentUser().then((sessionUser) => {
-      if (cancelled) return;
-      if (sessionUser) {
-        setUser(sessionUser);
-        setOnboardingOpen(false);
+  const syncListsForUser = useCallback(async (mergeLocal: boolean) => {
+    if (mergeLocal) {
+      const localW = loadWishlist();
+      const localC = loadCart();
+      const [serverW, serverC] = await Promise.all([fetchWishlist(), fetchCart()]);
+      if (serverW && serverC) {
+        const mergedW = [...new Set([...serverW, ...localW])];
+        const mergedC = [...new Set([...serverC, ...localC])];
+        await Promise.all([saveWishlistApi(mergedW), saveCartApi(mergedC)]);
+        setWishlistIds(mergedW);
+        setCartIds(mergedC);
+        saveWishlist(mergedW);
+        saveCart(mergedC);
         return;
       }
-      try {
-        setOnboardingOpen(!sessionStorage.getItem(ONBOARD_SESSION_KEY));
-      } catch {
-        setOnboardingOpen(true);
-      }
-    });
+    }
+    const [w, c] = await Promise.all([fetchWishlist(), fetchCart()]);
+    if (w) {
+      setWishlistIds(w);
+      saveWishlist(w);
+    }
+    if (c) {
+      setCartIds(c);
+      saveCart(c);
+    }
+  }, []);
+
+  useEffect(() => {
+    applyA11yPrefs(loadA11yPrefs());
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetchCurrentUser()
+      .then(async (sessionUser) => {
+        if (cancelled) return;
+        if (sessionUser) {
+          setUser(sessionUser);
+          setOnboardingOpen(false);
+          await syncListsForUser(false);
+          return;
+        }
+        try {
+          setOnboardingOpen(!sessionStorage.getItem(ONBOARD_SESSION_KEY));
+        } catch {
+          setOnboardingOpen(true);
+        }
+      })
+      .finally(() => {
+        if (!cancelled) setAuthSessionReady(true);
+      });
     return () => {
       cancelled = true;
     };
   }, []);
 
   useEffect(() => {
-    if (onboardingOpen) {
-      document.body.style.overflow = 'hidden';
-    } else if (!booking.open && !authModalOpen && !courseDetailId) {
-      document.body.style.overflow = '';
+    const shouldLockScroll =
+      onboardingOpen ||
+      booking.open ||
+      authModalOpen ||
+      courseDetailId !== null ||
+      legalModal !== null ||
+      accessibilityOpen;
+    if (shouldLockScroll) {
+      lockBodyScroll();
+      return () => unlockBodyScroll();
     }
-  }, [onboardingOpen, booking.open, authModalOpen, courseDetailId]);
+    unlockBodyScroll();
+  }, [onboardingOpen, booking.open, authModalOpen, courseDetailId, legalModal, accessibilityOpen]);
 
   useEffect(() => {
     if (user?.email) {
@@ -179,7 +236,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     (page: keyof typeof PAGE_PATHS) => {
       navigate(PAGE_PATHS[page]);
       setDrawerOpen(false);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      window.scrollTo({ top: 0, behavior: 'auto' });
     },
     [navigate],
   );
@@ -192,12 +249,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
       open: true,
       step: partial.step ?? 1,
     });
-    document.body.style.overflow = 'hidden';
   }, []);
 
   const closeBooking = useCallback(() => {
     setBooking((b) => ({ ...b, open: false }));
-    document.body.style.overflow = '';
   }, []);
 
   const updateBooking = useCallback((partial: Partial<BookingState>) => {
@@ -206,13 +261,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const openCourseDetail = useCallback((courseId: string) => {
     setCourseDetailId(courseId);
-    document.body.style.overflow = 'hidden';
   }, []);
 
   const closeCourseDetail = useCallback(() => {
     setCourseDetailId(null);
-    if (!booking.open && !authModalOpen) document.body.style.overflow = '';
-  }, [authModalOpen, booking.open]);
+  }, []);
 
   const addToWishlist = useCallback(
     (courseId: string) => {
@@ -220,20 +273,25 @@ export function AppProvider({ children }: { children: ReactNode }) {
         if (prev.includes(courseId)) return prev;
         const next = [...prev, courseId];
         saveWishlist(next);
+        if (user) void saveWishlistApi(next);
         return next;
       });
       toast('Added to wishlist', 'success');
     },
-    [toast],
+    [toast, user],
   );
 
-  const removeFromWishlist = useCallback((courseId: string) => {
-    setWishlistIds((prev) => {
-      const next = prev.filter((id) => id !== courseId);
-      saveWishlist(next);
-      return next;
-    });
-  }, []);
+  const removeFromWishlist = useCallback(
+    (courseId: string) => {
+      setWishlistIds((prev) => {
+        const next = prev.filter((id) => id !== courseId);
+        saveWishlist(next);
+        if (user) void saveWishlistApi(next);
+        return next;
+      });
+    },
+    [user],
+  );
 
   const addToCart = useCallback(
     (courseId: string) => {
@@ -241,56 +299,89 @@ export function AppProvider({ children }: { children: ReactNode }) {
         if (prev.includes(courseId)) return prev;
         const next = [...prev, courseId];
         saveCart(next);
+        if (user) void saveCartApi(next);
         return next;
       });
       toast('Added to cart', 'success');
     },
-    [toast],
+    [toast, user],
   );
 
-  const removeFromCart = useCallback((courseId: string) => {
-    setCartIds((prev) => {
-      const next = prev.filter((id) => id !== courseId);
-      saveCart(next);
-      return next;
-    });
-  }, []);
+  const removeFromCart = useCallback(
+    (courseId: string) => {
+      setCartIds((prev) => {
+        const next = prev.filter((id) => id !== courseId);
+        saveCart(next);
+        if (user) void saveCartApi(next);
+        return next;
+      });
+    },
+    [user],
+  );
 
   const isInWishlist = useCallback((courseId: string) => wishlistIds.includes(courseId), [wishlistIds]);
   const isInCart = useCallback((courseId: string) => cartIds.includes(courseId), [cartIds]);
 
   const openAuthModal = useCallback((mode: AuthModalMode = 'login') => {
+    setOnboardingOpen(false);
+    try {
+      sessionStorage.setItem(ONBOARD_SESSION_KEY, '1');
+    } catch {
+      /* ignore */
+    }
     setAuthModalMode(mode);
     setAuthModalOpen(true);
-    document.body.style.overflow = 'hidden';
+  }, []);
+
+  const openLegalModal = useCallback((doc: LegalDoc) => {
+    setLegalModal(doc);
+  }, []);
+
+  const closeLegalModal = useCallback(() => {
+    setLegalModal(null);
+  }, []);
+
+  const openAccessibilityPanel = useCallback(() => {
+    setAccessibilityOpen(true);
+  }, []);
+
+  const closeAccessibilityPanel = useCallback(() => {
+    setAccessibilityOpen(false);
   }, []);
 
   const closeAuthModal = useCallback(() => {
     setAuthModalOpen(false);
     setPendingBookCourseId(null);
-    if (!booking.open && !courseDetailId) document.body.style.overflow = '';
-  }, [booking.open, courseDetailId]);
+  }, []);
+
+  const updateSessionUser = useCallback((authUser: AuthUser) => {
+    setUser(authUser);
+  }, []);
 
   const completeAuth = useCallback(
     (authUser: AuthUser) => {
       setUser(authUser);
       setAuthModalOpen(false);
-      const successMessage =
-        authModalMode === 'register'
-          ? 'Account created! Welcome to TOBC.'
-          : authModalMode === 'book'
-            ? 'Signed in — continuing your booking…'
-            : 'Welcome back! You are now logged in.';
-      toast(successMessage, 'success');
+      setOnboardingOpen(false);
+      try {
+        sessionStorage.setItem(ONBOARD_SESSION_KEY, '1');
+      } catch {
+        /* ignore */
+      }
+      void syncListsForUser(true);
       const pending = pendingBookCourseId;
+      const successMessage = pending
+        ? 'Signed in — continuing your booking…'
+        : authModalMode === 'register'
+          ? 'Account created! Welcome to TOBC.'
+          : 'Welcome back! You are now logged in.';
+      toast(successMessage, 'success');
       setPendingBookCourseId(null);
       if (pending) {
         openBooking(bookingFromCourseId(pending, 1));
-      } else if (!booking.open && !courseDetailId) {
-        document.body.style.overflow = '';
       }
     },
-    [authModalMode, courseDetailId, booking.open, openBooking, pendingBookCourseId, toast],
+    [authModalMode, openBooking, pendingBookCourseId, syncListsForUser, toast],
   );
 
   const loginWithEmail = useCallback(
@@ -329,10 +420,15 @@ export function AppProvider({ children }: { children: ReactNode }) {
     (courseId: string) => {
       setCourseDetailId(null);
       if (!user) {
+        setOnboardingOpen(false);
+        try {
+          sessionStorage.setItem(ONBOARD_SESSION_KEY, '1');
+        } catch {
+          /* ignore */
+        }
         setPendingBookCourseId(courseId);
         setAuthModalMode('book');
         setAuthModalOpen(true);
-        document.body.style.overflow = 'hidden';
         return;
       }
       openBooking(bookingFromCourseId(courseId, 1));
@@ -347,10 +443,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       /* ignore */
     }
     setOnboardingOpen(false);
-    if (!booking.open && !authModalOpen && !courseDetailId) {
-      document.body.style.overflow = '';
-    }
-  }, [authModalOpen, booking.open, courseDetailId]);
+  }, []);
 
   const skipOnboarding = completeOnboarding;
 
@@ -360,6 +453,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       setRole,
       user,
       isLoggedIn,
+      authSessionReady,
       loginWithEmail,
       registerWithEmail,
       logout,
@@ -367,6 +461,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
       openAuthModal,
       closeAuthModal,
       authModalOpen,
+      legalModal,
+      openLegalModal,
+      closeLegalModal,
+      accessibilityOpen,
+      openAccessibilityPanel,
+      closeAccessibilityPanel,
       navigateTo,
       toasts,
       toast,
@@ -394,11 +494,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
       onboardingOpen,
       completeOnboarding,
       skipOnboarding,
+      updateSessionUser,
     }),
     [
       role,
       user,
       isLoggedIn,
+      authSessionReady,
       loginWithEmail,
       registerWithEmail,
       logout,
@@ -406,6 +508,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
       openAuthModal,
       closeAuthModal,
       authModalOpen,
+      legalModal,
+      openLegalModal,
+      closeLegalModal,
+      accessibilityOpen,
+      openAccessibilityPanel,
+      closeAccessibilityPanel,
       navigateTo,
       toasts,
       toast,
@@ -431,6 +539,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       onboardingOpen,
       completeOnboarding,
       skipOnboarding,
+      updateSessionUser,
     ],
   );
 

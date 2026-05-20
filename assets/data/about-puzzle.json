@@ -1,0 +1,30 @@
+{
+  "platform": {
+    "title": "Platform",
+    "summary": "Training services across industries — a marketplace where learners and providers connect.",
+    "accent": "#004762",
+    "icon": "hub",
+    "body": "<p>Our platform offers a wide range of training services across various industries and professions. Whether you are a professional looking to upskill, a student seeking supplementary education, or a training provider looking to showcase your expertise, TOBC provides a marketplace where these connections are made possible.</p>"
+  },
+  "mission": {
+    "title": "Mission",
+    "summary": "Empowering seamless booking and offering of training — making continuous learning effortless.",
+    "accent": "#FF7500",
+    "icon": "rocket_launch",
+    "body": "<p>Our mission is to empower individuals and organizations by providing a seamless and efficient platform for booking and offering training services. We understand the importance of continuous learning and professional development, and we are committed to making the process of finding, booking, and providing training services as effortless as possible.</p>"
+  },
+  "story": {
+    "title": "Our Story",
+    "summary": "Passionate professionals united to simplify finding training and connecting with trusted providers.",
+    "accent": "#fdba61",
+    "icon": "auto_stories",
+    "body": "<p>At TOBC, we are passionate about education and training. We are a dedicated team of professionals who believe in the transformative power of learning. With diverse backgrounds and expertise, we have come together to build a platform that simplifies the process of finding the right training opportunities and connecting learners with trusted providers.</p>"
+  },
+  "vision": {
+    "title": "Vision",
+    "summary": "A global learning ecosystem where quality training aligns with every learner's goals.",
+    "accent": "#28a5a8",
+    "icon": "public",
+    "body": "<p>Our vision is to be a leading global platform that fosters growth and development by connecting individuals and training providers. We aspire to create a learning ecosystem where people can easily discover, access, and engage in high-quality training experiences that align with their goals and aspirations.</p>"
+  }
+}

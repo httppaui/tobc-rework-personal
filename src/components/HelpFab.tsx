@@ -1,7 +1,7 @@
 import { useApp } from '../context/AppProvider';
 
 export function HelpFab() {
-  const { helpOpen, setHelpOpen, navigateTo, toast } = useApp();
+  const { helpOpen, setHelpOpen, navigateTo } = useApp();
 
   const scrollToTop = () => {
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -31,7 +31,14 @@ export function HelpFab() {
               <span>Quick answers</span>
             </div>
           </button>
-          <button type="button" className="help-item" onClick={() => toast('Opening live chat…', 'info')}>
+          <button
+            type="button"
+            className="help-item"
+            onClick={() => {
+              setHelpOpen(false);
+              navigateTo('messages');
+            }}
+          >
             <div className="help-item-icon">
               <i className="bi bi-chat-dots-fill" aria-hidden />
             </div>

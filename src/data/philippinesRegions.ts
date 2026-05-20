@@ -1,0 +1,21 @@
+/** PSA / NEDA administrative regions of the Philippines (incl. BARMM and NIR). */
+export const PHILIPPINES_REGIONS = [
+  { id: 'ncr', label: 'National Capital Region (NCR)' },
+  { id: 'car', label: 'Cordillera Administrative Region (CAR)' },
+  { id: 'region-1', label: 'Ilocos Region (Region I)' },
+  { id: 'region-2', label: 'Cagayan Valley (Region II)' },
+  { id: 'region-3', label: 'Central Luzon (Region III)' },
+  { id: 'region-4a', label: 'CALABARZON (Region IV-A)' },
+  { id: 'region-4b', label: 'MIMAROPA (Region IV-B)' },
+  { id: 'region-5', label: 'Bicol Region (Region V)' },
+  { id: 'region-6', label: 'Western Visayas (Region VI)' },
+  { id: 'nir', label: 'Negros Island Region (NIR)' },
+  { id: 'region-7', label: 'Central Visayas (Region VII)' },
+  { id: 'region-8', label: 'Eastern Visayas (Region VIII)' },
+  { id: 'region-9', label: 'Zamboanga Peninsula (Region IX)' },
+  { id: 'region-10', label: 'Northern Mindanao (Region X)' },
+  { id: 'region-11', label: 'Davao Region (Region XI)' },
+  { id: 'region-12', label: 'SOCCSKSARGEN (Region XII)' },
+  { id: 'region-13', label: 'Caraga (Region XIII)' },
+  { id: 'barmm', label: 'Bangsamoro Autonomous Region in Muslim Mindanao (BARMM)' },
+] as const;

@@ -6,7 +6,11 @@ export type PageId =
   | 'news'
   | 'library'
   | 'wishlist'
-  | 'cart';
+  | 'cart'
+  | 'messages'
+  | 'bookings'
+  | 'profile'
+  | 'settings';
 
 export type RoleId = 'seafarer' | 'agency' | 'center';
 
@@ -56,9 +60,31 @@ export interface BookingState {
 
 export type AuthModalMode = 'login' | 'register' | 'book';
 
+export type LegalDoc = 'terms' | 'privacy' | 'cookie' | 'disclaimer' | 'refund' | 'careers' | 'contact';
+
 export interface AuthUser {
   id: string;
   name: string;
   email: string;
   provider: 'email';
+}
+
+export interface BookingRecord {
+  id: string;
+  courseId: string;
+  courseTitle: string;
+  provider: string;
+  location: string;
+  price: string;
+  category: string;
+  scheduleDate: string;
+  scheduleTime: string;
+  firstName: string;
+  lastName: string;
+  srb: string;
+  mobile: string;
+  email: string;
+  paymentProofName: string;
+  status: string;
+  createdAt: string;
 }

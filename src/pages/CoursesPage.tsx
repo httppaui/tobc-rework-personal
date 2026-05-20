@@ -93,7 +93,7 @@ export function CoursesPage() {
   const goToPage = (next: number) => {
     const clamped = Math.max(1, Math.min(next, totalPages));
     setCurrentPage(clamped);
-    document.getElementById('coursesResultsPanel')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    document.getElementById('coursesResultsPanel')?.scrollIntoView({ behavior: 'auto', block: 'nearest' });
   };
 
   const clearFilters = () => {

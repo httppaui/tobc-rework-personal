@@ -9,6 +9,10 @@ export const PAGE_PATHS: Record<PageId, string> = {
   library: '/library',
   wishlist: '/wishlist',
   cart: '/cart',
+  messages: '/messages',
+  bookings: '/bookings',
+  profile: '/profile',
+  settings: '/settings',
 };
 
 export function pageFromPath(pathname: string): PageId {

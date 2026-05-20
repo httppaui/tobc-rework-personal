@@ -4,7 +4,8 @@ import type { RoleId } from '../../types';
 import { pageFromPath } from '../../lib/routes';
 
 export function MobileDrawer() {
-  const { drawerOpen, setDrawerOpen, setRole, navigateTo, openAuthModal } = useApp();
+  const { drawerOpen, setDrawerOpen, setRole, navigateTo, openAuthModal, isLoggedIn, user, logout, authSessionReady } =
+    useApp();
   const page = pageFromPath(useLocation().pathname);
 
   if (!drawerOpen) return null;
@@ -87,28 +88,20 @@ export function MobileDrawer() {
           ))}
         </div>
         <div style={{ marginTop: 20, display: 'flex', flexDirection: 'column', gap: 8 }}>
-          <button
-            type="button"
-            className="btn btn-primary"
-            style={{ justifyContent: 'center' }}
-            onClick={() => {
-              setDrawerOpen(false);
-              openAuthModal('register');
-            }}
-          >
-            Register Free
-          </button>
-          <button
-            type="button"
-            className="btn btn-secondary"
-            style={{ justifyContent: 'center' }}
-            onClick={() => {
-              setDrawerOpen(false);
-              openAuthModal('login');
-            }}
-          >
-            Log In
-          </button>
+          {authSessionReady && isLoggedIn ? (
+            <>
+              <p style={{ fontSize: 13, color: 'var(--muted)', marginBottom: 4 }}>Signed in as {user?.name}</p>
+              <button type="button" className="btn btn-secondary" onClick={() => { setDrawerOpen(false); navigateTo('profile'); }}>Profile</button>
+              <button type="button" className="btn btn-secondary" onClick={() => { setDrawerOpen(false); navigateTo('bookings'); }}>My Bookings</button>
+              <button type="button" className="btn btn-secondary" onClick={() => { setDrawerOpen(false); navigateTo('messages'); }}>Messages</button>
+              <button type="button" className="btn btn-ghost" style={{ justifyContent: 'center' }} onClick={() => { setDrawerOpen(false); logout(); }}>Log out</button>
+            </>
+          ) : (
+            <>
+              <button type="button" className="btn btn-primary" style={{ justifyContent: 'center' }} onClick={() => { setDrawerOpen(false); openAuthModal('register'); }}>Register Free</button>
+              <button type="button" className="btn btn-secondary" style={{ justifyContent: 'center' }} onClick={() => { setDrawerOpen(false); openAuthModal('login'); }}>Log In</button>
+            </>
+          )}
         </div>
       </div>
     </div>

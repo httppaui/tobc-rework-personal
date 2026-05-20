@@ -65,6 +65,8 @@ Frontend output is in `dist/`. The API is not bundled into `dist/`—deploy it s
 
 Google Sign-In is optional later; see **[docs/GOOGLE-SIGNIN.md](docs/GOOGLE-SIGNIN.md)**.
 
+**What to build next:** see **[docs/ROADMAP.md](docs/ROADMAP.md)**. **Deploy:** **[docs/DEPLOY.md](docs/DEPLOY.md)**.
+
 ## Project structure
 
 | Path | Purpose |
@@ -84,12 +86,16 @@ Google Sign-In is optional later; see **[docs/GOOGLE-SIGNIN.md](docs/GOOGLE-SIGN
 | POST | `/api/auth/login` | Log in `{ email, password }` |
 | POST | `/api/auth/logout` | Clear session cookie |
 | GET | `/api/auth/me` | Current user (requires cookie) |
+| GET/POST | `/api/bookings` | List / create bookings (auth) |
+| GET/PUT | `/api/lists/wishlist`, `/api/lists/cart` | Per-user lists (auth) |
+| GET/PATCH/POST | `/api/profile`, `/api/profile/password` | Profile & password (auth) |
+| GET/POST | `/api/messages/threads`, `.../messages` | Chat (auth) |
 
 ## Routes
 
 Hash-based routing:
 
-- `#/home`, `#/courses`, `#/partners`, `#/about`, `#/news`, `#/library`, `#/wishlist`, `#/cart`
+- `#/home`, `#/courses`, `#/partners`, `#/about`, `#/news`, `#/library`, `#/wishlist`, `#/cart`, `#/messages`, `#/bookings`, `#/profile`, `#/settings`
 
 ## About puzzle
 

@@ -116,6 +116,12 @@ _Add a bullet with **YYYY-MM-DD** when you ship a meaningful UI/UX change (what 
 
 - **2026-05-19 — Puzzle alignment fix:** Single `puzzle-complete.png` with transparent hit-layer buttons (replaces four separate PNGs in grid) so pieces interlock like reference artwork. Files: `index.html`, `tobc.css`, `assets/about/puzzle-complete.png`.
 
+- **2026-05-19 — Dark hero breadcrumbs:** Higher-contrast white breadcrumb text on Courses, Partners, News, Library, About, Messages heroes. Files: `main.css`.
+
+- **2026-05-19 — Course card actions:** Ratings below provider; **View description** link; wishlist/cart icon buttons on `CourseCard`. Files: `CourseCard.tsx`, `main.css`, `UI-UX-PLAN.md`.
+
+- **2026-05-19 — Phase C polish:** `docs/POLISH.md`; shared `EmptyResults` on Partners/News/Library; booking price strip + mobile header back; legal modals (cookie, disclaimer, refund, careers, contact); Display & accessibility panel (`AccessibilityModal`, `localStorage`). Files: `main.css`, `Footer.tsx`, `BookingModal.tsx`, `legalContent.ts`, `AppProvider.tsx`, `ProfileMenu.tsx`, `SettingsPage.tsx`, `POLISH.md`, `ROADMAP.md`.
+
 - **2026-05-19 — React + TypeScript + Tailwind migration:** Vite app with HashRouter (`#/home` … `#/library`), layout chrome (nav, role bar, drawer, MBN, booking modal, onboarding, toasts, help FAB), six pages, About puzzle component + modal (`AboutPuzzle.tsx`, `about-puzzle.css`, `src/data/aboutPuzzle.json`). Brand tokens in `src/index.css` `@theme`. Files: `package.json`, `vite.config.ts`, `src/**`, `public/**`, `vercel.json`, `README.md`, `UI-UX-PLAN.md`.
 
 - **2026-05-19 — About puzzle interlocking fix:** Replaced flat/broken placeholder SVG with matching jigsaw paths; inline SVG + hover dim/scale on paths (removed misaligned sprite layers). Files: `AboutPuzzle.tsx`, `puzzle-complete.svg`, `main.css`.
@@ -165,6 +171,24 @@ _Add a bullet with **YYYY-MM-DD** when you ship a meaningful UI/UX change (what 
 - **2026-05-19 — Auth API backend:** Express + SQLite (`server/`), bcrypt passwords, JWT httpOnly cookie; Vite `/api` proxy; `authApi.ts` + session restore on load. Files: `server/**`, `authApi.ts`, `AppProvider.tsx`, `vite.config.ts`, `package.json`, `.env.example`, `README.md`, `UI-UX-PLAN.md`.
 
 - **2026-05-19 — Guest onboarding guide:** Welcome overlay shows for guests on each visit (session dismiss); hidden when logged in; body scroll lock + Escape to skip. Files: `AppProvider.tsx`, `Onboarding.tsx`, `Layout.tsx`, `UI-UX-PLAN.md`.
+
+- **2026-05-19 — Auth login/register polish:** Auth modal above onboarding (z-index); session restore gate; API health hint; show/hide password; book-flow register/login; server `.env` load. Files: `AuthModal.tsx`, `AppProvider.tsx`, `authApi.ts`, `server/env.ts`, `SiteHeader.tsx`, `main.css`, `UI-UX-PLAN.md`.
+
+- **2026-05-19 — Auth API fix + terms checkbox:** Replaced `better-sqlite3` with Node built-in `node:sqlite` (Windows/Node 22); required Terms/Privacy checkbox before login/register. Files: `server/db.ts`, `AuthModal.tsx`, `package.json`, `main.css`, `UI-UX-PLAN.md`.
+
+- **2026-05-19 — Register password UX:** Centered show/hide toggle inside input wrap; live requirements checklist (8+ chars, letter, number); client + server validation aligned. Files: `AuthModal.tsx`, `passwordRules.ts`, `server/routes/auth.ts`, `main.css`, `UI-UX-PLAN.md`.
+
+- **2026-05-19 — Terms & Privacy modals:** Scrollable legal dialogs (Terms of Use, Privacy Policy) from auth checkbox links and footer Legal column; layered above auth modal. Files: `LegalModal.tsx`, `legalContent.ts`, `AppProvider.tsx`, `AuthModal.tsx`, `Footer.tsx`, `Layout.tsx`, `main.css`, `UI-UX-PLAN.md`.
+
+- **2026-05-19 — Password rules popover:** Requirements appear in a floating panel on password focus while registering, not fixed below the field. Files: `AuthModal.tsx`, `main.css`, `UI-UX-PLAN.md`.
+
+- **2026-05-19 — Toast position:** Toasts (e.g. account created) centered below the header for visibility. Files: `main.css`, `UI-UX-PLAN.md`.
+
+- **2026-05-19 — Profile menu dropdown:** Logged-in header uses avatar + menu (Profile, Settings & privacy, Help center, Display & accessibility, Log out). Files: `ProfileMenu.tsx`, `SiteHeader.tsx`, `main.css`, `UI-UX-PLAN.md`.
+
+- **2026-05-19 — Live chat page:** `/messages` inbox + chat UI (bubbles, quick replies, typing demo); header message icon and Help FAB link here. Files: `MessagesPage.tsx`, `chatSupport.ts`, `App.tsx`, `routes.ts`, `SiteHeader.tsx`, `HelpFab.tsx`, `main.css`, `UI-UX-PLAN.md`.
+
+- **2026-05-19 — Scroll jump fix:** Chat scroll contained to message pane; modal scroll lock preserves position; removed global smooth scroll on focus/hash links. Files: `scrollLock.ts`, `AppProvider.tsx`, `MessagesPage.tsx`, `main.css`, `Footer.tsx`, `SiteHeader.tsx`, `CoursesPage.tsx`, `UI-UX-PLAN.md`.
 
 ---
 

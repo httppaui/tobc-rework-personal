@@ -1,65 +1,26 @@
 import { randomUUID } from 'node:crypto';
-import { Router, type Request, type Response } from 'express';
+import { Router } from 'express';
 import { z } from 'zod';
-import { signToken, verifyToken } from '../auth/jwt.js';
 import { hashPassword, verifyPassword } from '../auth/password.js';
+import { clearSessionCookie, publicUser, readSessionUser, setSessionCookie } from '../auth/session.js';
 import { db, type UserRow } from '../db.js';
-import { env } from '../env.js';
 
 const router = Router();
 
 const registerSchema = z.object({
   name: z.string().trim().min(1, 'Please enter your name.'),
   email: z.string().trim().email('Please enter a valid email address.'),
-  password: z.string().min(6, 'Password must be at least 6 characters.'),
+  password: z
+    .string()
+    .min(8, 'Password must be at least 8 characters.')
+    .regex(/[a-zA-Z]/, 'Password must contain a letter.')
+    .regex(/\d/, 'Password must contain a number.'),
 });
 
 const loginSchema = z.object({
   email: z.string().trim().email('Please enter a valid email address.'),
   password: z.string().min(1, 'Please enter your password.'),
 });
-
-function publicUser(row: Pick<UserRow, 'id' | 'name' | 'email'>) {
-  return {
-    id: row.id,
-    name: row.name,
-    email: row.email,
-    provider: 'email' as const,
-  };
-}
-
-function setSessionCookie(res: Response, token: string) {
-  res.cookie(env.cookieName, token, {
-    httpOnly: true,
-    secure: env.nodeEnv === 'production',
-    sameSite: 'lax',
-    maxAge: 7 * 24 * 60 * 60 * 1000,
-    path: '/',
-  });
-}
-
-function clearSessionCookie(res: Response) {
-  res.clearCookie(env.cookieName, {
-    httpOnly: true,
-    secure: env.nodeEnv === 'production',
-    sameSite: 'lax',
-    path: '/',
-  });
-}
-
-function readSessionUser(req: Request): Pick<UserRow, 'id' | 'name' | 'email'> | null {
-  const token = req.cookies?.[env.cookieName];
-  if (!token || typeof token !== 'string') return null;
-
-  const payload = verifyToken(token);
-  if (!payload) return null;
-
-  const row = db
-    .prepare('SELECT id, name, email FROM users WHERE id = ?')
-    .get(payload.sub) as Pick<UserRow, 'id' | 'name' | 'email'> | undefined;
-
-  return row ?? null;
-}
 
 router.post('/register', async (req, res) => {
   const parsed = registerSchema.safeParse(req.body);
@@ -88,9 +49,8 @@ router.post('/register', async (req, res) => {
     passwordHash,
   );
 
-  const user = publicUser({ id, name, email: normalizedEmail });
-  setSessionCookie(res, signToken(id));
-  res.status(201).json({ user });
+  setSessionCookie(res, id);
+  res.status(201).json({ user: publicUser({ id, name, email: normalizedEmail }) });
 });
 
 router.post('/login', async (req, res) => {
@@ -117,7 +77,7 @@ router.post('/login', async (req, res) => {
     return;
   }
 
-  setSessionCookie(res, signToken(row.id));
+  setSessionCookie(res, row.id);
   res.json({ user: publicUser(row) });
 });
 

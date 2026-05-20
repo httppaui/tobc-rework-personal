@@ -2,6 +2,7 @@ import { useCallback, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useApp } from '../../context/AppProvider';
 import { NavDropdown, NavDropdownItem } from './NavDropdown';
+import { ProfileMenu } from './ProfileMenu';
 import type { RoleId } from '../../types';
 import { ROLE_PATHS } from '../../data/rolePaths';
 import { PAGE_PATHS, pageFromPath } from '../../lib/routes';
@@ -23,8 +24,7 @@ export function SiteHeader() {
     wishlistIds,
     openAuthModal,
     isLoggedIn,
-    user,
-    logout,
+    authSessionReady,
   } = useApp();
   const navigate = useNavigate();
   const location = useLocation();
@@ -58,7 +58,7 @@ export function SiteHeader() {
       setOpenDropdown(null);
       setDrawerOpen(false);
       navigate(path);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      window.scrollTo({ top: 0, behavior: 'auto' });
     },
     [navigate, setDrawerOpen],
   );
@@ -222,20 +222,18 @@ export function SiteHeader() {
                 <i className="bi bi-heart" aria-hidden />
                 {wishlistIds.length > 0 && <span className="nav-badge">{wishlistIds.length}</span>}
               </button>
-              <button type="button" className="nav-icon-btn" aria-label="Messages">
+              <button
+                type="button"
+                className="nav-icon-btn"
+                aria-label="Messages"
+                onClick={() => navigateTo('messages')}
+              >
                 <i className="bi bi-chat-dots" aria-hidden />
                 <span className="dot" />
               </button>
               <div className="nav-divider" />
-              {isLoggedIn ? (
-                <>
-                  <span className="nav-user-label" title={user?.email}>
-                    {user?.name.split(' ')[0]}
-                  </span>
-                  <button type="button" className="btn btn-secondary btn--sm" onClick={logout}>
-                    Log out
-                  </button>
-                </>
+              {!authSessionReady ? null : isLoggedIn ? (
+                <ProfileMenu />
               ) : (
                 <>
                   <button type="button" className="btn btn-secondary btn--sm" onClick={() => openAuthModal('login')}>
