@@ -6,7 +6,6 @@ import { PartnersNavMenu } from './PartnersNavMenu';
 import { NotificationBell } from './NotificationBell';
 import { ProfileMenu } from './ProfileMenu';
 import type { RoleId } from '../../types';
-import { ROLE_PATHS } from '../../data/rolePaths';
 import { PAGE_PATHS, pageFromPath } from '../../lib/routes';
 
 const ROLES: { id: RoleId; label: string }[] = [
@@ -82,25 +81,6 @@ export function SiteHeader() {
 
   const switchRole = (next: RoleId) => {
     setRole(next);
-  };
-
-  const rolePathAction = (action: string) => {
-    switch (action) {
-      case 'courses':
-        navigateTo('courses');
-        break;
-      case 'partners-training':
-        navigate(`${PAGE_PATHS.partners}?type=training`);
-        break;
-      case 'faq':
-        document.getElementById('faq-section')?.scrollIntoView({ behavior: 'smooth' });
-        break;
-      case 'bookings':
-        navigateTo('booked-courses');
-        break;
-      default:
-        break;
-    }
   };
 
   const navClass = (p: typeof page) => `nav-link${page === p ? ' active-page' : ''}`;
@@ -277,30 +257,6 @@ export function SiteHeader() {
               Fills the course search on the Courses page, then runs the search.
             </span>
           </div>
-        </div>
-      </div>
-
-      <div className="role-quick-bar">
-        <div className="container role-quick-inner">
-          <span className="role-quick-label" id="roleQuickLabel">
-            {ROLE_PATHS[role].label}
-          </span>
-          <nav
-            className="role-quick-links"
-            id="navRolePaths"
-            aria-labelledby="roleQuickLabel"
-          >
-            {ROLE_PATHS[role].links.map((link) => (
-              <button
-                key={link.label}
-                type="button"
-                className="role-ql"
-                onClick={() => rolePathAction(link.action)}
-              >
-                {link.label}
-              </button>
-            ))}
-          </nav>
         </div>
       </div>
     </>

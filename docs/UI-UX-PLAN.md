@@ -13,7 +13,7 @@ This file is the **source of truth** for UI/UX direction for the TOBC site (**Re
 - **Design tokens**: `:root` in `assets/styles/main.css` — brand palette (Navy `#004762`, Deep Sea `#00555e`, Teal `#28a5a8`, Sky `#b9e5fb`, Orange `#FF7500`, Ochre `#fdba61`, Ivory `#fffce8`) mapped to semantic `--teal-*`, `--amber`, `--paper`.
 - **Code layout**: `src/components/`, `src/pages/`, `src/context/`, `src/data/`, `public/assets/`; legacy `assets/styles/main.css` + `legacy-tobc.html` kept for reference.
 - **Typography**: Montserrat (headings), DM Sans (body).
-- **Chrome**: Sticky nav + global search bar + role quick bar + dropdowns + mobile drawer + bottom nav — high density above the fold.
+- **Chrome**: Sticky nav + global search bar + role tabs + dropdowns + mobile drawer + bottom nav — high density above the fold.
 - **Pages** (SPA): home, courses, partners, about, news, library, help (`#/help`), messages, bookings, profile, settings. Entry: **`index.html`** (root).
 - **Debt**: Many inline `style=""` blocks in `index.html` — migrate to classes over time.
 
@@ -249,6 +249,8 @@ _Add a bullet with **YYYY-MM-DD** when you ship a meaningful UI/UX change (what 
 - **2026-05-20 — Log out confirmation:** Modal confirms sign-out from profile menu and mobile drawer. Files: `LogoutConfirmModal.tsx`, `AppProvider.tsx`, `ProfileMenu.tsx`, `MobileDrawer.tsx`, `Layout.tsx`, `assets/styles/main.css`, `UI-UX-PLAN.md`.
 
 - **2026-05-20 — UX polish (search scope, chrome density, partners mega-menu, booking primer):** Global search line “Searches courses only”; compact laptop chrome (shorter nav, tighter bars, horizontal role shortcuts); Partners dropdown two-column mega-menu with tap targets for categories; one-time “How booking works” modal before first book/login. Files: `SiteHeader.tsx`, `PartnersNavMenu.tsx`, `BookingFlowPrimerModal.tsx`, `AppProvider.tsx`, `storage.ts`, `Layout.tsx`, `assets/styles/main.css`, `UI-UX-PLAN.md`.
+
+- **2026-05-20 — Remove role quick bar:** Dropped Seafarer/Agency/Center shortcut strip below global search; role tabs in nav unchanged. Files: `SiteHeader.tsx`, `assets/styles/main.css`, `UI-UX-PLAN.md`.
 
 ---
 
