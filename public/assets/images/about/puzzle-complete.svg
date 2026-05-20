@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" role="img" aria-label="TOBC four-piece puzzle">
+  <path fill="#004762" d="M0,0 H200 V72 A28 28 0 0 1 200 128 V200 H128 A28 28 0 0 0 72 200 H0 Z"/>
+  <path fill="#FF7500" d="M200,0 H400 V200 H328 A28 28 0 0 1 272 200 H200 V128 A28 28 0 0 0 200 72 V0 H200 Z"/>
+  <path fill="#fdba61" d="M0,400 H200 V328 A28 28 0 0 1 200 272 V200 H128 A28 28 0 0 0 72 200 H0 V400 Z"/>
+  <path fill="#28a5a8" d="M200,200 H272 A28 28 0 0 0 328 200 H400 V400 H200 V328 A28 28 0 0 1 200 272 V200 Z"/>
+</svg>

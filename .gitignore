@@ -1,2 +1,10 @@
+node_modules/
+dist/
+dist-server/
+data/
+.env
+.env.local
+*.local
+
 # Local editor / agent (optional — remove if you want these in the repo)
 .cursor/
