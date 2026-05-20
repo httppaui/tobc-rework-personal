@@ -5,7 +5,9 @@ import { PAGE_PATHS } from '../lib/routes';
 import { HERO_VALUE_PROPS } from '../data/rolePaths';
 import type { RoleId } from '../types';
 import { CourseCard } from '../components/CourseCard';
+import { FaqAccordion } from '../components/help/FaqAccordion';
 import { COURSES } from '../data/courses';
+import { HELP_LANDING_FAQS } from '../data/helpCenter';
 
 function HeroCTAs({
   role,
@@ -56,7 +58,7 @@ export function HomePage() {
   const { role, navigateTo, openCourseDetail, openAuthModal } = useApp();
   const navigate = useNavigate();
   const [homeQ, setHomeQ] = useState('');
-  const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const [openFaq, setOpenFaq] = useState<string | null>(null);
 
   useEffect(() => {
     const run = () => {
@@ -350,37 +352,26 @@ export function HomePage() {
             <h2>Frequently Asked Questions</h2>
             <p className="section-lede">Straight answers before you book.</p>
           </div>
-          <div className="faq-grid">
-            {[
-              ['What documents do I need to book?', 'Typically a valid Seaman\'s Book (SRB), government-issued ID, and any prerequisite certificates.'],
-              ['How do I get a refund if I cancel?', 'Cancellations 7+ days before: full refund. 3–6 days: 50% refund. Within 48 hours: no refund.'],
-            ].map(([q, a], i) => (
-              <div
-                key={q}
-                className={`faq-item${openFaq === i ? ' open' : ''}`}
-                onClick={() => setOpenFaq(openFaq === i ? null : i)}
-                onKeyDown={(e) => e.key === 'Enter' && setOpenFaq(openFaq === i ? null : i)}
-                role="button"
-                tabIndex={0}
-              >
-                <div className="faq-q">
-                  {q}
-                  <i className="bi bi-chevron-down faq-chevron" aria-hidden />
-                </div>
-                <div className="faq-a">{a}</div>
-              </div>
-            ))}
+          <FaqAccordion
+            items={HELP_LANDING_FAQS}
+            openId={openFaq}
+            onToggle={(id) => setOpenFaq(id || null)}
+          />
+          <div className="faq-section-cta">
+            <button type="button" className="btn btn-secondary" onClick={() => navigateTo('help')}>
+              Help Center <i className="bi bi-arrow-right" aria-hidden />
+            </button>
           </div>
         </div>
       </section>
 
       <div className="cta-banner">
         <div className="container">
-          <span className="section-eyebrow" style={{ color: 'var(--teal-200)' }}>
+          <span className="section-eyebrow">
             Get Started Today
           </span>
-          <h2 style={{ color: '#fff', marginBottom: 12 }}>Ready to Book Your Maritime Training?</h2>
-          <p style={{ color: 'rgba(255,255,255,.88)', maxWidth: 480, margin: '0 auto 28px' }}>
+          <h2 className="cta-banner-title">Ready to Book Your Maritime Training?</h2>
+          <p className="cta-banner-lede">
             Join 12,400+ seafarers who trust TOBC. Register free and find your next course in minutes.
           </p>
           <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>

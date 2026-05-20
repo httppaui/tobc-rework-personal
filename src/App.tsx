@@ -12,6 +12,7 @@ import { MessagesPage } from './pages/MessagesPage';
 import { BookingsPage } from './pages/BookingsPage';
 import { ProfilePage } from './pages/ProfilePage';
 import { SettingsPage } from './pages/SettingsPage';
+import { HelpCenterPage } from './pages/HelpCenterPage';
 import { PAGE_PATHS } from './lib/routes';
 
 export default function App() {
@@ -31,6 +32,7 @@ export default function App() {
         <Route path="bookings" element={<BookingsPage />} />
         <Route path="profile" element={<ProfilePage />} />
         <Route path="settings" element={<SettingsPage />} />
+        <Route path="help" element={<HelpCenterPage />} />
         <Route path="*" element={<Navigate to={PAGE_PATHS.home} replace />} />
       </Route>
     </Routes>

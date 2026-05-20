@@ -63,6 +63,7 @@ export function MobileDrawer() {
             ['about', 'bi-info-circle', 'About Us'],
             ['news', 'bi-newspaper', 'News'],
             ['library', 'bi-book', 'Library'],
+            ['help', 'bi-question-circle', 'Help Center'],
           ].map(([id, icon, label]) => (
             <button
               key={id}
@@ -75,7 +76,7 @@ export function MobileDrawer() {
                 padding: '12px 0',
                 fontSize: 15,
                 fontWeight: 500,
-                borderBottom: id === 'library' ? 'none' : '1px solid var(--ghost)',
+                borderBottom: id === 'help' ? 'none' : '1px solid var(--ghost)',
                 color: 'var(--ink)',
                 background: 'none',
                 border: 'none',

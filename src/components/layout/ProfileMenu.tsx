@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useApp } from '../../context/AppProvider';
+import { PAGE_PATHS } from '../../lib/routes';
 
 function userInitials(name: string): string {
   const parts = name.trim().split(/\s+/).filter(Boolean);
@@ -85,16 +87,25 @@ export function ProfileMenu() {
           <i className="bi bi-gear" aria-hidden />
           Settings &amp; privacy
         </button>
-        <button
-          type="button"
-          className="nav-profile-dropdown-item"
-          role="menuitem"
-          onClick={() => run(() => navigateTo('messages'))}
-        >
-          <i className="bi bi-life-preserver" aria-hidden />
-          Help &amp; support
-          <span className="nav-profile-item-hint">Help center</span>
-        </button>
+        <div className="nav-profile-help-row" role="presentation">
+          <button
+            type="button"
+            className="nav-profile-dropdown-item nav-profile-help-main"
+            role="menuitem"
+            onClick={() => run(() => navigateTo('help'))}
+          >
+            <i className="bi bi-life-preserver" aria-hidden />
+            Help &amp; support
+          </button>
+          <Link
+            to={PAGE_PATHS.help}
+            className="nav-profile-item-hint"
+            role="menuitem"
+            onClick={close}
+          >
+            Help center
+          </Link>
+        </div>
         <button
           type="button"
           className="nav-profile-dropdown-item"

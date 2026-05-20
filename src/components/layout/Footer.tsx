@@ -1,6 +1,9 @@
+import { useNavigate } from 'react-router-dom';
 import { useApp } from '../../context/AppProvider';
+import { PAGE_PATHS } from '../../lib/routes';
 
 export function Footer() {
+  const navigate = useNavigate();
   const { navigateTo, openAuthModal, openLegalModal } = useApp();
 
   return (
@@ -116,10 +119,13 @@ export function Footer() {
             <button type="button" onClick={() => openLegalModal('careers')}>
               Careers
             </button>
-            <button type="button" onClick={() => navigateTo('messages')}>
+            <button type="button" onClick={() => navigateTo('help')}>
               Help Center
             </button>
-            <button type="button" onClick={() => openLegalModal('contact')}>
+            <button
+              type="button"
+              onClick={() => navigate(`${PAGE_PATHS.help}#help-contact`)}
+            >
               Contact Us
             </button>
           </div>

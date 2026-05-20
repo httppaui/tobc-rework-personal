@@ -14,7 +14,7 @@ This file is the **source of truth** for UI/UX direction for the TOBC site (**Re
 - **Code layout**: `src/components/`, `src/pages/`, `src/context/`, `src/data/`, `public/assets/`; legacy `assets/styles/main.css` + `legacy-tobc.html` kept for reference.
 - **Typography**: Montserrat (headings), DM Sans (body).
 - **Chrome**: Sticky nav + global search bar + role quick bar + dropdowns + mobile drawer + bottom nav — high density above the fold.
-- **Pages** (SPA): `page-home`, `page-courses`, `page-partners`, `page-about`, `page-news`, `page-library`. Entry: **`index.html`** (root).
+- **Pages** (SPA): home, courses, partners, about, news, library, help (`#/help`), messages, bookings, profile, settings. Entry: **`index.html`** (root).
 - **Debt**: Many inline `style=""` blocks in `index.html` — migrate to classes over time.
 
 ---
@@ -194,9 +194,17 @@ _Add a bullet with **YYYY-MM-DD** when you ship a meaningful UI/UX change (what 
 
 - **2026-05-20 — Docs:** Moved `UI-UX-PLAN.md` to `docs/UI-UX-PLAN.md`; updated cross-links and Cursor sync rule. Files: `docs/UI-UX-PLAN.md`, `docs/PROJECT.md`, `docs/ROADMAP.md`, `docs/POLISH.md`, `.cursor/rules/tobc-ui-ux-sync.mdc`, `README.md`.
 
+- **2026-05-20 — Dark section backgrounds:** `--teal-900` mapped to Deep Sea (`#00555e`) instead of Navy for hero, page heroes, footer, booking header, etc. Files: `assets/styles/main.css`, `UI-UX-PLAN.md`.
+
 - **2026-05-20 — Booking stepper (compact teal):** Smaller circles/icons; teal bar + white elements; gap circle→icon; orange active step with pulsing outer ring (`prefers-reduced-motion` safe). Files: `BookingModal.tsx`, `assets/styles/main.css`, `UI-UX-PLAN.md`.
 
 - **2026-05-20 — Phase A polish (POLISH.md):** Courses zero-results via `EmptyResults` (“Clear all filters”); `ResultsSkeleton` on Courses/Partners filter; removed noisy info toasts (role switch, search, Opening…); home hero/banner primary `btn-primary` + secondary `btn-secondary`. Files: `CoursesPage.tsx`, `PartnersPage.tsx`, `HomePage.tsx`, `SiteHeader.tsx`, `ResultsSkeleton.tsx`, `LibraryPage.tsx`, `Footer.tsx`, `AboutPage.tsx`, `assets/styles/main.css`, `POLISH.md`, `UI-UX-PLAN.md`.
+
+- **2026-05-20 — Help Center page:** `/help` with “Need Help?” hero, topic search, six expandable category cards (accordion Q&A), shared landing FAQ (`FaqAccordion`), Contact Us grid; Help FAB + footer/profile link here; home FAQ uses same data component. Files: `HelpCenterPage.tsx`, `helpCenter.ts`, `FaqAccordion.tsx`, `HelpFab.tsx`, `Footer.tsx`, `ProfileMenu.tsx`, `HomePage.tsx`, `App.tsx`, `routes.ts`, `types/index.ts`, `assets/styles/main.css`, `UI-UX-PLAN.md`.
+
+- **2026-05-20 — Help Center entry points:** Profile “Help & support” + “Help center” link, footer Help Center, home FAQ CTA button, mobile drawer Help Center all navigate to `#/help`. Files: `ProfileMenu.tsx`, `Footer.tsx`, `HomePage.tsx`, `MobileDrawer.tsx`, `main.css`, `UI-UX-PLAN.md`.
+
+- **2026-05-20 — Orange CTA accents:** Primary buttons, section eyebrows, bottom CTA banner, help FAB/panel header, scroll-top accent, footer social hover use `--brand-orange`. Files: `assets/styles/main.css`, `HomePage.tsx`, `UI-UX-PLAN.md`.
 
 ---
 

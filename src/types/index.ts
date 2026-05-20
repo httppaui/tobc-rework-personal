@@ -10,7 +10,8 @@ export type PageId =
   | 'messages'
   | 'bookings'
   | 'profile'
-  | 'settings';
+  | 'settings'
+  | 'help';
 
 export type RoleId = 'seafarer' | 'agency' | 'center';
 

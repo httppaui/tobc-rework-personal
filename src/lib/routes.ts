@@ -13,6 +13,7 @@ export const PAGE_PATHS: Record<PageId, string> = {
   bookings: '/bookings',
   profile: '/profile',
   settings: '/settings',
+  help: '/help',
 };
 
 export function pageFromPath(pathname: string): PageId {

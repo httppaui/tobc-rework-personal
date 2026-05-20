@@ -197,7 +197,7 @@ export function MessagesPage() {
             <aside className="chat-sidebar" aria-label="Conversations">
               <div className="chat-sidebar-head">
                 <h2>Inbox</h2>
-                <button type="button" className="btn btn-secondary btn--sm" disabled title="Coming soon">
+                <button type="button" className="btn btn-primary btn--sm" disabled title="Coming soon">
                   <i className="bi bi-plus-lg" aria-hidden /> New
                 </button>
               </div>
