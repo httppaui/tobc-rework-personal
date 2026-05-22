@@ -61,7 +61,7 @@ export const HELP_CATEGORIES: HelpCategory[] = [
         id: 'bookings-1',
         question: 'How do I book a course?',
         answer:
-          'Find a course on the Courses page, open the listing, choose Book now, sign in or register, then complete the four steps: schedule, your details, payment proof upload, and confirmation.',
+          'Find courses on the Courses page or add several to your cart. Choose Book now or Checkout, sign in, then complete: review selection, your details, a schedule for each course, payment proof upload, and confirmation.',
         keywords: ['how to book', 'steps'],
       },
       {
@@ -112,7 +112,7 @@ export const HELP_CATEGORIES: HelpCategory[] = [
         id: 'account-3',
         question: 'Will my wishlist sync across devices?',
         answer:
-          'When you are signed in, wishlist and cart are saved to your account. Guest lists in your browser merge into your account when you log in or register.',
+          'Wishlist and cart require a signed-in account. Your saved courses sync to your account and are available on any device where you log in.',
         keywords: ['wishlist', 'cart', 'sync'],
       },
     ],

@@ -106,6 +106,20 @@ This file is the **source of truth** for UI/UX direction for the TOBC site (**Re
 
 _Add a bullet with **YYYY-MM-DD** when you ship a meaningful UI/UX change (what changed, files touched)._
 
+- **2026-05-22 — Skip payment for free bookings:** All-free carts skip step 4 and go to confirmation; progress shows “No payment”. Files: `booking.ts`, `BookingModal.tsx`, `main.css`.
+
+- **2026-05-22 — Booking step 4 payment methods:** Bank / e-wallet / gateway selection with sample pay-to details and QR placeholder; proof upload below. Files: `BookingPaymentStep.tsx`, `paymentMethods.ts`, `BookingModal.tsx`, `types/index.ts`, `main.css`.
+
+- **2026-05-22 — Collapsible booking summary:** Multi-course sidebar uses accordion per line item (title, hint, fee in header). Files: `BookingSummary.tsx`, `main.css`.
+
+- **2026-05-22 — Multi-course checkout:** 5-step flow (review → details → per-course schedules → pay → confirm); cart/wishlist checkout all selected; batch booking API calls; cart clears on success. Files: `BookingModal.tsx`, `BookingSummary.tsx`, `booking.ts`, `bookingsApi.ts`, `AppProvider.tsx`, `types/index.ts`, `CartPage.tsx`, `WishlistPage.tsx`, `CartOrderSummary.tsx`, `main.css`.
+
+- **2026-05-22 — Booking step 2:** Auto-fill first/last name and email from logged-in user; removed SRB field; all contact fields required (mobile + email). Files: `BookingModal.tsx`, `AppProvider.tsx`, `userName.ts`, `types/index.ts`, `main.css`, `server/routes/bookings.ts`.
+
+- **2026-05-22 — Course detail modal tabs:** Course Overview, Training Outcomes, Entry Standards (requirements + PDF), Cancellation Policy (policy + PDF); teal underline tab bar. Files: `CourseDetailModal.tsx`, `courseCatalog.ts`, `courses.ts`, `main.css`, `public/assets/documents/*.pdf`.
+
+- **2026-05-22 — Wishlist/cart require sign-in:** No guest localStorage lists or header badges when logged out; add actions open login; lists clear on logout; wishlist/cart pages show sign-in empty state. Files: `AppProvider.tsx`, `storage.ts`, `SiteHeader.tsx`, `WishlistPage.tsx`, `CartPage.tsx`, `helpCenter.ts`.
+
 - **2026-05-11 — Handoff (blocked in Plan mode):** Plan mode could not edit non-markdown files; see below for completed Agent implementation.
 
 - **2026-05-11 — Appendix A shipped (Agent):** Hash routing (`#/courses`, `#/partners/training`), `navigate(..., { fromHash })`, `initEscapeKey`, `syncDrawerNavHighlight`, mobile bottom nav (Home / Courses / Partners / More) + `data-mbn-page`, drawer `data-nav-page` + current-route styling, global search hint copy, booking trust strip, breadcrumb `aria-current`, `:focus-visible` + `prefers-reduced-motion`, `--space-*` tokens, silent grid/list toggle. Files: `tobc.js`, `tobc.html`, `tobc.css`, `UI-UX-PLAN.md`.

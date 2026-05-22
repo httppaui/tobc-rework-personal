@@ -14,6 +14,7 @@ import { PAGE_PATHS } from '../lib/routes';
 import { fetchCurrentUser, loginAccount, logoutAccount, registerAccount } from '../lib/authApi';
 import { fetchCart, fetchWishlist, saveCartApi, saveWishlistApi } from '../lib/listsApi';
 import {
+  clearWishlistAndCart,
   hasSeenBookingPrimer,
   loadCart,
   loadNotifications,
@@ -25,11 +26,13 @@ import {
 } from '../lib/storage';
 import { lockBodyScroll, unlockBodyScroll } from '../lib/scrollLock';
 import { applyA11yPrefs, loadA11yPrefs } from '../lib/accessibility';
+import { emptyBookingState, lineItemsFromCourseIds } from '../lib/booking';
+import { mergeBookingContactFromUser } from '../lib/userName';
 
 /** Guest guide dismissed for this browser tab session only */
 const ONBOARD_SESSION_KEY = 'tobc_guest_onboard_dismissed';
 
-type BookingPartial = Omit<BookingState, 'open' | 'step' | 'confirmationId'> &
+type BookingPartial = Omit<BookingState, 'open' | 'step' | 'confirmationIds'> &
   Partial<Pick<BookingState, 'step'>>;
 
 interface AppContextValue {
@@ -63,6 +66,7 @@ interface AppContextValue {
   openBooking: (partial: BookingPartial) => void;
   closeBooking: () => void;
   updateBooking: (partial: Partial<BookingState>) => void;
+  updateBookingItem: (courseId: string, patch: Partial<BookingState['items'][number]>) => void;
   courseDetailId: string | null;
   openCourseDetail: (courseId: string) => void;
   closeCourseDetail: () => void;
@@ -75,6 +79,7 @@ interface AppContextValue {
   isInWishlist: (courseId: string) => boolean;
   isInCart: (courseId: string) => boolean;
   startBookNow: (courseId: string) => void;
+  startCheckout: (courseIds: string[]) => void;
   drawerOpen: boolean;
   setDrawerOpen: (open: boolean) => void;
   helpOpen: boolean;
@@ -95,48 +100,13 @@ const AppContext = createContext<AppContextValue | null>(null);
 
 const defaultBooking: BookingState = {
   open: false,
-  courseId: '',
-  course: '',
-  price: '',
-  provider: '',
-  location: '',
-  dates: '',
-  duration: '',
-  category: '',
-  step: 1,
-  scheduleDate: '',
-  scheduleTime: '',
-  firstName: '',
-  lastName: '',
-  srb: '',
-  mobile: '',
-  email: '',
-  paymentProofName: '',
-  paymentProofDataUrl: '',
-  confirmationId: '',
+  ...emptyBookingState(1),
 };
 
-function bookingFromCourseId(courseId: string, step: BookingState['step'] = 1): Omit<BookingState, 'open'> {
-  const c = getCourseById(courseId);
-  if (!c) {
-    return { ...defaultBooking, step, courseId };
-  }
+function bookingFromCourseIds(courseIds: string[], step: BookingState['step'] = 1): Omit<BookingState, 'open'> {
   return {
-    ...defaultBooking,
-    courseId: c.id,
-    course: c.title,
-    price: c.price,
-    provider: c.provider,
-    location: c.location,
-    dates: c.dates,
-    duration: c.duration,
-    category: c.category,
-    step,
-    scheduleDate: '',
-    scheduleTime: '',
-    paymentProofName: '',
-    paymentProofDataUrl: '',
-    confirmationId: '',
+    ...emptyBookingState(step),
+    items: lineItemsFromCourseIds(courseIds),
   };
 }
 
@@ -152,19 +122,25 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [helpOpen, setHelpOpen] = useState(false);
   const [onboardingOpen, setOnboardingOpen] = useState(false);
   const [courseDetailId, setCourseDetailId] = useState<string | null>(null);
-  const [wishlistIds, setWishlistIds] = useState<string[]>(() => loadWishlist());
-  const [cartIds, setCartIds] = useState<string[]>(() => loadCart());
+  const [wishlistIds, setWishlistIds] = useState<string[]>([]);
+  const [cartIds, setCartIds] = useState<string[]>([]);
   const [notifications, setNotifications] = useState<AppNotification[]>(() => loadNotifications());
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [authModalMode, setAuthModalMode] = useState<AuthModalMode>('login');
   const [legalModal, setLegalModal] = useState<LegalDoc | null>(null);
   const [logoutConfirmOpen, setLogoutConfirmOpen] = useState(false);
   const [accessibilityOpen, setAccessibilityOpen] = useState(false);
-  const [pendingBookCourseId, setPendingBookCourseId] = useState<string | null>(null);
+  const [pendingBookCourseIds, setPendingBookCourseIds] = useState<string[]>([]);
   const [bookingPrimerOpen, setBookingPrimerOpen] = useState(false);
   const [primerPendingCourseId, setPrimerPendingCourseId] = useState<string | null>(null);
 
   const isLoggedIn = !!user;
+
+  const resetGuestLists = useCallback(() => {
+    setWishlistIds([]);
+    setCartIds([]);
+    clearWishlistAndCart();
+  }, []);
 
   const syncListsForUser = useCallback(async (mergeLocal: boolean) => {
     if (mergeLocal) {
@@ -208,6 +184,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
           await syncListsForUser(false);
           return;
         }
+        resetGuestLists();
         try {
           setOnboardingOpen(!sessionStorage.getItem(ONBOARD_SESSION_KEY));
         } catch {
@@ -249,10 +226,19 @@ export function AppProvider({ children }: { children: ReactNode }) {
   ]);
 
   useEffect(() => {
-    if (user?.email) {
-      setBooking((b) => (b.email ? b : { ...b, email: user.email, firstName: b.firstName || user.name.split(' ')[0] || '' }));
-    }
-  }, [user]);
+    if (!user || !booking.open) return;
+    setBooking((b) => {
+      const contact = mergeBookingContactFromUser(b, user);
+      if (
+        contact.firstName === b.firstName &&
+        contact.lastName === b.lastName &&
+        contact.email === b.email
+      ) {
+        return b;
+      }
+      return { ...b, ...contact };
+    });
+  }, [user, booking.open]);
 
   const toast = useCallback((message: string, type: ToastItem['type'] = 'info') => {
     const id = Date.now() + Math.random();
@@ -275,15 +261,19 @@ export function AppProvider({ children }: { children: ReactNode }) {
     [navigate],
   );
 
-  const openBooking = useCallback((partial: BookingPartial) => {
-    setCourseDetailId(null);
-    setBooking({
-      ...defaultBooking,
-      ...partial,
-      open: true,
-      step: partial.step ?? 1,
-    });
-  }, []);
+  const openBooking = useCallback(
+    (partial: BookingPartial) => {
+      setCourseDetailId(null);
+      const base: BookingState = {
+        ...defaultBooking,
+        ...partial,
+        open: true,
+        step: partial.step ?? 1,
+      };
+      setBooking({ ...base, ...mergeBookingContactFromUser(base, user) });
+    },
+    [user],
+  );
 
   const closeBooking = useCallback(() => {
     setBooking((b) => ({ ...b, open: false }));
@@ -293,6 +283,16 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setBooking((b) => ({ ...b, ...partial }));
   }, []);
 
+  const updateBookingItem = useCallback(
+    (courseId: string, patch: Partial<BookingState['items'][number]>) => {
+      setBooking((b) => ({
+        ...b,
+        items: b.items.map((item) => (item.courseId === courseId ? { ...item, ...patch } : item)),
+      }));
+    },
+    [],
+  );
+
   const openCourseDetail = useCallback((courseId: string) => {
     setCourseDetailId(courseId);
   }, []);
@@ -300,61 +300,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const closeCourseDetail = useCallback(() => {
     setCourseDetailId(null);
   }, []);
-
-  const addToWishlist = useCallback(
-    (courseId: string) => {
-      setWishlistIds((prev) => {
-        if (prev.includes(courseId)) return prev;
-        const next = [...prev, courseId];
-        saveWishlist(next);
-        if (user) void saveWishlistApi(next);
-        return next;
-      });
-      toast('Added to wishlist', 'success');
-    },
-    [toast, user],
-  );
-
-  const removeFromWishlist = useCallback(
-    (courseId: string) => {
-      setWishlistIds((prev) => {
-        const next = prev.filter((id) => id !== courseId);
-        saveWishlist(next);
-        if (user) void saveWishlistApi(next);
-        return next;
-      });
-    },
-    [user],
-  );
-
-  const addToCart = useCallback(
-    (courseId: string) => {
-      setCartIds((prev) => {
-        if (prev.includes(courseId)) return prev;
-        const next = [...prev, courseId];
-        saveCart(next);
-        if (user) void saveCartApi(next);
-        return next;
-      });
-      toast('Added to cart', 'success');
-    },
-    [toast, user],
-  );
-
-  const removeFromCart = useCallback(
-    (courseId: string) => {
-      setCartIds((prev) => {
-        const next = prev.filter((id) => id !== courseId);
-        saveCart(next);
-        if (user) void saveCartApi(next);
-        return next;
-      });
-    },
-    [user],
-  );
-
-  const isInWishlist = useCallback((courseId: string) => wishlistIds.includes(courseId), [wishlistIds]);
-  const isInCart = useCallback((courseId: string) => cartIds.includes(courseId), [cartIds]);
 
   const openAuthModal = useCallback((mode: AuthModalMode = 'login') => {
     setOnboardingOpen(false);
@@ -366,6 +311,77 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setAuthModalMode(mode);
     setAuthModalOpen(true);
   }, []);
+
+  const addToWishlist = useCallback(
+    (courseId: string) => {
+      if (!user) {
+        openAuthModal('login');
+        return;
+      }
+      setWishlistIds((prev) => {
+        if (prev.includes(courseId)) return prev;
+        const next = [...prev, courseId];
+        saveWishlist(next);
+        void saveWishlistApi(next);
+        return next;
+      });
+      toast('Added to wishlist', 'success');
+    },
+    [openAuthModal, toast, user],
+  );
+
+  const removeFromWishlist = useCallback(
+    (courseId: string) => {
+      if (!user) return;
+      setWishlistIds((prev) => {
+        const next = prev.filter((id) => id !== courseId);
+        saveWishlist(next);
+        void saveWishlistApi(next);
+        return next;
+      });
+    },
+    [user],
+  );
+
+  const addToCart = useCallback(
+    (courseId: string) => {
+      if (!user) {
+        openAuthModal('login');
+        return;
+      }
+      setCartIds((prev) => {
+        if (prev.includes(courseId)) return prev;
+        const next = [...prev, courseId];
+        saveCart(next);
+        void saveCartApi(next);
+        return next;
+      });
+      toast('Added to cart', 'success');
+    },
+    [openAuthModal, toast, user],
+  );
+
+  const removeFromCart = useCallback(
+    (courseId: string) => {
+      if (!user) return;
+      setCartIds((prev) => {
+        const next = prev.filter((id) => id !== courseId);
+        saveCart(next);
+        void saveCartApi(next);
+        return next;
+      });
+    },
+    [user],
+  );
+
+  const isInWishlist = useCallback(
+    (courseId: string) => Boolean(user) && wishlistIds.includes(courseId),
+    [user, wishlistIds],
+  );
+  const isInCart = useCallback(
+    (courseId: string) => Boolean(user) && cartIds.includes(courseId),
+    [user, cartIds],
+  );
 
   const openLegalModal = useCallback((doc: LegalDoc) => {
     setLegalModal(doc);
@@ -385,7 +401,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const closeAuthModal = useCallback(() => {
     setAuthModalOpen(false);
-    setPendingBookCourseId(null);
+    setPendingBookCourseIds([]);
   }, []);
 
   const updateSessionUser = useCallback((authUser: AuthUser) => {
@@ -394,7 +410,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const completeAuth = useCallback(
     (authUser: AuthUser) => {
-      const pending = pendingBookCourseId;
+      const pending = pendingBookCourseIds;
       setUser(authUser);
       setAuthModalOpen(false);
       setOnboardingOpen(false);
@@ -404,23 +420,23 @@ export function AppProvider({ children }: { children: ReactNode }) {
         /* ignore */
       }
       void syncListsForUser(true);
-      const successMessage = pending
+      const successMessage = pending.length
         ? 'Signed in — continuing your booking…'
         : authModalMode === 'register'
           ? 'Account created! Welcome to TOBC.'
           : 'Welcome back! You are now logged in.';
       toast(successMessage, 'success');
-      setPendingBookCourseId(null);
+      setPendingBookCourseIds([]);
       if (!hasSeenBookingPrimer()) {
-        setPrimerPendingCourseId(pending ?? null);
+        setPrimerPendingCourseId(pending[0] ?? null);
         setBookingPrimerOpen(true);
         return;
       }
-      if (pending) {
-        openBooking(bookingFromCourseId(pending, 1));
+      if (pending.length) {
+        openBooking(bookingFromCourseIds(pending, 1));
       }
     },
-    [authModalMode, openBooking, pendingBookCourseId, syncListsForUser, toast],
+    [authModalMode, openBooking, pendingBookCourseIds, syncListsForUser, toast],
   );
 
   const loginWithEmail = useCallback(
@@ -446,6 +462,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const logout = useCallback(() => {
     void logoutAccount().finally(() => {
       setUser(null);
+      resetGuestLists();
       try {
         setOnboardingOpen(!sessionStorage.getItem(ONBOARD_SESSION_KEY));
       } catch {
@@ -453,7 +470,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       }
       toast('Signed out', 'info');
     });
-  }, [toast]);
+  }, [resetGuestLists, toast]);
 
   const openLogoutConfirm = useCallback(() => setLogoutConfirmOpen(true), []);
   const closeLogoutConfirm = useCallback(() => setLogoutConfirmOpen(false), []);
@@ -465,16 +482,27 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const dismissBookingPrimer = useCallback(() => {
     setBookingPrimerSeen();
-    const pid = primerPendingCourseId;
+    const ids =
+      pendingBookCourseIds.length > 0
+        ? pendingBookCourseIds
+        : primerPendingCourseId
+          ? [primerPendingCourseId]
+          : [];
     setBookingPrimerOpen(false);
     setPrimerPendingCourseId(null);
-    if (pid) {
-      openBooking(bookingFromCourseId(pid, 1));
+    setPendingBookCourseIds([]);
+    if (ids.length) {
+      openBooking(bookingFromCourseIds(ids, 1));
     }
-  }, [openBooking, primerPendingCourseId]);
+  }, [openBooking, pendingBookCourseIds, primerPendingCourseId]);
 
-  const startBookNow = useCallback(
-    (courseId: string) => {
+  const beginBooking = useCallback(
+    (courseIds: string[]) => {
+      const ids = [...new Set(courseIds)].filter((id) => getCourseById(id));
+      if (ids.length === 0) {
+        toast('No valid courses to book', 'error');
+        return;
+      }
       setCourseDetailId(null);
       if (!user) {
         setOnboardingOpen(false);
@@ -483,19 +511,34 @@ export function AppProvider({ children }: { children: ReactNode }) {
         } catch {
           /* ignore */
         }
-        setPendingBookCourseId(courseId);
+        setPendingBookCourseIds(ids);
         setAuthModalMode('book');
         setAuthModalOpen(true);
         return;
       }
       if (!hasSeenBookingPrimer()) {
-        setPrimerPendingCourseId(courseId);
+        setPrimerPendingCourseId(ids[0] ?? null);
         setBookingPrimerOpen(true);
+        setPendingBookCourseIds(ids);
         return;
       }
-      openBooking(bookingFromCourseId(courseId, 1));
+      openBooking(bookingFromCourseIds(ids, 1));
     },
-    [openBooking, user],
+    [openBooking, toast, user],
+  );
+
+  const startBookNow = useCallback(
+    (courseId: string) => {
+      beginBooking([courseId]);
+    },
+    [beginBooking],
+  );
+
+  const startCheckout = useCallback(
+    (courseIds: string[]) => {
+      beginBooking(courseIds);
+    },
+    [beginBooking],
   );
 
   const addNotification = useCallback((title: string, body: string) => {
@@ -566,6 +609,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       openBooking,
       closeBooking,
       updateBooking,
+      updateBookingItem,
       courseDetailId,
       openCourseDetail,
       closeCourseDetail,
@@ -578,6 +622,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       isInWishlist,
       isInCart,
       startBookNow,
+      startCheckout,
       drawerOpen,
       setDrawerOpen,
       helpOpen,
@@ -623,6 +668,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       openBooking,
       closeBooking,
       updateBooking,
+      updateBookingItem,
       courseDetailId,
       openCourseDetail,
       closeCourseDetail,
@@ -635,6 +681,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       isInWishlist,
       isInCart,
       startBookNow,
+      startCheckout,
       drawerOpen,
       helpOpen,
       onboardingOpen,

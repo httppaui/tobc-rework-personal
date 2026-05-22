@@ -125,11 +125,11 @@ export function CartOrderSummary({
           onClick={onBookNow}
           disabled={bookDisabled || selectedCount === 0}
         >
-          Book now
+          {selectedCount > 1 ? `Checkout (${selectedCount} courses)` : 'Checkout'}
         </button>
         {selectedCount > 1 ? (
           <p className="cart-summary-note">
-            Checkout runs one course at a time. After you confirm, return here to book the rest.
+            One checkout for all selected courses — set a schedule for each, then pay once.
           </p>
         ) : null}
       </div>

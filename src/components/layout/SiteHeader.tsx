@@ -177,20 +177,28 @@ export function SiteHeader() {
               <button
                 type="button"
                 className="nav-icon-btn"
-                aria-label={`Wishlist${wishlistIds.length ? `, ${wishlistIds.length} items` : ''}`}
-                onClick={() => navigateTo('wishlist')}
+                aria-label={
+                  isLoggedIn && wishlistIds.length
+                    ? `Wishlist, ${wishlistIds.length} items`
+                    : 'Wishlist'
+                }
+                onClick={() => (isLoggedIn ? navigateTo('wishlist') : openAuthModal('login'))}
               >
                 <i className="bi bi-heart" aria-hidden />
-                {wishlistIds.length > 0 && <span className="nav-badge">{wishlistIds.length}</span>}
+                {isLoggedIn && wishlistIds.length > 0 && (
+                  <span className="nav-badge">{wishlistIds.length}</span>
+                )}
               </button>
               <button
                 type="button"
                 className="nav-icon-btn"
-                aria-label={`Cart${cartIds.length ? `, ${cartIds.length} items` : ''}`}
-                onClick={() => navigateTo('cart')}
+                aria-label={isLoggedIn && cartIds.length ? `Cart, ${cartIds.length} items` : 'Cart'}
+                onClick={() => (isLoggedIn ? navigateTo('cart') : openAuthModal('login'))}
               >
                 <i className="bi bi-cart3" aria-hidden />
-                {cartIds.length > 0 && <span className="nav-badge">{cartIds.length}</span>}
+                {isLoggedIn && cartIds.length > 0 && (
+                  <span className="nav-badge">{cartIds.length}</span>
+                )}
               </button>
               <button
                 type="button"

@@ -1,5 +1,14 @@
 import { apiRequest } from './api';
-import type { BookingRecord } from '../types';
+import type { BookingLineItem, BookingRecord } from '../types';
+
+export type BookingContact = {
+  firstName: string;
+  lastName: string;
+  mobile: string;
+  email: string;
+  paymentProofName?: string;
+  paymentProofDataUrl?: string;
+};
 
 export async function fetchBookings(): Promise<BookingRecord[]> {
   const result = await apiRequest<{ bookings: BookingRecord[] }>('/api/bookings');
@@ -24,7 +33,6 @@ export async function createBooking(
       scheduleTime: payload.scheduleTime,
       firstName: payload.firstName,
       lastName: payload.lastName,
-      srb: payload.srb,
       mobile: payload.mobile,
       email: payload.email,
       paymentProofName: payload.paymentProofName,
@@ -32,4 +40,41 @@ export async function createBooking(
     }),
   });
   return result.ok ? { ok: true, booking: result.data.booking } : { ok: false, error: result.error };
+}
+
+export async function createBookingsBatch(
+  contact: BookingContact,
+  items: BookingLineItem[],
+): Promise<
+  | { ok: true; bookings: BookingRecord[] }
+  | { ok: false; error: string; bookings: BookingRecord[] }
+> {
+  const created: BookingRecord[] = [];
+  for (const item of items) {
+    const result = await createBooking({
+      courseId: item.courseId,
+      courseTitle: item.course,
+      provider: item.provider,
+      location: item.location,
+      price: item.price,
+      category: item.category,
+      scheduleDate: item.scheduleDate,
+      scheduleTime: item.scheduleTime,
+      firstName: contact.firstName,
+      lastName: contact.lastName,
+      mobile: contact.mobile,
+      email: contact.email,
+      paymentProofName: contact.paymentProofName ?? '',
+      paymentProofDataUrl: contact.paymentProofDataUrl,
+    });
+    if (!result.ok) {
+      return {
+        ok: false,
+        error: result.error,
+        bookings: created,
+      };
+    }
+    created.push(result.booking);
+  }
+  return { ok: true, bookings: created };
 }

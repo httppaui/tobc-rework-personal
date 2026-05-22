@@ -35,7 +35,23 @@ export interface ToastItem {
   type: 'info' | 'success' | 'error';
 }
 
-export type BookingStep = 1 | 2 | 3 | 4;
+export type BookingStep = 1 | 2 | 3 | 4 | 5;
+
+export type PaymentMethodId = 'bank' | 'ewallet' | 'gateway';
+
+export interface BookingLineItem {
+  courseId: string;
+  course: string;
+  price: string;
+  priceNum: number;
+  provider: string;
+  location: string;
+  dates: string;
+  duration: string;
+  category: string;
+  scheduleDate: string;
+  scheduleTime: string;
+}
 
 export interface AppNotification {
   id: string;
@@ -47,25 +63,16 @@ export interface AppNotification {
 
 export interface BookingState {
   open: boolean;
-  courseId: string;
-  course: string;
-  price: string;
-  provider: string;
-  location: string;
-  dates: string;
-  duration: string;
-  category: string;
+  items: BookingLineItem[];
   step: BookingStep;
-  scheduleDate: string;
-  scheduleTime: string;
   firstName: string;
   lastName: string;
-  srb: string;
   mobile: string;
   email: string;
+  paymentMethodId: PaymentMethodId | '';
   paymentProofName: string;
   paymentProofDataUrl: string;
-  confirmationId: string;
+  confirmationIds: string[];
 }
 
 export type AuthModalMode = 'login' | 'register' | 'book';
@@ -91,7 +98,6 @@ export interface BookingRecord {
   scheduleTime: string;
   firstName: string;
   lastName: string;
-  srb: string;
   mobile: string;
   email: string;
   paymentProofName: string;

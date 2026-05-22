@@ -17,7 +17,17 @@ function matchesCartSearch(course: Course, query: string): boolean {
 }
 
 export function CartPage() {
-  const { cartIds, removeFromCart, openCourseDetail, startBookNow, navigateTo, toast } = useApp();
+  const {
+    cartIds,
+    removeFromCart,
+    openCourseDetail,
+    startCheckout,
+    navigateTo,
+    toast,
+    isLoggedIn,
+    authSessionReady,
+    openAuthModal,
+  } = useApp();
   const [searchQ, setSearchQ] = useState('');
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
@@ -75,10 +85,7 @@ export function CartPage() {
       toast('Select at least one course to book', 'error');
       return;
     }
-    if (ids.length > 1) {
-      toast('Starting checkout for your first selected course', 'info');
-    }
-    startBookNow(ids[0]);
+    startCheckout(ids);
   };
 
   const handleRemoveSelected = () => {
@@ -111,7 +118,18 @@ export function CartPage() {
       />
       <div className="shelf-page-body">
         <div className="container">
-        {courses.length === 0 ? (
+        {!authSessionReady ? (
+          <p className="page-lede">Loading…</p>
+        ) : !isLoggedIn ? (
+          <div className="empty-shelf">
+            <i className="bi bi-cart3" aria-hidden />
+            <h2>Sign in to use your cart</h2>
+            <p>Add courses from the catalog and book them when you are ready.</p>
+            <button type="button" className="btn btn-primary" onClick={() => openAuthModal('login')}>
+              Log in
+            </button>
+          </div>
+        ) : courses.length === 0 ? (
           <div className="empty-shelf">
             <i className="bi bi-cart3" aria-hidden />
             <h2>Your cart is empty</h2>

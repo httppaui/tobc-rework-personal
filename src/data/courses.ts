@@ -16,6 +16,11 @@ export interface Course {
   availability?: 'available' | 'low' | 'critical' | 'open';
   professions?: string[];
   description?: string;
+  trainingOutcomes?: string;
+  entryStandards?: string;
+  cancellationPolicy?: string;
+  entryRequirementsPdf?: string;
+  cancellationPolicyPdf?: string;
 }
 
 export const COURSES: Course[] = [

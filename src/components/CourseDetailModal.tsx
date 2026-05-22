@@ -1,5 +1,39 @@
+import { useEffect, useId, useState, type ReactNode } from 'react';
 import { useApp } from '../context/AppProvider';
-import { getCourseById, getCourseDescription } from '../lib/courseCatalog';
+import {
+  COURSE_DETAIL_TABS,
+  courseDetailPdfFilename,
+  getCourseById,
+  getCourseCancellationPolicy,
+  getCourseCancellationPolicyPdf,
+  getCourseDescription,
+  getCourseEntryRequirementsPdf,
+  getCourseEntryStandards,
+  getCourseTrainingOutcomes,
+  type CourseDetailTabId,
+} from '../lib/courseCatalog';
+
+function formatDetailText(text: string) {
+  return text.split(/\n\n+/).map((block, i) => {
+    const trimmed = block.trim();
+    if (!trimmed) return null;
+    if (trimmed.startsWith('•')) {
+      const items = trimmed.split('\n').map((line) => line.replace(/^•\s*/, '').trim());
+      return (
+        <ul key={i} className="course-detail-list">
+          {items.map((item) => (
+            <li key={item}>{item}</li>
+          ))}
+        </ul>
+      );
+    }
+    return (
+      <p key={i} className="course-detail-desc">
+        {trimmed}
+      </p>
+    );
+  });
+}
 
 export function CourseDetailModal() {
   const {
@@ -13,12 +47,52 @@ export function CourseDetailModal() {
     navigateTo,
   } = useApp();
 
+  const tabListId = useId();
+  const [activeTab, setActiveTab] = useState<CourseDetailTabId>('overview');
+
+  useEffect(() => {
+    setActiveTab('overview');
+  }, [courseDetailId]);
+
   if (!courseDetailId) return null;
   const course = getCourseById(courseDetailId);
   if (!course) return null;
 
   const inWishlist = isInWishlist(course.id);
   const inCart = isInCart(course.id);
+  const entryPdf = getCourseEntryRequirementsPdf(course);
+  const cancellationPdf = getCourseCancellationPolicyPdf(course);
+
+  const panelContent: Record<CourseDetailTabId, ReactNode> = {
+    overview: formatDetailText(getCourseDescription(course)),
+    outcomes: formatDetailText(getCourseTrainingOutcomes(course)),
+    entry: (
+      <>
+        {formatDetailText(getCourseEntryStandards(course))}
+        <a
+          className="course-detail-pdf-btn"
+          href={entryPdf}
+          download={courseDetailPdfFilename(course, 'entry')}
+        >
+          <i className="bi bi-file-earmark-pdf" aria-hidden />
+          Download requirements (PDF)
+        </a>
+      </>
+    ),
+    cancellation: (
+      <>
+        {formatDetailText(getCourseCancellationPolicy(course))}
+        <a
+          className="course-detail-pdf-btn"
+          href={cancellationPdf}
+          download={courseDetailPdfFilename(course, 'cancellation')}
+        >
+          <i className="bi bi-file-earmark-pdf" aria-hidden />
+          Download cancellation policy (PDF)
+        </a>
+      </>
+    ),
+  };
 
   return (
     <div
@@ -42,10 +116,7 @@ export function CourseDetailModal() {
           </button>
         </div>
         <div className="course-detail-body">
-          <div
-            className="course-detail-hero"
-            style={{ background: course.gradient }}
-          >
+          <div className="course-detail-hero" style={{ background: course.gradient }}>
             <i className={`bi ${course.icon}`} aria-hidden />
           </div>
           <div className="course-detail-meta">
@@ -60,8 +131,45 @@ export function CourseDetailModal() {
             </span>
             <span className="course-detail-price">{course.price}</span>
           </div>
-          <h3>About this course</h3>
-          <p className="course-detail-desc">{getCourseDescription(course)}</p>
+
+          <div className="course-detail-tabs-wrap">
+            <div className="course-detail-tabs" role="tablist" aria-label="Course information" id={tabListId}>
+              {COURSE_DETAIL_TABS.map((tab) => {
+                const selected = activeTab === tab.id;
+                return (
+                  <button
+                    key={tab.id}
+                    type="button"
+                    role="tab"
+                    id={`${tabListId}-${tab.id}`}
+                    className={`course-detail-tab${selected ? ' is-active' : ''}`}
+                    aria-selected={selected}
+                    aria-controls={`${tabListId}-panel-${tab.id}`}
+                    tabIndex={selected ? 0 : -1}
+                    onClick={() => setActiveTab(tab.id)}
+                  >
+                    {tab.label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {COURSE_DETAIL_TABS.map((tab) => {
+            const selected = activeTab === tab.id;
+            return (
+              <div
+                key={tab.id}
+                id={`${tabListId}-panel-${tab.id}`}
+                role="tabpanel"
+                aria-labelledby={`${tabListId}-${tab.id}`}
+                hidden={!selected}
+                className="course-detail-panel"
+              >
+                {selected ? panelContent[tab.id] : null}
+              </div>
+            );
+          })}
         </div>
         <div className="course-detail-footer">
           <button

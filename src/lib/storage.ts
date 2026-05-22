@@ -46,6 +46,11 @@ export function saveWishlist(ids: string[]) {
   saveIdList(WISHLIST_KEY, ids);
 }
 
+export function clearWishlistAndCart() {
+  saveWishlist([]);
+  saveCart([]);
+}
+
 export function loadNotifications(): StoredNotification[] {
   try {
     const raw = localStorage.getItem(NOTIFICATIONS_KEY);
