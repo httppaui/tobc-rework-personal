@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { PartnerCard } from '../components/partners/PartnerCard';
 import { PartnersFilters } from '../components/partners/PartnersFilters';
 import {
@@ -14,63 +14,32 @@ import {
   filterPartners,
   type PartnerSidebarFilters,
 } from '../lib/partnerFilters';
+import { PAGE_PATHS } from '../lib/routes';
+import { partnerFiltersFromSearchParams } from '../lib/partnerRoutes';
 import { EmptyResults } from '../components/EmptyResults';
 import { ResultsSkeleton } from '../components/ResultsSkeleton';
-
-function normalizePartnerType(type: string): string {
-  if (type === 'review') return 'review';
-  return type;
-}
 
 type PartnerSortKey = 'name' | 'courses-desc' | 'courses-asc';
 
 export function PartnersPage() {
   const { navigateTo } = useApp();
+  const navigate = useNavigate();
   const [params] = useSearchParams();
+  const initialFromUrl = partnerFiltersFromSearchParams(params);
   const [searchQ, setSearchQ] = useState('');
-  const [toolbarCategory, setToolbarCategory] = useState(() => params.get('category') ?? 'all');
-  const [toolbarType, setToolbarType] = useState(() => {
-    const raw = params.get('type');
-    return raw ? normalizePartnerType(raw) : 'all';
-  });
+  const [toolbarCategory, setToolbarCategory] = useState(initialFromUrl.toolbarCategory);
+  const [toolbarType, setToolbarType] = useState(initialFromUrl.toolbarType);
   const [location, setLocation] = useState('');
   const [sort, setSort] = useState<PartnerSortKey>('name');
-  const [sidebar, setSidebar] = useState<PartnerSidebarFilters>(DEFAULT_PARTNER_FILTERS);
+  const [sidebar, setSidebar] = useState<PartnerSidebarFilters>(initialFromUrl.sidebar);
   const [filtering, setFiltering] = useState(false);
   const [view, setView] = useState<'grid' | 'list'>('grid');
 
   useEffect(() => {
-    const cat = params.get('category');
-    const raw = params.get('type');
-    const partnerId = params.get('partner');
-    if (cat === 'business' || cat === 'industry') {
-      setToolbarCategory(cat);
-      setSidebar((prev) => ({
-        ...prev,
-        categories: prev.categories.length ? prev.categories : [cat],
-      }));
-    }
-    if (raw) {
-      const type = normalizePartnerType(raw);
-      setToolbarType(type);
-      setToolbarCategory((c) => (c === 'all' ? 'business' : c));
-      setSidebar((prev) => ({
-        ...prev,
-        types: prev.types.length ? prev.types : [type],
-      }));
-    }
-    if (partnerId) {
-      const match = PARTNERS.find((p) => p.id === partnerId);
-      if (match) {
-        setToolbarCategory('industry');
-        setToolbarType('all');
-        setSidebar((prev) => ({
-          ...prev,
-          categories: ['industry'],
-          types: [],
-        }));
-      }
-    }
+    const next = partnerFiltersFromSearchParams(params);
+    setToolbarCategory(next.toolbarCategory);
+    setToolbarType(next.toolbarType);
+    setSidebar(next.sidebar);
   }, [params]);
 
   useEffect(() => {
@@ -104,6 +73,7 @@ export function PartnersPage() {
     setLocation('');
     setSort('name');
     setSidebar(DEFAULT_PARTNER_FILTERS);
+    if (params.toString()) navigate(PAGE_PATHS.partners, { replace: true });
   };
 
   const handleSidebarChange = (next: PartnerSidebarFilters) => {

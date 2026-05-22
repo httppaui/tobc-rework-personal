@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { PAGE_PATHS } from '../../lib/routes';
+import { partnersUrl } from '../../lib/partnerRoutes';
 import { INDUSTRY_PARTNERS_NAV, PARTNER_BUSINESS_NAV, partnerNavLabel } from '../../data/partnersNav';
 import { NavDropdownItem } from './NavDropdown';
 
@@ -20,7 +20,7 @@ export function PartnersNavMenu({ onNavigate, menuOpen }: PartnersNavMenuProps) 
   };
 
   const goToSection = (section: 'business' | 'industry') => {
-    onNavigate(`${PAGE_PATHS.partners}?category=${section}`);
+    onNavigate(partnersUrl({ category: section }));
   };
 
   return (
@@ -59,9 +59,7 @@ export function PartnersNavMenu({ onNavigate, menuOpen }: PartnersNavMenuProps) 
               <NavDropdownItem
                 key={item.type}
                 label={item.label}
-                onSelect={() =>
-                  onNavigate(`${PAGE_PATHS.partners}?category=business&type=${item.type}`)
-                }
+                onSelect={() => onNavigate(partnersUrl({ category: 'business', type: item.type }))}
               />
             ))
           : INDUSTRY_PARTNERS_NAV.map((partner) => (
@@ -69,7 +67,7 @@ export function PartnersNavMenu({ onNavigate, menuOpen }: PartnersNavMenuProps) 
                 key={partner.id}
                 label={partnerNavLabel(partner)}
                 onSelect={() =>
-                  onNavigate(`${PAGE_PATHS.partners}?category=industry&partner=${partner.id}`)
+                  onNavigate(partnersUrl({ category: 'industry', partner: partner.id }))
                 }
               />
             ))}

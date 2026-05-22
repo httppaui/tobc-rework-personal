@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../../context/AppProvider';
-import { PAGE_PATHS } from '../../lib/routes';
+import { partnersUrl } from '../../lib/partnerRoutes';
 
 export function Footer() {
   const navigate = useNavigate();
@@ -71,16 +71,10 @@ export function Footer() {
           </div>
           <div className="footer-col">
             <h4>Partners</h4>
-            <button
-              type="button"
-              onClick={() => navigate(`${PAGE_PATHS.partners}?category=business`)}
-            >
+            <button type="button" onClick={() => navigate(partnersUrl({ category: 'business' }))}>
               Business Partners
             </button>
-            <button
-              type="button"
-              onClick={() => navigate(`${PAGE_PATHS.partners}?category=industry`)}
-            >
+            <button type="button" onClick={() => navigate(partnersUrl({ category: 'industry' }))}>
               Industry Partners
             </button>
           </div>
