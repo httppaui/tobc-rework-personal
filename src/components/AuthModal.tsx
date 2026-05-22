@@ -1,5 +1,6 @@
 import { FormEvent, useEffect, useState } from 'react';
 import { useApp } from '../context/AppProvider';
+import { isApiConfigured, productionApiSetupError } from '../lib/api';
 import { checkApiHealth } from '../lib/authApi';
 import { isPasswordValid, PASSWORD_RULES, passwordValidationError } from '../lib/passwordRules';
 import type { AuthModalMode } from '../types';
@@ -149,7 +150,8 @@ export function AuthModal() {
 
   const copy = AUTH_COPY[authModalMode];
   const registerPasswordOk = !isRegister || (isPasswordValid(password) && password === confirmPassword);
-  const canSubmit = agreedToTerms && apiOnline !== false && !submitting && registerPasswordOk;
+  const canSubmit =
+    agreedToTerms && isApiConfigured() && apiOnline !== false && !submitting && registerPasswordOk;
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -160,8 +162,18 @@ export function AuthModal() {
       return;
     }
 
+    const setupErr = productionApiSetupError();
+    if (setupErr) {
+      setFieldError(setupErr);
+      return;
+    }
+
     if (apiOnline === false) {
-      setFieldError('Auth server is offline. Run npm run dev in the project folder (starts API on port 3001).');
+      setFieldError(
+        import.meta.env.PROD
+          ? 'Cannot reach the TOBC API. Deploy the API (see docs/DEPLOY.md), set VITE_API_URL on Vercel, and set CLIENT_ORIGIN on the API to https://tobc-rework-personal.vercel.app'
+          : 'Auth server is offline. Run npm run dev in the project folder (starts API on port 3001).',
+      );
       return;
     }
 
@@ -205,10 +217,12 @@ export function AuthModal() {
         </div>
         <div className="auth-modal-body">
           <p>{copy.body}</p>
-          {apiOnline === false && (
+          {(productionApiSetupError() || apiOnline === false) && (
             <p className="auth-api-status is-error" role="status">
-              Cannot reach the auth API. Stop the dev server, then run <strong>npm run dev</strong> again
-              (needs both web and api). Check the terminal for <strong>[api]</strong> listening on port 3001.
+              {productionApiSetupError() ??
+                (import.meta.env.PROD
+                  ? 'Cannot reach the TOBC API. Deploy the API on Render (or similar), then set VITE_API_URL on Vercel and CLIENT_ORIGIN on the API. See docs/DEPLOY.md.'
+                  : 'Cannot reach the auth API. Stop the dev server, then run npm run dev again (needs both web and api). Check the terminal for [api] on port 3001.')}
             </p>
           )}
           <form className="auth-form" onSubmit={handleSubmit} noValidate>

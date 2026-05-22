@@ -1,11 +1,22 @@
 import { useLocation } from 'react-router-dom';
 import { useApp } from '../../context/AppProvider';
+import { AUTH_PAUSED_MESSAGE } from '../../lib/featureFlags';
 import type { RoleId } from '../../types';
 import { pageFromPath } from '../../lib/routes';
 
 export function MobileDrawer() {
-  const { drawerOpen, setDrawerOpen, setRole, navigateTo, openAuthModal, isLoggedIn, user, openLogoutConfirm, authSessionReady } =
-    useApp();
+  const {
+    drawerOpen,
+    setDrawerOpen,
+    setRole,
+    navigateTo,
+    openAuthModal,
+    isLoggedIn,
+    authEnabled,
+    user,
+    openLogoutConfirm,
+    authSessionReady,
+  } = useApp();
   const page = pageFromPath(useLocation().pathname);
 
   if (!drawerOpen) return null;
@@ -107,11 +118,13 @@ export function MobileDrawer() {
                 Log out
               </button>
             </>
-          ) : (
+          ) : authEnabled ? (
             <>
               <button type="button" className="btn btn-primary" style={{ justifyContent: 'center' }} onClick={() => { setDrawerOpen(false); openAuthModal('register'); }}>Register Free</button>
               <button type="button" className="btn btn-secondary" style={{ justifyContent: 'center' }} onClick={() => { setDrawerOpen(false); openAuthModal('login'); }}>Log In</button>
             </>
+          ) : (
+            <p style={{ fontSize: 13, color: 'var(--muted)', margin: 0, lineHeight: 1.5 }}>{AUTH_PAUSED_MESSAGE}</p>
           )}
         </div>
       </div>

@@ -24,6 +24,7 @@ export function SiteHeader() {
     wishlistIds,
     openAuthModal,
     isLoggedIn,
+    authEnabled,
     authSessionReady,
   } = useApp();
   const navigate = useNavigate();
@@ -212,7 +213,7 @@ export function SiteHeader() {
               <div className="nav-divider" />
               {!authSessionReady ? null : isLoggedIn ? (
                 <ProfileMenu />
-              ) : (
+              ) : authEnabled ? (
                 <>
                   <button type="button" className="btn btn-secondary btn--sm" onClick={() => openAuthModal('login')}>
                     Log In
@@ -225,7 +226,7 @@ export function SiteHeader() {
                     Register Free
                   </button>
                 </>
-              )}
+              ) : null}
               <button type="button" className="nav-mobile-toggle" onClick={() => setDrawerOpen(true)} aria-label="Open menu">
                 <span />
                 <span />

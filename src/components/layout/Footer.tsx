@@ -5,7 +5,7 @@ import { PAGE_PATHS } from '../../lib/routes';
 
 export function Footer() {
   const navigate = useNavigate();
-  const { navigateTo, openAuthModal, openLegalModal } = useApp();
+  const { navigateTo, openAuthModal, openLegalModal, authEnabled } = useApp();
 
   return (
     <footer className="footer">
@@ -66,9 +66,11 @@ export function Footer() {
             <button type="button" disabled title="Coming soon">
               My Certificates
             </button>
-            <button type="button" onClick={() => openAuthModal('register')}>
-              Create Account
-            </button>
+            {authEnabled ? (
+              <button type="button" onClick={() => openAuthModal('register')}>
+                Create Account
+              </button>
+            ) : null}
           </div>
           <div className="footer-col">
             <h4>Partners</h4>

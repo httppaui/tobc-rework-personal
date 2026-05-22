@@ -23,7 +23,8 @@ function matchesBookingSearch(booking: BookingRecord, query: string): boolean {
 }
 
 export function BookedCoursesPage() {
-  const { navigateTo, isLoggedIn, openAuthModal, authSessionReady, openCourseDetail } = useApp();
+  const { navigateTo, isLoggedIn, authEnabled, openAuthModal, authSessionReady, openCourseDetail } =
+    useApp();
   const [bookings, setBookings] = useState<BookingRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQ, setSearchQ] = useState('');
@@ -73,11 +74,21 @@ export function BookedCoursesPage() {
         ) : !isLoggedIn ? (
           <div className="empty-shelf">
             <i className="bi bi-journal-check" aria-hidden />
-            <h2>Sign in to view booked courses</h2>
-            <p>Complete a booking while logged in and your courses will show up here.</p>
-            <button type="button" className="btn btn-primary" onClick={() => openAuthModal('login')}>
-              Log in
-            </button>
+            <h2>{authEnabled ? 'Sign in to view booked courses' : 'Booked courses coming soon'}</h2>
+            <p>
+              {authEnabled
+                ? 'Complete a booking while logged in and your courses will show up here.'
+                : 'Account sign-in is paused while we finish setup.'}
+            </p>
+            {authEnabled ? (
+              <button type="button" className="btn btn-primary" onClick={() => openAuthModal('login')}>
+                Log in
+              </button>
+            ) : (
+              <button type="button" className="btn btn-primary" onClick={() => navigateTo('courses')}>
+                Browse courses
+              </button>
+            )}
           </div>
         ) : bookings.length === 0 ? (
           <div className="empty-shelf">

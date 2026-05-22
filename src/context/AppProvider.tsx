@@ -28,6 +28,7 @@ import { lockBodyScroll, unlockBodyScroll } from '../lib/scrollLock';
 import { applyA11yPrefs, loadA11yPrefs } from '../lib/accessibility';
 import { emptyBookingState, lineItemsFromCourseIds } from '../lib/booking';
 import { mergeBookingContactFromUser } from '../lib/userName';
+import { AUTH_ENABLED, AUTH_PAUSED_MESSAGE } from '../lib/featureFlags';
 
 /** Guest guide dismissed for this browser tab session only */
 const ONBOARD_SESSION_KEY = 'tobc_guest_onboard_dismissed';
@@ -40,6 +41,7 @@ interface AppContextValue {
   setRole: (role: RoleId) => void;
   user: AuthUser | null;
   isLoggedIn: boolean;
+  authEnabled: boolean;
   authSessionReady: boolean;
   loginWithEmail: (email: string, password: string) => Promise<string | null>;
   registerWithEmail: (name: string, email: string, password: string) => Promise<string | null>;
@@ -178,6 +180,17 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
+    if (!AUTH_ENABLED) {
+      resetGuestLists();
+      setAuthSessionReady(true);
+      try {
+        setOnboardingOpen(!sessionStorage.getItem(ONBOARD_SESSION_KEY));
+      } catch {
+        setOnboardingOpen(true);
+      }
+      return;
+    }
+
     let cancelled = false;
     fetchCurrentUser()
       .then(async (sessionUser) => {
@@ -201,7 +214,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [resetGuestLists, syncListsForUser]);
 
   useEffect(() => {
     const shouldLockScroll =
@@ -318,16 +331,23 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setPartnerDetailId(null);
   }, []);
 
-  const openAuthModal = useCallback((mode: AuthModalMode = 'login') => {
-    setOnboardingOpen(false);
-    try {
-      sessionStorage.setItem(ONBOARD_SESSION_KEY, '1');
-    } catch {
-      /* ignore */
-    }
-    setAuthModalMode(mode);
-    setAuthModalOpen(true);
-  }, []);
+  const openAuthModal = useCallback(
+    (mode: AuthModalMode = 'login') => {
+      if (!AUTH_ENABLED) {
+        toast(AUTH_PAUSED_MESSAGE, 'info');
+        return;
+      }
+      setOnboardingOpen(false);
+      try {
+        sessionStorage.setItem(ONBOARD_SESSION_KEY, '1');
+      } catch {
+        /* ignore */
+      }
+      setAuthModalMode(mode);
+      setAuthModalOpen(true);
+    },
+    [toast],
+  );
 
   const addToWishlist = useCallback(
     (courseId: string) => {
@@ -600,6 +620,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       setRole,
       user,
       isLoggedIn,
+      authEnabled: AUTH_ENABLED,
       authSessionReady,
       loginWithEmail,
       registerWithEmail,
@@ -662,6 +683,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       role,
       user,
       isLoggedIn,
+      authEnabled: AUTH_ENABLED,
       authSessionReady,
       loginWithEmail,
       registerWithEmail,

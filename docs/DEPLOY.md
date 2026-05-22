@@ -57,12 +57,34 @@ Health check path: `/api/health`
 
 1. Import repo; framework **Vite**.
 2. Build: `npm run build` · Output: `dist`
-3. Env: `VITE_API_URL` = your API URL.
-4. Deploy.
+3. **Environment variable (required for login/booking):** `VITE_API_URL` = your API URL (e.g. `https://tobc-api.onrender.com`). Apply to **Production** (and Preview if you test PRs).
+4. **When the API is ready:** also set `VITE_AUTH_ENABLED=true` (sign-in is off in production by default until then).
+5. Redeploy after saving env vars (Vite bakes `VITE_*` at build time).
+
+**Without `VITE_API_URL`,** the live site calls `/api` on the Vercel domain, which only serves the React app (HTML), so sign-in shows “Something went wrong.”
+
+For [https://tobc-rework-personal.vercel.app/](https://tobc-rework-personal.vercel.app/), the API must also allow that origin:
+
+```env
+CLIENT_ORIGIN=https://tobc-rework-personal.vercel.app
+COOKIE_SAME_SITE=none
+```
 
 ---
 
-## 5. Smoke test (production)
+## 5. Quick checklist (Vercel + Render)
+
+| Step | Where | What |
+|------|--------|------|
+| 1 | Render | Web service running `npm run start:api`, disk at `/data`, env from section 1 |
+| 2 | Render | Open `https://YOUR-SERVICE.onrender.com/api/health` → `{"ok":true,"service":"tobc-api",...}` |
+| 3 | Vercel | `VITE_API_URL` = same API origin (no trailing slash) |
+| 4 | Vercel | Redeploy production |
+| 5 | Live app | Create account → refresh → still logged in |
+
+---
+
+## 6. Smoke test (production)
 
 1. Open `https://your-api.onrender.com/api/health` → `{ "ok": true }`
 2. Open the live app → **Create account** → refresh → still logged in
@@ -71,7 +93,7 @@ Health check path: `/api/health`
 
 ---
 
-## 6. Local full stack
+## 7. Local full stack
 
 ```bash
 cp .env.example .env

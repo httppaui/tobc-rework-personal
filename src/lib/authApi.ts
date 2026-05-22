@@ -37,6 +37,6 @@ export async function logoutAccount(): Promise<void> {
 }
 
 export async function checkApiHealth(): Promise<boolean> {
-  const result = await apiRequest<{ ok: boolean }>('/api/health');
-  return result.ok;
+  const result = await apiRequest<{ ok?: boolean; service?: string }>('/api/health');
+  return result.ok && result.data.ok === true && result.data.service === 'tobc-api';
 }
