@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../../context/AppProvider';
 import { partnersUrl } from '../../lib/partnerRoutes';
+import { PAGE_PATHS } from '../../lib/routes';
 
 export function Footer() {
   const navigate = useNavigate();
