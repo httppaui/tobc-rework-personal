@@ -106,6 +106,8 @@ This file is the **source of truth** for UI/UX direction for the TOBC site (**Re
 
 _Add a bullet with **YYYY-MM-DD** when you ship a meaningful UI/UX change (what changed, files touched)._
 
+- **2026-05-22 — Partners mega-menu category clicks:** Business / Industry sidebar tabs navigate to filtered Partners page on click (hover still previews submenu). Files: `PartnersNavMenu.tsx`, `UI-UX-PLAN.md`.
+
 - **2026-05-22 — Skip payment for free bookings:** All-free carts skip step 4 and go to confirmation; progress shows “No payment”. Files: `booking.ts`, `BookingModal.tsx`, `main.css`.
 
 - **2026-05-22 — Booking step 4 payment methods:** Bank / e-wallet / gateway selection with sample pay-to details and QR placeholder; proof upload below. Files: `BookingPaymentStep.tsx`, `paymentMethods.ts`, `BookingModal.tsx`, `types/index.ts`, `main.css`.

@@ -15,6 +15,14 @@ export function PartnersNavMenu({ onNavigate, menuOpen }: PartnersNavMenuProps) 
     if (menuOpen) setActiveSection('business');
   }, [menuOpen]);
 
+  const previewSection = (section: 'business' | 'industry') => {
+    setActiveSection(section);
+  };
+
+  const goToSection = (section: 'business' | 'industry') => {
+    onNavigate(`${PAGE_PATHS.partners}?category=${section}`);
+  };
+
   return (
     <div className="nav-dropdown-partners nav-dropdown-partners--mega">
       <div className="nav-dropdown-mega-sidebar" role="presentation">
@@ -22,9 +30,9 @@ export function PartnersNavMenu({ onNavigate, menuOpen }: PartnersNavMenuProps) 
           type="button"
           className={`nav-dropdown-mega-tab${activeSection === 'business' ? ' is-active' : ''}`}
           aria-pressed={activeSection === 'business'}
-          onMouseEnter={() => setActiveSection('business')}
-          onFocus={() => setActiveSection('business')}
-          onClick={() => setActiveSection('business')}
+          onMouseEnter={() => previewSection('business')}
+          onFocus={() => previewSection('business')}
+          onClick={() => goToSection('business')}
         >
           Business Partners
           <i className="bi bi-chevron-right nav-dropdown-mega-tab-ico" aria-hidden />
@@ -33,9 +41,9 @@ export function PartnersNavMenu({ onNavigate, menuOpen }: PartnersNavMenuProps) 
           type="button"
           className={`nav-dropdown-mega-tab${activeSection === 'industry' ? ' is-active' : ''}`}
           aria-pressed={activeSection === 'industry'}
-          onMouseEnter={() => setActiveSection('industry')}
-          onFocus={() => setActiveSection('industry')}
-          onClick={() => setActiveSection('industry')}
+          onMouseEnter={() => previewSection('industry')}
+          onFocus={() => previewSection('industry')}
+          onClick={() => goToSection('industry')}
         >
           Industry Partners
           <i className="bi bi-chevron-right nav-dropdown-mega-tab-ico" aria-hidden />
