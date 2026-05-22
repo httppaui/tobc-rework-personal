@@ -683,7 +683,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       role,
       user,
       isLoggedIn,
-      authEnabled: AUTH_ENABLED,
+      AUTH_ENABLED,
       authSessionReady,
       loginWithEmail,
       registerWithEmail,
