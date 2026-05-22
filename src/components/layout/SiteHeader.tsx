@@ -179,25 +179,23 @@ export function SiteHeader() {
                 type="button"
                 className="nav-icon-btn"
                 aria-label={
-                  isLoggedIn && wishlistIds.length
-                    ? `Wishlist, ${wishlistIds.length} items`
-                    : 'Wishlist'
+                  wishlistIds.length ? `Wishlist, ${wishlistIds.length} items` : 'Wishlist'
                 }
-                onClick={() => (isLoggedIn ? navigateTo('wishlist') : openAuthModal('login'))}
+                onClick={() => navigateTo('wishlist')}
               >
                 <i className="bi bi-heart" aria-hidden />
-                {isLoggedIn && wishlistIds.length > 0 && (
+                {wishlistIds.length > 0 && (
                   <span className="nav-badge">{wishlistIds.length}</span>
                 )}
               </button>
               <button
                 type="button"
                 className="nav-icon-btn"
-                aria-label={isLoggedIn && cartIds.length ? `Cart, ${cartIds.length} items` : 'Cart'}
-                onClick={() => (isLoggedIn ? navigateTo('cart') : openAuthModal('login'))}
+                aria-label={cartIds.length ? `Cart, ${cartIds.length} items` : 'Cart'}
+                onClick={() => navigateTo('cart')}
               >
                 <i className="bi bi-cart3" aria-hidden />
-                {isLoggedIn && cartIds.length > 0 && (
+                {cartIds.length > 0 && (
                   <span className="nav-badge">{cartIds.length}</span>
                 )}
               </button>

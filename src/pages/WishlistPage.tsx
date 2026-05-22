@@ -23,10 +23,7 @@ export function WishlistPage() {
     startCheckout,
     navigateTo,
     toast,
-    isLoggedIn,
     authSessionReady,
-    authEnabled,
-    openAuthModal,
   } = useApp();
 
   const [searchQ, setSearchQ] = useState('');
@@ -114,21 +111,6 @@ export function WishlistPage() {
         <div className="container">
         {!authSessionReady ? (
           <p className="page-lede">Loading…</p>
-        ) : !isLoggedIn ? (
-          <div className="empty-shelf">
-            <i className="bi bi-heart" aria-hidden />
-            <h2>{authEnabled ? 'Sign in to use your wishlist' : 'Wishlist coming soon'}</h2>
-            <p>
-              {authEnabled
-                ? 'Save courses you are considering and access them on any device.'
-                : 'Account sign-in is paused while we finish setup. Browse courses in the meantime.'}
-            </p>
-            {authEnabled ? (
-              <button type="button" className="btn btn-primary" onClick={() => openAuthModal('login')}>
-                Log in
-              </button>
-            ) : null}
-          </div>
         ) : courses.length === 0 ? (
           <div className="empty-shelf">
             <i className="bi bi-heart" aria-hidden />

@@ -24,10 +24,7 @@ export function CartPage() {
     startCheckout,
     navigateTo,
     toast,
-    isLoggedIn,
     authSessionReady,
-    authEnabled,
-    openAuthModal,
   } = useApp();
   const [searchQ, setSearchQ] = useState('');
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
@@ -121,21 +118,6 @@ export function CartPage() {
         <div className="container">
         {!authSessionReady ? (
           <p className="page-lede">Loading…</p>
-        ) : !isLoggedIn ? (
-          <div className="empty-shelf">
-            <i className="bi bi-cart3" aria-hidden />
-            <h2>{authEnabled ? 'Sign in to use your cart' : 'Cart & booking coming soon'}</h2>
-            <p>
-              {authEnabled
-                ? 'Add courses from the catalog and book them when you are ready.'
-                : 'Account sign-in is paused while we finish setup. Browse courses in the meantime.'}
-            </p>
-            {authEnabled ? (
-              <button type="button" className="btn btn-primary" onClick={() => openAuthModal('login')}>
-                Log in
-              </button>
-            ) : null}
-          </div>
         ) : courses.length === 0 ? (
           <div className="empty-shelf">
             <i className="bi bi-cart3" aria-hidden />

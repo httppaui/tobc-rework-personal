@@ -128,8 +128,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [onboardingOpen, setOnboardingOpen] = useState(false);
   const [courseDetailId, setCourseDetailId] = useState<string | null>(null);
   const [partnerDetailId, setPartnerDetailId] = useState<string | null>(null);
-  const [wishlistIds, setWishlistIds] = useState<string[]>([]);
-  const [cartIds, setCartIds] = useState<string[]>([]);
+  const [wishlistIds, setWishlistIds] = useState<string[]>(() => loadWishlist());
+  const [cartIds, setCartIds] = useState<string[]>(() => loadCart());
   const [notifications, setNotifications] = useState<AppNotification[]>(() => loadNotifications());
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [authModalMode, setAuthModalMode] = useState<AuthModalMode>('login');
@@ -181,7 +181,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (!AUTH_ENABLED) {
-      resetGuestLists();
       setAuthSessionReady(true);
       try {
         setOnboardingOpen(!sessionStorage.getItem(ONBOARD_SESSION_KEY));
@@ -201,7 +200,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
           await syncListsForUser(false);
           return;
         }
-        resetGuestLists();
+        setWishlistIds(loadWishlist());
+        setCartIds(loadCart());
         try {
           setOnboardingOpen(!sessionStorage.getItem(ONBOARD_SESSION_KEY));
         } catch {
@@ -351,29 +351,24 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const addToWishlist = useCallback(
     (courseId: string) => {
-      if (!user) {
-        openAuthModal('login');
-        return;
-      }
       setWishlistIds((prev) => {
         if (prev.includes(courseId)) return prev;
         const next = [...prev, courseId];
         saveWishlist(next);
-        void saveWishlistApi(next);
+        if (user) void saveWishlistApi(next);
         return next;
       });
       toast('Added to wishlist', 'success');
     },
-    [openAuthModal, toast, user],
+    [toast, user],
   );
 
   const removeFromWishlist = useCallback(
     (courseId: string) => {
-      if (!user) return;
       setWishlistIds((prev) => {
         const next = prev.filter((id) => id !== courseId);
         saveWishlist(next);
-        void saveWishlistApi(next);
+        if (user) void saveWishlistApi(next);
         return next;
       });
     },
@@ -382,29 +377,24 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const addToCart = useCallback(
     (courseId: string) => {
-      if (!user) {
-        openAuthModal('login');
-        return;
-      }
       setCartIds((prev) => {
         if (prev.includes(courseId)) return prev;
         const next = [...prev, courseId];
         saveCart(next);
-        void saveCartApi(next);
+        if (user) void saveCartApi(next);
         return next;
       });
       toast('Added to cart', 'success');
     },
-    [openAuthModal, toast, user],
+    [toast, user],
   );
 
   const removeFromCart = useCallback(
     (courseId: string) => {
-      if (!user) return;
       setCartIds((prev) => {
         const next = prev.filter((id) => id !== courseId);
         saveCart(next);
-        void saveCartApi(next);
+        if (user) void saveCartApi(next);
         return next;
       });
     },
@@ -412,12 +402,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
   );
 
   const isInWishlist = useCallback(
-    (courseId: string) => Boolean(user) && wishlistIds.includes(courseId),
-    [user, wishlistIds],
+    (courseId: string) => wishlistIds.includes(courseId),
+    [wishlistIds],
   );
   const isInCart = useCallback(
-    (courseId: string) => Boolean(user) && cartIds.includes(courseId),
-    [user, cartIds],
+    (courseId: string) => cartIds.includes(courseId),
+    [cartIds],
   );
 
   const openLegalModal = useCallback((doc: LegalDoc) => {
