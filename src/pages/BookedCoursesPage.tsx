@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { ShelfPageHero } from '../components/layout/ShelfPageHero';
 import { useApp } from '../context/AppProvider';
 import { fetchBookings } from '../lib/bookingsApi';
 import type { BookingRecord } from '../types';
@@ -46,23 +47,27 @@ export function BookedCoursesPage() {
     [bookings, searchQ],
   );
 
-  return (
-    <section className="section booked-courses-page">
-      <div className="container">
-        <nav className="breadcrumb" aria-label="Breadcrumb">
-          <button type="button" onClick={() => navigateTo('home')}>
-            Home
-          </button>
-          <span className="sep">/</span>
-          <span className="current" aria-current="page">
-            Booked Courses
-          </span>
-        </nav>
-        <h1 className="page-title">Booked Courses</h1>
-        <p className="page-lede">
-          Courses you have booked through TOBC. Confirmation references and schedules appear after checkout.
-        </p>
+  const bookedStatus =
+    isLoggedIn && bookings.length > 0 ? (
+      <div className="chat-status-pill" role="status">
+        <span className="chat-status-dot" aria-hidden />
+        {bookings.length} booking{bookings.length === 1 ? '' : 's'}
+        {searchQ.trim() && filtered.length !== bookings.length
+          ? ` · ${filtered.length} shown`
+          : ''}
+      </div>
+    ) : undefined;
 
+  return (
+    <div className="booked-courses-page">
+      <ShelfPageHero
+        breadcrumbLabel="Booked Courses"
+        title="Booked Courses"
+        description="Courses you have booked through TOBC. Confirmation references and schedules appear after checkout."
+        status={bookedStatus}
+      />
+      <div className="shelf-page-body">
+        <div className="container">
         {!authSessionReady || loading ? (
           <p className="page-lede">Loading your courses…</p>
         ) : !isLoggedIn ? (
@@ -161,7 +166,8 @@ export function BookedCoursesPage() {
             )}
           </>
         )}
+        </div>
       </div>
-    </section>
+    </div>
   );
 }

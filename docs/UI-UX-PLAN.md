@@ -106,6 +106,10 @@ This file is the **source of truth** for UI/UX direction for the TOBC site (**Re
 
 _Add a bullet with **YYYY-MM-DD** when you ship a meaningful UI/UX change (what changed, files touched)._
 
+- **2026-05-22 — Booked Courses page hero:** Teal shelf hero matches Cart/Wishlist (`ShelfPageHero`). Files: `BookedCoursesPage.tsx`, `UI-UX-PLAN.md`.
+
+- **2026-05-22 — Business partner profile modal:** Business cards open tabbed modal (about, contact, address, cancellation, gallery) with View website; industry cards keep Visit Site. Files: `PartnerDetailModal.tsx`, `PartnerCard.tsx`, `partnerCatalog.ts`, `AppProvider.tsx`, `Layout.tsx`, `main.css`, `UI-UX-PLAN.md`.
+
 - **2026-05-22 — Partners category deep links:** Mega menu, footer, and `?category=` URL always apply business-only or industry-only filters (toolbar + sidebar); shared `partnerRoutes.ts`. Files: `partnerRoutes.ts`, `PartnersPage.tsx`, `PartnersNavMenu.tsx`, `Footer.tsx`, `UI-UX-PLAN.md`.
 
 - **2026-05-22 — Partners mega-menu tab hover:** Business / Industry sidebar tabs use solid white background on hover (matches active state). Files: `main.css`, `UI-UX-PLAN.md`.

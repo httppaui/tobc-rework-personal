@@ -70,6 +70,9 @@ interface AppContextValue {
   courseDetailId: string | null;
   openCourseDetail: (courseId: string) => void;
   closeCourseDetail: () => void;
+  partnerDetailId: string | null;
+  openPartnerDetail: (partnerId: string) => void;
+  closePartnerDetail: () => void;
   wishlistIds: string[];
   cartIds: string[];
   addToWishlist: (courseId: string) => void;
@@ -122,6 +125,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [helpOpen, setHelpOpen] = useState(false);
   const [onboardingOpen, setOnboardingOpen] = useState(false);
   const [courseDetailId, setCourseDetailId] = useState<string | null>(null);
+  const [partnerDetailId, setPartnerDetailId] = useState<string | null>(null);
   const [wishlistIds, setWishlistIds] = useState<string[]>([]);
   const [cartIds, setCartIds] = useState<string[]>([]);
   const [notifications, setNotifications] = useState<AppNotification[]>(() => loadNotifications());
@@ -205,6 +209,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       booking.open ||
       authModalOpen ||
       courseDetailId !== null ||
+      partnerDetailId !== null ||
       legalModal !== null ||
       logoutConfirmOpen ||
       bookingPrimerOpen ||
@@ -219,6 +224,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     booking.open,
     authModalOpen,
     courseDetailId,
+    partnerDetailId,
     legalModal,
     logoutConfirmOpen,
     bookingPrimerOpen,
@@ -264,6 +270,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const openBooking = useCallback(
     (partial: BookingPartial) => {
       setCourseDetailId(null);
+      setPartnerDetailId(null);
       const base: BookingState = {
         ...defaultBooking,
         ...partial,
@@ -294,11 +301,21 @@ export function AppProvider({ children }: { children: ReactNode }) {
   );
 
   const openCourseDetail = useCallback((courseId: string) => {
+    setPartnerDetailId(null);
     setCourseDetailId(courseId);
   }, []);
 
   const closeCourseDetail = useCallback(() => {
     setCourseDetailId(null);
+  }, []);
+
+  const openPartnerDetail = useCallback((partnerId: string) => {
+    setCourseDetailId(null);
+    setPartnerDetailId(partnerId);
+  }, []);
+
+  const closePartnerDetail = useCallback(() => {
+    setPartnerDetailId(null);
   }, []);
 
   const openAuthModal = useCallback((mode: AuthModalMode = 'login') => {
@@ -613,6 +630,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
       courseDetailId,
       openCourseDetail,
       closeCourseDetail,
+      partnerDetailId,
+      openPartnerDetail,
+      closePartnerDetail,
       wishlistIds,
       cartIds,
       addToWishlist,
@@ -672,6 +692,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
       courseDetailId,
       openCourseDetail,
       closeCourseDetail,
+      partnerDetailId,
+      openPartnerDetail,
+      closePartnerDetail,
       wishlistIds,
       cartIds,
       addToWishlist,

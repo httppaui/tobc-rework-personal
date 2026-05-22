@@ -10,6 +10,7 @@ import { LogoutConfirmModal } from '../LogoutConfirmModal';
 import { BookingFlowPrimerModal } from '../BookingFlowPrimerModal';
 import { BookingModal } from '../BookingModal';
 import { CourseDetailModal } from '../CourseDetailModal';
+import { PartnerDetailModal } from '../PartnerDetailModal';
 import { Onboarding } from '../Onboarding';
 import { ToastStack } from '../ToastStack';
 import { HelpFab } from '../HelpFab';
@@ -20,6 +21,7 @@ export function Layout() {
   const {
     closeBooking,
     closeCourseDetail,
+    closePartnerDetail,
     closeAuthModal,
     closeLegalModal,
     closeAccessibilityPanel,
@@ -40,6 +42,7 @@ export function Layout() {
     },
     closeBooking,
     closeCourseDetail,
+    closePartnerDetail,
     closeAuthModal,
     closeLegalModal,
     closeAccessibilityPanel,
@@ -59,6 +62,7 @@ export function Layout() {
       <MobileBottomNav />
       <MobileDrawer />
       <CourseDetailModal />
+      <PartnerDetailModal />
       <AuthModal />
       <LegalModal />
       <AccessibilityModal />
