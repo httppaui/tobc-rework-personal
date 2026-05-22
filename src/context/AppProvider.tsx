@@ -541,18 +541,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
         return;
       }
       setCourseDetailId(null);
-      if (!user) {
-        setOnboardingOpen(false);
-        try {
-          sessionStorage.setItem(ONBOARD_SESSION_KEY, '1');
-        } catch {
-          /* ignore */
-        }
-        setPendingBookCourseIds(ids);
-        setAuthModalMode('book');
-        setAuthModalOpen(true);
-        return;
-      }
       if (!hasSeenBookingPrimer()) {
         setPrimerPendingCourseId(ids[0] ?? null);
         setBookingPrimerOpen(true);
@@ -561,7 +549,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       }
       openBooking(bookingFromCourseIds(ids, 1));
     },
-    [openBooking, toast, user],
+    [openBooking, toast],
   );
 
   const startBookNow = useCallback(

@@ -8,8 +8,10 @@ import {
   bookingTitleLabel,
   bookingTotalLabel,
   findScheduleDateConflicts,
+  guestConfirmationIds,
 } from '../lib/booking';
 import { BookingPaymentStep } from './BookingPaymentStep';
+import { isApiConfigured } from '../lib/api';
 import { createBookingsBatch } from '../lib/bookingsApi';
 import { DEFAULT_PAYMENT_METHOD_ID } from '../data/paymentMethods';
 import type { BookingStep, PaymentMethodId } from '../types';
@@ -42,7 +44,7 @@ export function BookingModal() {
     toast,
     navigateTo,
     isLoggedIn,
-    openAuthModal,
+    authEnabled,
     addNotification,
     removeFromCart,
     user,
@@ -153,15 +155,30 @@ export function BookingModal() {
     return true;
   };
 
+  const finishGuestBooking = () => {
+    const ids = guestConfirmationIds(items);
+    updateBooking({ confirmationIds: ids, step: 5 });
+    items.forEach((item) => removeFromCart(item.courseId));
+    const summary =
+      items.length === 1
+        ? `${items[0].course} · Ref ${ids[0]}`
+        : `${items.length} courses · Refs ${ids.join(', ')}`;
+    addNotification(
+      'Booking received (demo)',
+      `${summary}. Full booking save requires sign-in and API — coming soon.`,
+    );
+    toast(
+      authEnabled
+        ? 'Booking preview saved. Sign in and connect the API to save bookings to your account.'
+        : 'Booking received! We will email you once online booking is fully enabled.',
+      'success',
+    );
+  };
+
   const onNext = async () => {
     if (!validateStep()) return;
     const advancingToConfirm = step === 4 || (step === 3 && allFree);
     if (advancingToConfirm) {
-      if (!isLoggedIn) {
-        toast('Please log in to submit your booking', 'error');
-        openAuthModal('login');
-        return;
-      }
       goStep(5);
       return;
     }
@@ -169,9 +186,8 @@ export function BookingModal() {
   };
 
   const onConfirmBooking = async () => {
-    if (!isLoggedIn) {
-      toast('Please log in to confirm your booking', 'error');
-      openAuthModal('login');
+    if (!authEnabled || !isLoggedIn || !isApiConfigured()) {
+      finishGuestBooking();
       return;
     }
     setSubmitting(true);

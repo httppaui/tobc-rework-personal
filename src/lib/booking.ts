@@ -73,6 +73,12 @@ export function patchBookingItem(
   return items.map((item) => (item.courseId === courseId ? { ...item, ...patch } : item));
 }
 
+/** Local confirmation refs when sign-in or API is unavailable. */
+export function guestConfirmationIds(items: BookingLineItem[]): string[] {
+  const stamp = Date.now().toString(36).toUpperCase();
+  return items.map((_, index) => `DEMO-${stamp}-${index + 1}`);
+}
+
 export function emptyBookingState(step: BookingState['step'] = 1): Omit<BookingState, 'open'> {
   return {
     items: [],
