@@ -1,7 +1,8 @@
 import { useApp } from '../context/AppProvider';
+import { TOUR_WELCOME_CHECKLIST } from '../data/guidedTour';
 
 export function Onboarding() {
-  const { onboardingOpen, completeOnboarding, skipOnboarding } = useApp();
+  const { onboardingOpen, startGuidedTour, skipOnboarding } = useApp();
 
   return (
     <div
@@ -13,18 +14,27 @@ export function Onboarding() {
     >
       <div className="onboard-modal">
         <h2 id="onboardTitle">Welcome to TOBC</h2>
-        <p>Here is a quick guide to booking MARINA-accredited training in a few minutes.</p>
-        <ol className="onboard-steps">
-          <li>Choose your role above — Seafarer, Agency, or Training Center — for tailored shortcuts.</li>
-          <li>Use the search bar (always at the top) to find courses by name, place, or category.</li>
-          <li>Open a course card to see schedule, seats, and price — then continue to secure checkout.</li>
-        </ol>
+        <p>
+          New here? Take a two-minute tour with coach marks on the real interface, or skip and
+          explore on your own.
+        </p>
+        <p className="onboard-checklist-label">You will learn how to:</p>
+        <ul className="onboard-checklist">
+          {TOUR_WELCOME_CHECKLIST.map((item) => (
+            <li key={item}>
+              <span className="onboard-check" aria-hidden>
+                ✓
+              </span>
+              {item}
+            </li>
+          ))}
+        </ul>
         <div className="onboard-actions">
-          <button type="button" className="btn btn-primary" onClick={completeOnboarding}>
-            Start exploring
+          <button type="button" className="btn btn-primary" onClick={startGuidedTour}>
+            Start guided tour
           </button>
           <button type="button" className="btn btn-secondary" onClick={skipOnboarding}>
-            Skip
+            Skip for now
           </button>
         </div>
       </div>

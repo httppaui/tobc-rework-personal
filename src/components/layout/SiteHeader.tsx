@@ -107,7 +107,7 @@ export function SiteHeader() {
                   decoding="async"
                 />
               </button>
-              <div className="nav-role-tabs">
+              <div className="nav-role-tabs" data-tour="role-tabs">
                 {ROLES.map((r) => (
                   <button
                     key={r.id}
@@ -178,6 +178,7 @@ export function SiteHeader() {
               <button
                 type="button"
                 className="nav-icon-btn"
+                data-tour="wishlist"
                 aria-label={
                   wishlistIds.length ? `Wishlist, ${wishlistIds.length} items` : 'Wishlist'
                 }
@@ -191,6 +192,7 @@ export function SiteHeader() {
               <button
                 type="button"
                 className="nav-icon-btn"
+                data-tour="cart"
                 aria-label={cartIds.length ? `Cart, ${cartIds.length} items` : 'Cart'}
                 onClick={() => navigateTo('cart')}
               >
@@ -235,7 +237,7 @@ export function SiteHeader() {
         </div>
       </div>
 
-      <div className="global-search-bar" id="globalSearchBar">
+      <div className="global-search-bar" id="globalSearchBar" data-tour="search">
         <div className="container global-search-inner">
           <label className="visually-hidden" htmlFor="globalSearchQ">
             Search courses by name or keyword

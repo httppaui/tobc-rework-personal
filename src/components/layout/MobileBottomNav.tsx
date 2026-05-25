@@ -9,7 +9,7 @@ export function MobileBottomNav() {
   const itemClass = (p: string) => `mbn-item${page === p ? ' active' : ''}`;
 
   return (
-    <nav className="mobile-bottom-nav" aria-label="Primary mobile">
+    <nav className="mobile-bottom-nav" aria-label="Primary mobile" data-tour="mobile-nav">
       <div className="mbn-grid">
         <button type="button" className={itemClass('home')} data-mbn-page="home" onClick={() => navigateTo('home')}>
           <span className="mbn-icon">
@@ -17,7 +17,13 @@ export function MobileBottomNav() {
           </span>
           Home
         </button>
-        <button type="button" className={itemClass('courses')} data-mbn-page="courses" onClick={() => navigateTo('courses')}>
+        <button
+          type="button"
+          className={itemClass('courses')}
+          data-mbn-page="courses"
+          data-tour="mobile-courses"
+          onClick={() => navigateTo('courses')}
+        >
           <span className="mbn-icon">
             <i className="bi bi-search" aria-hidden />
           </span>

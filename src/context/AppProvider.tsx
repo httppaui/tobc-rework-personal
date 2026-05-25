@@ -29,6 +29,7 @@ import { applyA11yPrefs, loadA11yPrefs } from '../lib/accessibility';
 import { emptyBookingState, lineItemsFromCourseIds } from '../lib/booking';
 import { mergeBookingContactFromUser } from '../lib/userName';
 import { AUTH_ENABLED, AUTH_PAUSED_MESSAGE } from '../lib/featureFlags';
+import { GUIDED_TOUR_STEPS } from '../data/guidedTour';
 
 /** Guest guide dismissed for this browser tab session only */
 const ONBOARD_SESSION_KEY = 'tobc_guest_onboard_dismissed';
@@ -92,6 +93,12 @@ interface AppContextValue {
   onboardingOpen: boolean;
   completeOnboarding: () => void;
   skipOnboarding: () => void;
+  tourOpen: boolean;
+  tourStepIndex: number;
+  startGuidedTour: () => void;
+  nextTourStep: () => void;
+  prevTourStep: () => void;
+  endTour: () => void;
   updateSessionUser: (user: AuthUser) => void;
   notifications: AppNotification[];
   unreadNotificationCount: number;
@@ -126,6 +133,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [helpOpen, setHelpOpen] = useState(false);
   const [onboardingOpen, setOnboardingOpen] = useState(false);
+  const [tourOpen, setTourOpen] = useState(false);
+  const [tourStepIndex, setTourStepIndex] = useState(0);
   const [courseDetailId, setCourseDetailId] = useState<string | null>(null);
   const [partnerDetailId, setPartnerDetailId] = useState<string | null>(null);
   const [wishlistIds, setWishlistIds] = useState<string[]>(() => loadWishlist());
@@ -581,16 +590,44 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const unreadNotificationCount = notifications.filter((n) => !n.read).length;
 
-  const completeOnboarding = useCallback(() => {
+  const dismissOnboardingSession = useCallback(() => {
     try {
       sessionStorage.setItem(ONBOARD_SESSION_KEY, '1');
     } catch {
       /* ignore */
     }
-    setOnboardingOpen(false);
   }, []);
 
+  const completeOnboarding = useCallback(() => {
+    dismissOnboardingSession();
+    setOnboardingOpen(false);
+  }, [dismissOnboardingSession]);
+
   const skipOnboarding = completeOnboarding;
+
+  const endTour = useCallback(() => {
+    dismissOnboardingSession();
+    setTourOpen(false);
+    setTourStepIndex(0);
+  }, [dismissOnboardingSession]);
+
+  const startGuidedTour = useCallback(() => {
+    setOnboardingOpen(false);
+    setCourseDetailId(null);
+    setPartnerDetailId(null);
+    setTourStepIndex(0);
+    setTourOpen(true);
+    navigate(PAGE_PATHS.home);
+    window.scrollTo({ top: 0, behavior: 'auto' });
+  }, [navigate]);
+
+  const nextTourStep = useCallback(() => {
+    setTourStepIndex((i) => Math.min(i + 1, GUIDED_TOUR_STEPS.length - 1));
+  }, []);
+
+  const prevTourStep = useCallback(() => {
+    setTourStepIndex((i) => Math.max(i - 1, 0));
+  }, []);
 
   const value = useMemo(
     () => ({
@@ -649,6 +686,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
       onboardingOpen,
       completeOnboarding,
       skipOnboarding,
+      tourOpen,
+      tourStepIndex,
+      startGuidedTour,
+      nextTourStep,
+      prevTourStep,
+      endTour,
       updateSessionUser,
       notifications,
       unreadNotificationCount,
@@ -710,6 +753,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
       onboardingOpen,
       completeOnboarding,
       skipOnboarding,
+      tourOpen,
+      tourStepIndex,
+      startGuidedTour,
+      nextTourStep,
+      prevTourStep,
+      endTour,
       updateSessionUser,
       notifications,
       unreadNotificationCount,

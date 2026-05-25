@@ -29,6 +29,7 @@ export function NavDropdown({
     <div
       ref={wrapRef}
       className={`nav-link-wrap${isOpen ? ' is-dropdown-open' : ''}`}
+      {...(id === 'courses' ? { 'data-tour': 'courses-nav' } : {})}
       onMouseEnter={() => {
         onCancelClose();
         onOpen();

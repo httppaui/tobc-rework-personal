@@ -12,6 +12,7 @@ import { BookingModal } from '../BookingModal';
 import { CourseDetailModal } from '../CourseDetailModal';
 import { PartnerDetailModal } from '../PartnerDetailModal';
 import { Onboarding } from '../Onboarding';
+import { GuidedTour } from '../GuidedTour';
 import { ToastStack } from '../ToastStack';
 import { HelpFab } from '../HelpFab';
 import { useApp } from '../../context/AppProvider';
@@ -33,12 +34,17 @@ export function Layout() {
     setHelpOpen,
     onboardingOpen,
     skipOnboarding,
+    tourOpen,
+    endTour,
   } = useApp();
   const location = useLocation();
 
   useEscapeKey([
     () => {
       if (onboardingOpen) skipOnboarding();
+    },
+    () => {
+      if (tourOpen) endTour();
     },
     closeBooking,
     closeCourseDetail,
@@ -70,6 +76,7 @@ export function Layout() {
       <BookingFlowPrimerModal />
       <BookingModal />
       <Onboarding />
+      <GuidedTour />
       <ToastStack />
       <HelpFab />
       {(drawerOpen || helpOpen || onboardingOpen) && null}

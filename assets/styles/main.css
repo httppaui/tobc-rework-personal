@@ -244,6 +244,29 @@ html.tobc-reduced-motion .skeleton-course-card,html.tobc-reduced-motion .skeleto
 .onboard-steps li{counter-increment:ob;position:relative;padding:12px 12px 12px 44px;border:1px solid var(--ghost);border-radius:10px;margin-bottom:10px;font-size:14px;color:var(--ink-700)}
 .onboard-steps li::before{content:counter(ob);position:absolute;left:12px;top:50%;transform:translateY(-50%);width:26px;height:26px;background:var(--teal-700);color:#fff;border-radius:50%;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center}
 .onboard-actions{display:flex;gap:10px;flex-wrap:wrap}
+.onboard-checklist-label{font-size:13px;font-weight:600;color:var(--ink-700);margin:0 0 10px}
+.onboard-checklist{margin:0 0 22px;padding:0;list-style:none}
+.onboard-checklist li{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;border:1px solid var(--ghost);border-radius:10px;margin-bottom:8px;font-size:14px;color:var(--ink-700)}
+.onboard-checklist .onboard-check{flex-shrink:0;width:22px;height:22px;border-radius:50%;background:var(--teal-100);color:var(--teal-700);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center}
+/* Guided tour — coach marks & popovers */
+.tour-root{position:fixed;inset:0;z-index:420;pointer-events:none}
+.tour-backdrop{position:absolute;inset:0;z-index:0;background:transparent;pointer-events:auto;cursor:default}
+.tour-backdrop--dim{background:rgba(0,30,29,.22)}
+.tour-spotlight{position:fixed;border-radius:12px;box-shadow:0 0 0 9999px rgba(0,30,29,.28);outline:2px solid rgba(255,255,255,.85);pointer-events:none;z-index:1;transition:top .2s,left .2s,width .2s,height .2s}
+.tour-popover{position:fixed;z-index:2;width:min(360px,calc(100vw - 24px));background:var(--white);border-radius:16px;padding:18px 20px;box-shadow:var(--shadow-lg);pointer-events:auto;max-height:min(80vh,520px);overflow-y:auto}
+.tour-popover-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px}
+.tour-step-badge{font-size:12px;font-weight:600;color:var(--teal-700);background:var(--teal-100);padding:4px 10px;border-radius:999px}
+.tour-skip{border:none;background:transparent;color:var(--muted);font-size:13px;cursor:pointer;text-decoration:underline;padding:4px 0}
+.tour-skip:hover{color:var(--ink-700)}
+.tour-popover h3{font-size:18px;margin:0 0 8px}
+.tour-popover p{font-size:14px;color:var(--muted);margin:0 0 14px;line-height:1.5}
+.tour-checklist{margin:0 0 16px;padding:0;list-style:none;font-size:12px}
+.tour-checklist li{display:flex;align-items:center;gap:8px;padding:6px 0;color:var(--muted)}
+.tour-checklist li.current{color:var(--ink-700);font-weight:600}
+.tour-checklist li.done{color:var(--teal-700)}
+.tour-check-icon{width:18px;text-align:center;flex-shrink:0}
+.tour-popover-actions{display:flex;gap:10px;justify-content:flex-end}
+@media(prefers-reduced-motion:reduce){.tour-spotlight{transition:none}}
 .footer-bottom{margin-top:28px;padding-top:24px;border-top:1px solid rgba(255,255,255,.12)}
 .footer-contact{color:rgba(255,255,255,.78)!important}
 

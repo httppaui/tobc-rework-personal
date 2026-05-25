@@ -8,7 +8,7 @@ import {
 const CLOSE_DELAY_MS = 160;
 
 export function HelpFab() {
-  const { helpOpen, setHelpOpen, navigateTo } = useApp();
+  const { helpOpen, setHelpOpen, navigateTo, startGuidedTour } = useApp();
   const closeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const clearCloseTimer = useCallback(() => {
@@ -84,6 +84,22 @@ export function HelpFab() {
           <p>We&apos;re here for you</p>
         </div>
         <div className="help-panel-body">
+          <button
+            type="button"
+            className="help-item"
+            onClick={() => {
+              closePanel();
+              startGuidedTour();
+            }}
+          >
+            <div className="help-item-icon">
+              <i className="bi bi-signpost-split-fill" aria-hidden />
+            </div>
+            <div className="help-item-text">
+              <strong>Site tour</strong>
+              <span>Walkthrough with coach marks</span>
+            </div>
+          </button>
           <button type="button" className="help-item" onClick={goHelpCenter}>
             <div className="help-item-icon">
               <i className="bi bi-life-preserver" aria-hidden />
@@ -141,6 +157,7 @@ export function HelpFab() {
         <button
           type="button"
           className="help-fab-btn"
+          data-tour="help-fab"
           onClick={togglePanel}
           aria-label="Help"
           aria-expanded={helpOpen}

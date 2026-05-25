@@ -177,7 +177,7 @@ export function HomePage() {
             </div>
           </div>
 
-          <div className="search-card hero-search-card">
+          <div className="search-card hero-search-card" data-tour="hero-search">
             <div className="search-card-label">
               <i className="bi bi-search" aria-hidden /> Find a Maritime Training Course
             </div>
