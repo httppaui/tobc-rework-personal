@@ -30,6 +30,8 @@ import { emptyBookingState, lineItemsFromCourseIds } from '../lib/booking';
 import { mergeBookingContactFromUser } from '../lib/userName';
 import { AUTH_ENABLED, AUTH_PAUSED_MESSAGE } from '../lib/featureFlags';
 import { GUIDED_TOUR_STEPS } from '../data/guidedTour';
+import { cleanupTourDom } from '../lib/tourCleanup';
+import { forceUnlockBodyScroll } from '../lib/scrollLock';
 
 /** Guest guide dismissed for this browser tab session only */
 const ONBOARD_SESSION_KEY = 'tobc_guest_onboard_dismissed';
@@ -600,6 +602,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const completeOnboarding = useCallback(() => {
     dismissOnboardingSession();
+    forceUnlockBodyScroll();
     setOnboardingOpen(false);
   }, [dismissOnboardingSession]);
 
@@ -607,11 +610,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const endTour = useCallback(() => {
     dismissOnboardingSession();
+    cleanupTourDom();
     setTourOpen(false);
     setTourStepIndex(0);
   }, [dismissOnboardingSession]);
 
   const startGuidedTour = useCallback(() => {
+    cleanupTourDom();
     setOnboardingOpen(false);
     setCourseDetailId(null);
     setPartnerDetailId(null);

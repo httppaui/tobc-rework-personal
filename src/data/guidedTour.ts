@@ -15,6 +15,8 @@ export interface TourStep {
   page?: PageId;
   /** Scroll the target into view before measuring the spotlight */
   scrollIntoView?: boolean;
+  /** Allow clicking/typing inside the highlighted target (e.g. form fields) */
+  interactive?: boolean;
 }
 
 /** Checklist shown on the welcome screen before the spotlight tour */
@@ -75,9 +77,10 @@ export const GUIDED_TOUR_STEPS: TourStep[] = [
     target: 'hero-search',
     page: 'home',
     scrollIntoView: true,
+    interactive: true,
     title: 'Detailed home search',
-    body: 'Filter by course or keyword, training provider, category, and schedule date. Press Search to jump to matching courses on the Courses page.',
-    placement: 'bottom',
+    body: 'Try the filters here — course or keyword, training provider, category, and schedule date. Press Search to jump to matching courses on the Courses page.',
+    placement: 'top',
   },
 ];
 

@@ -1,13 +1,47 @@
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from 'react';
+import { createPortal } from 'react-dom';
 import { useApp } from '../context/AppProvider';
 import { GUIDED_TOUR_STEPS, resolveTourTarget } from '../data/guidedTour';
+import { cleanupTourDom } from '../lib/tourCleanup';
 import { scrollTourTargetIntoView } from '../lib/tourScroll';
 import {
   popoverPosition,
   spotlightFromElement,
+  tourShieldPanels,
   type PopoverPos,
   type SpotlightRect,
 } from '../lib/tourPosition';
+
+function blockPointer(e: React.MouseEvent | React.PointerEvent) {
+  e.preventDefault();
+  e.stopPropagation();
+}
+
+function TourDimPanels({ spot }: { spot: SpotlightRect }) {
+  return (
+    <>
+      {tourShieldPanels(spot).map((panel, i) => (
+        <div
+          key={i}
+          className="tour-panel"
+          aria-hidden
+          style={
+            {
+              position: 'fixed',
+              top: panel.top,
+              left: panel.left,
+              width: panel.width,
+              height: panel.height,
+            } as CSSProperties
+          }
+          onClick={blockPointer}
+          onMouseDown={blockPointer}
+          onPointerDown={blockPointer}
+        />
+      ))}
+    </>
+  );
+}
 
 export function GuidedTour() {
   const {
@@ -51,6 +85,11 @@ export function GuidedTour() {
   }, [tourOpen, step]);
 
   useEffect(() => {
+    if (tourOpen) return;
+    cleanupTourDom();
+  }, [tourOpen]);
+
+  useEffect(() => {
     if (!tourOpen || !step?.page) return;
     closeCourseDetail();
     closePartnerDetail();
@@ -91,30 +130,39 @@ export function GuidedTour() {
     };
   }, [tourOpen, measure]);
 
+  useEffect(() => () => cleanupTourDom(), []);
+
   if (!tourOpen || !step) return null;
 
   const hasSpotlight = spot && !targetMissing;
+  /** Interactive steps: popover only — page stays fully clickable */
+  const showShield = hasSpotlight && !step.interactive;
 
-  return (
+  const tourUi = (
     <div className="tour-root" role="presentation">
-      <div
-        className={`tour-backdrop${hasSpotlight ? '' : ' tour-backdrop--dim'}`}
-        aria-hidden
-        onClick={(e) => e.preventDefault()}
-        onMouseDown={(e) => e.preventDefault()}
-      />
-      {hasSpotlight && (
+      {showShield ? (
+        <>
+          <TourDimPanels spot={spot} />
+          <div
+            className="tour-spotlight-ring"
+            aria-hidden
+            style={{
+              top: spot.top,
+              left: spot.left,
+              width: spot.width,
+              height: spot.height,
+            }}
+          />
+        </>
+      ) : !step.interactive ? (
         <div
-          className="tour-spotlight"
+          className="tour-backdrop tour-backdrop--dim"
           aria-hidden
-          style={{
-            top: spot.top,
-            left: spot.left,
-            width: spot.width,
-            height: spot.height,
-          }}
+          onClick={blockPointer}
+          onMouseDown={blockPointer}
+          onPointerDown={blockPointer}
         />
-      )}
+      ) : null}
       <div
         ref={popoverRef}
         className="tour-popover"
@@ -173,4 +221,6 @@ export function GuidedTour() {
       </div>
     </div>
   );
+
+  return createPortal(tourUi, document.body);
 }

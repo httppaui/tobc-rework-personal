@@ -1,6 +1,8 @@
 import type { TourPlacement } from '../data/guidedTour';
 
 const SPOTLIGHT_PAD = 8;
+/** Gap between dim panels and spotlight so the target is not covered at the edges */
+const SHIELD_GAP = 4;
 const POPOVER_GAP = 14;
 const VIEWPORT_PAD = 12;
 
@@ -25,6 +27,30 @@ export function spotlightFromElement(el: HTMLElement): SpotlightRect {
     width: r.width + SPOTLIGHT_PAD * 2,
     height: r.height + SPOTLIGHT_PAD * 2,
   };
+}
+
+export interface TourShieldPanel {
+  top: number;
+  left: number;
+  width: number;
+  height: number;
+}
+
+/** Four fixed panels around the spotlight — nothing covers the hole. */
+export function tourShieldPanels(spot: SpotlightRect): TourShieldPanel[] {
+  const vw = window.innerWidth;
+  const vh = window.innerHeight;
+  const holeTop = spot.top + SHIELD_GAP;
+  const holeLeft = spot.left + SHIELD_GAP;
+  const holeRight = spot.left + spot.width - SHIELD_GAP;
+  const holeBottom = spot.top + spot.height - SHIELD_GAP;
+  const holeH = Math.max(0, holeBottom - holeTop);
+  return [
+    { top: 0, left: 0, width: vw, height: Math.max(0, holeTop) },
+    { top: holeTop, left: 0, width: Math.max(0, holeLeft), height: holeH },
+    { top: holeTop, left: holeRight, width: Math.max(0, vw - holeRight), height: holeH },
+    { top: holeBottom, left: 0, width: vw, height: Math.max(0, vh - holeBottom) },
+  ].filter((p) => p.width > 0 && p.height > 0);
 }
 
 export function popoverPosition(

@@ -1,6 +1,13 @@
 let locked = false;
 let savedScrollY = 0;
 
+function parseBodyScrollTop(): number {
+  const top = document.body.style.top;
+  if (!top) return window.scrollY;
+  const n = parseInt(top, 10);
+  return Number.isFinite(n) ? Math.abs(n) : window.scrollY;
+}
+
 /** Lock window scroll without losing position (avoids overflow:hidden jump). */
 export function lockBodyScroll(): void {
   if (locked) return;
@@ -16,7 +23,7 @@ export function lockBodyScroll(): void {
 
 /** Restore scroll position after lockBodyScroll(). */
 export function unlockBodyScroll(): void {
-  if (!locked) return;
+  const scrollY = locked ? savedScrollY : parseBodyScrollTop();
   locked = false;
   document.body.style.position = '';
   document.body.style.top = '';
@@ -24,5 +31,10 @@ export function unlockBodyScroll(): void {
   document.body.style.right = '';
   document.body.style.width = '';
   document.body.style.overflow = '';
-  window.scrollTo(0, savedScrollY);
+  window.scrollTo(0, scrollY);
+}
+
+/** Always clear scroll lock — use when tour/onboarding ends (guards stuck body styles). */
+export function forceUnlockBodyScroll(): void {
+  unlockBodyScroll();
 }

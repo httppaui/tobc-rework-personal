@@ -250,10 +250,11 @@ html.tobc-reduced-motion .skeleton-course-card,html.tobc-reduced-motion .skeleto
 .onboard-checklist .onboard-check{flex-shrink:0;width:22px;height:22px;border-radius:50%;background:var(--teal-100);color:var(--teal-700);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center}
 /* Guided tour — coach marks & popovers */
 .tour-root{position:fixed;inset:0;z-index:420;pointer-events:none}
+.tour-panel{position:fixed;z-index:0;background:rgba(0,30,29,.28);pointer-events:auto;cursor:default}
 .tour-backdrop{position:absolute;inset:0;z-index:0;background:transparent;pointer-events:auto;cursor:default}
 .tour-backdrop--dim{background:rgba(0,30,29,.22)}
-.tour-spotlight{position:fixed;border-radius:12px;box-shadow:0 0 0 9999px rgba(0,30,29,.28);outline:2px solid rgba(255,255,255,.85);pointer-events:none;z-index:1;transition:top .2s,left .2s,width .2s,height .2s}
-.tour-popover{position:fixed;z-index:2;width:min(360px,calc(100vw - 24px));background:var(--white);border-radius:16px;padding:18px 20px;box-shadow:var(--shadow-lg);pointer-events:auto;max-height:min(80vh,520px);overflow-y:auto}
+.tour-spotlight-ring{position:fixed;border-radius:12px;outline:2px solid rgba(255,255,255,.9);box-shadow:0 0 0 1px rgba(0,30,29,.15);pointer-events:none;z-index:1;transition:top .2s,left .2s,width .2s,height .2s}
+.tour-popover{position:fixed;z-index:3;width:min(360px,calc(100vw - 24px));background:var(--white);border-radius:16px;padding:18px 20px;box-shadow:var(--shadow-lg);pointer-events:auto;max-height:min(80vh,520px);overflow-y:auto}
 .tour-popover-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px}
 .tour-step-badge{font-size:12px;font-weight:600;color:var(--teal-700);background:var(--teal-100);padding:4px 10px;border-radius:999px}
 .tour-skip{border:none;background:transparent;color:var(--muted);font-size:13px;cursor:pointer;text-decoration:underline;padding:4px 0}
@@ -266,7 +267,7 @@ html.tobc-reduced-motion .skeleton-course-card,html.tobc-reduced-motion .skeleto
 .tour-checklist li.done{color:var(--teal-700)}
 .tour-check-icon{width:18px;text-align:center;flex-shrink:0}
 .tour-popover-actions{display:flex;gap:10px;justify-content:flex-end}
-@media(prefers-reduced-motion:reduce){.tour-spotlight{transition:none}}
+@media(prefers-reduced-motion:reduce){.tour-spotlight-ring{transition:none}}
 .footer-bottom{margin-top:28px;padding-top:24px;border-top:1px solid rgba(255,255,255,.12)}
 .footer-contact{color:rgba(255,255,255,.78)!important}
 
@@ -293,8 +294,8 @@ html.tobc-reduced-motion .skeleton-course-card,html.tobc-reduced-motion .skeleto
    ██████  HOME PAGE
 ═══════════════════════════════════════ */
 .hero{position:relative;background:var(--teal-900);overflow:hidden;padding:80px 0 40px}
-.hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 70% 40%,rgba(0,85,94,.4) 0%,transparent 70%),radial-gradient(ellipse 40% 80% at 10% 90%,rgba(40,165,168,.18) 0%,transparent 60%)}
-.hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.04) 1px,transparent 1px);background-size:60px 60px}
+.hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 70% 40%,rgba(0,85,94,.4) 0%,transparent 70%),radial-gradient(ellipse 40% 80% at 10% 90%,rgba(40,165,168,.18) 0%,transparent 60%);pointer-events:none}
+.hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.04) 1px,transparent 1px);background-size:60px 60px;pointer-events:none}
 .hero-content{position:relative;z-index:2;display:grid;grid-template-columns:1fr 440px;gap:56px;align-items:center}
 .hero-eyebrow{display:inline-flex;align-items:center;gap:8px;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--teal-400);background:rgba(0,176,171,.12);border:1px solid rgba(0,176,171,.25);padding:6px 14px;border-radius:20px;margin-bottom:22px}
 .hero h1{color:#fff;margin-bottom:18px;font-style:italic;font-weight:700}
@@ -328,6 +329,7 @@ html.tobc-reduced-motion .skeleton-course-card,html.tobc-reduced-motion .skeleto
 .search-section{background:var(--teal-900);padding:0 0 56px}
 .hero .container{display:flex;flex-direction:column;align-items:stretch}
 .hero-search-card,.search-card{width:100%;max-width:100%;margin:40px auto 0;box-sizing:border-box}
+.hero-search-card{position:relative;z-index:3}
 .search-card{background:#fff;border-radius:16px;padding:22px 26px;box-shadow:0 20px 60px rgba(0,0,0,.25)}
 .search-card-label{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:12px}
 .search-fields{display:grid;width:100%;grid-template-columns:minmax(0,1.2fr) minmax(0,1.2fr) minmax(130px,.9fr) minmax(150px,.95fr) auto;gap:12px;align-items:end}
@@ -336,7 +338,7 @@ html.tobc-reduced-motion .skeleton-course-card,html.tobc-reduced-motion .skeleto
 .sf{display:flex;flex-direction:column;gap:4px;min-width:0}
 .sf input,.sf select{width:100%}
 .sf label{font-size:11px;font-weight:600;color:var(--ink-700);letter-spacing:.04em}
-.sf input,.sf select{height:44px;border:1.5px solid var(--ghost);border-radius:8px;padding:0 12px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--ink);background:var(--paper);outline:none;transition:border-color .18s;-webkit-appearance:none}
+.sf input,.sf select{height:44px;border:1.5px solid var(--ghost);border-radius:8px;padding:0 12px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--ink);background:#fff;outline:none;transition:border-color .18s;-webkit-appearance:none}
 .sf input:focus,.sf select:focus{border-color:var(--teal-500);background:#fff}
 .sf input::placeholder{color:var(--muted-lt)}
 
