@@ -1,58 +1,14 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppProvider';
 import { PAGE_PATHS } from '../lib/routes';
 import { HERO_VALUE_PROPS } from '../data/rolePaths';
-import type { RoleId } from '../types';
 import { CourseCard } from '../components/CourseCard';
+import { HeroCTAs } from '../components/home/HeroCTAs';
 import { FaqAccordion } from '../components/help/FaqAccordion';
 import { COURSES } from '../data/courses';
 import { HELP_LANDING_FAQS } from '../data/helpCenter';
-
-function HeroCTAs({
-  role,
-  onPrimary,
-  onSecondary,
-}: {
-  role: RoleId;
-  onPrimary: () => void;
-  onSecondary: () => void;
-}) {
-  if (role === 'agency') {
-    return (
-      <>
-        <button type="button" className="btn btn-primary btn--lg" onClick={onPrimary}>
-          <i className="bi bi-people-fill" aria-hidden /> Bulk-book for my crew
-        </button>
-        <button type="button" className="btn btn-secondary btn--lg" onClick={onSecondary}>
-          Agency dashboard →
-        </button>
-      </>
-    );
-  }
-  if (role === 'center') {
-    return (
-      <>
-        <button type="button" className="btn btn-primary btn--lg" onClick={onPrimary}>
-          <i className="bi bi-mortarboard-fill" aria-hidden /> Publish courses on TOBC
-        </button>
-        <button type="button" className="btn btn-secondary btn--lg" onClick={onSecondary}>
-          Provider console →
-        </button>
-      </>
-    );
-  }
-  return (
-    <>
-      <button type="button" className="btn btn-primary btn--lg" onClick={onPrimary}>
-        <i className="bi bi-search" aria-hidden /> Find a course &amp; schedule
-      </button>
-      <button type="button" className="btn btn-secondary btn--lg" onClick={onSecondary}>
-        Create account
-      </button>
-    </>
-  );
-}
+import { useStatsCounter } from '../hooks/useStatsCounter';
 
 export function HomePage() {
   const { role, navigateTo, openCourseDetail, openAuthModal } = useApp();
@@ -60,26 +16,7 @@ export function HomePage() {
   const [homeQ, setHomeQ] = useState('');
   const [openFaq, setOpenFaq] = useState<string | null>(null);
 
-  useEffect(() => {
-    const run = () => {
-      animateNum('s1', 12400);
-      animateNum('s2', 84);
-      animateNum('s3', 320);
-      animateNum('s4', 98, '%');
-    };
-    const obs = new IntersectionObserver(
-      (entries) => {
-        if (entries[0]?.isIntersecting) {
-          run();
-          obs.disconnect();
-        }
-      },
-      { threshold: 0.2 },
-    );
-    const el = document.getElementById('stats-bar');
-    if (el) obs.observe(el);
-    return () => obs.disconnect();
-  }, []);
+  useStatsCounter();
 
   const runHomeSearch = () => {
     const q = homeQ.trim();
@@ -386,17 +323,4 @@ export function HomePage() {
       </div>
     </>
   );
-}
-
-function animateNum(id: string, target: number, suffix = '') {
-  const el = document.getElementById(id);
-  if (!el) return;
-  let v = 0;
-  const step = target / (1800 / 16);
-  const run = () => {
-    v = Math.min(v + step, target);
-    el.textContent = (target > 100 ? Math.floor(v).toLocaleString() : Math.floor(v)) + suffix;
-    if (v < target) requestAnimationFrame(run);
-  };
-  requestAnimationFrame(run);
 }
