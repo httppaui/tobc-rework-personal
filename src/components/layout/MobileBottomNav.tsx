@@ -3,7 +3,7 @@ import { useApp } from '../../context/AppProvider';
 import { pageFromPath } from '../../lib/routes';
 
 export function MobileBottomNav() {
-  const { navigateTo, setDrawerOpen } = useApp();
+  const { navigateTo } = useApp();
   const page = pageFromPath(useLocation().pathname);
 
   const itemClass = (p: string) => `mbn-item${page === p ? ' active' : ''}`;
@@ -35,11 +35,16 @@ export function MobileBottomNav() {
           </span>
           Partners
         </button>
-        <button type="button" className="mbn-item" data-mbn-page="" onClick={() => setDrawerOpen(true)} aria-label="More navigation">
+        <button
+          type="button"
+          className={itemClass('profile')}
+          data-mbn-page="profile"
+          onClick={() => navigateTo('profile')}
+        >
           <span className="mbn-icon">
-            <i className="bi bi-list" aria-hidden />
+            <i className="bi bi-person-fill" aria-hidden />
           </span>
-          More
+          Profile
         </button>
       </div>
     </nav>

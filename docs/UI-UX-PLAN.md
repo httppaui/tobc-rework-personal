@@ -26,7 +26,7 @@ This file is the **source of truth** for UI/UX direction for the TOBC site (**Re
 | Clarify global search vs Courses search (copy / pre-fill / visibility) | [x] | Hint text updated; global search still pre-fills Courses (`runGlobalSearch`). |
 | Consistent breadcrumbs on Partners, News, Library, About | [x] | Already matched Courses; added `aria-current="page"`. |
 | Deep links + browser Back (`hash` or `history.pushState`) | [x] | Hash routes `#/page` and `#/page/filter` + `hashchange` (`tobc.js`). |
-| Mobile bottom nav matches full IA (or Home / Courses / More) | [x] | Home · Courses · Partners · More (`data-mbn-page` + `openDrawer`). |
+| Mobile bottom nav matches full IA (or Home / Courses / More) | [x] | Home · Courses · Partners · Profile (temporary; drawer still available via header). |
 | Active state on mobile drawer for current section | [x] | `data-nav-page` + `.is-current-route` (`syncDrawerNavHighlight`). |
 
 ---
@@ -106,6 +106,7 @@ This file is the **source of truth** for UI/UX direction for the TOBC site (**Re
 
 _Add a bullet with **YYYY-MM-DD** when you ship a meaningful UI/UX change (what changed, files touched)._
 
+- **2026-05-26 — Mobile bottom nav: remove duplicate hamburger:** Bottom “More” hamburger replaced with Profile shortcut (header hamburger remains for drawer). Files: `MobileBottomNav.tsx`, `UI-UX-PLAN.md`.
 - **2026-05-22 — Guest cart & wishlist:** localStorage lists without login; header icons open shelf pages; sign-in gate removed from Cart/Wishlist pages. Files: `AppProvider.tsx`, `SiteHeader.tsx`, `CartPage.tsx`, `WishlistPage.tsx`, `UI-UX-PLAN.md`.
 - **2026-05-22 — Book Now without sign-in:** `beginBooking` opens booking modal directly (no auth gate); guest/demo confirmation when API or auth unavailable. Files: `AppProvider.tsx`, `BookingModal.tsx`, `booking.ts`, `UI-UX-PLAN.md`.
 - **2026-05-22 — Pause production sign-in:** `VITE_AUTH_ENABLED` flag; production hides Log in/Register until API ready; dev unchanged. Files: `featureFlags.ts`, `AppProvider.tsx`, `SiteHeader.tsx`, `MobileDrawer.tsx`, `Footer.tsx`, `WishlistPage.tsx`, `CartPage.tsx`, `BookedCoursesPage.tsx`, `DEPLOY.md`, `UI-UX-PLAN.md`.
