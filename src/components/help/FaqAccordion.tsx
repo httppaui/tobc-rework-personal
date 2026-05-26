@@ -13,10 +13,7 @@ export function FaqAccordion({ items, openId, onToggle, layout = 'grid' }: FaqAc
     return <p className="help-empty-hint">No topics match your search in this section.</p>;
   }
 
-  const listClass =
-    layout === 'stack'
-      ? 'help-category-faq-list help-category-faq-list--overlay'
-      : 'faq-grid help-faq-grid';
+  const listClass = layout === 'stack' ? 'help-category-faq-list' : 'faq-grid help-faq-grid';
 
   return (
     <div className={listClass} role="list">
@@ -29,12 +26,18 @@ export function FaqAccordion({ items, openId, onToggle, layout = 'grid' }: FaqAc
               type="button"
               className="faq-q"
               aria-expanded={isOpen}
+              aria-controls={`faq-answer-${stableId}`}
               onClick={() => onToggle(isOpen ? '' : stableId)}
             >
               {item.question}
               <i className="bi bi-chevron-down faq-chevron" aria-hidden />
             </button>
-            <div className="faq-a" id={`faq-answer-${stableId}`}>
+            <div
+              className="faq-a"
+              id={`faq-answer-${stableId}`}
+              role="region"
+              aria-hidden={!isOpen}
+            >
               {item.answer}
             </div>
           </div>

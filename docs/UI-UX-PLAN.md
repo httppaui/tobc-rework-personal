@@ -106,6 +106,7 @@ This file is the **source of truth** for UI/UX direction for the TOBC site (**Re
 
 _Add a bullet with **YYYY-MM-DD** when you ship a meaningful UI/UX change (what changed, files touched)._
 
+- **2026-05-26 — FAQ accordion fixes:** Inline expand in Help category cards (no clipped overlay); per-category open state; 2-col FAQ grid uses `align-items: start`. Files: `FaqAccordion.tsx`, `HelpCenterPage.tsx`, `main.css`, `UI-UX-PLAN.md`.
 - **2026-05-26 — Courses/Partners catalog alignment:** Shared toolbar row aligns “Filters” with sidebar column and result count with card grid. Files: `CatalogLayoutToolbar.tsx`, `CoursesPage.tsx`, `PartnersPage.tsx`, `CoursesFilters.tsx`, `PartnersFilters.tsx`, `main.css`, `UI-UX-PLAN.md`.
 - **2026-05-26 — Help Center topics single column + load more:** One-column category list, 3 topics initially, “Load more topics” button; nested FAQ answers overlay; category header hover uses teal (`--teal-600`). Files: `HelpCenterPage.tsx`, `FaqAccordion.tsx`, `assets/styles/main.css`, `UI-UX-PLAN.md`.
 - **2026-05-26 — Fix Partners load more + Help Center UI nits:** Implemented functional “Load More Partners” pagination, removed duplicate native search clear “X” in Help Center, tightened Help “Open Messages” button width, and updated footer social hover color. Files: `PartnersPage.tsx`, `HelpCenterPage.tsx`, `FaqAccordion.tsx`, `assets/styles/main.css`, `UI-UX-PLAN.md`.

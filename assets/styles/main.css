@@ -393,8 +393,8 @@ html.tobc-reduced-motion .skeleton-course-card,html.tobc-reduced-motion .skeleto
 .read-more{font-size:13px;font-weight:600;color:var(--teal-700);display:flex;align-items:center;gap:4px}
 
 /* FAQ */
-.faq-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-.faq-item{background:#fff;border:1px solid var(--ghost);border-radius:12px;overflow:hidden}
+.faq-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:start}
+.faq-item{background:#fff;border:1px solid var(--ghost);border-radius:12px;overflow:hidden;align-self:start}
 .faq-q{padding:16px 18px;font-size:14px;font-weight:600;color:var(--ink);cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:background .15s}
 .faq-q:hover{background:var(--teal-50)}
 .faq-chevron{font-size:12px;line-height:1;transition:transform .2s;color:var(--teal-700);display:inline-block;vertical-align:middle;margin-left:4px}
@@ -447,12 +447,7 @@ input[type="search"].help-center-search::-ms-clear{display:none}
 .help-category-faq-list .faq-item{border:none;border-radius:0;border-bottom:1px solid var(--ghost);background:#fff}
 .help-category-faq-list .faq-item:last-child{border-bottom:none;border-radius:0 0 14px 14px;overflow:hidden}
 .help-category-faq-list .faq-q{padding:12px 16px}
-/* Overlay answers: opening one item does not push siblings */
-.help-category-faq-list--overlay .faq-item{position:relative;z-index:1}
-.help-category-faq-list--overlay .faq-item.open{z-index:30}
-.help-category-faq-list--overlay .faq-a{position:absolute;top:100%;left:0;right:0;z-index:31;margin:0;padding:0 16px;max-height:0;overflow:hidden;opacity:0;visibility:hidden;pointer-events:none;background:#fff;border:1px solid var(--ghost);border-top:none;box-shadow:var(--shadow-md);transition:opacity .2s ease,visibility .2s ease,max-height .25s ease}
-.help-category-faq-list--overlay .faq-item.open .faq-a{opacity:1;visibility:visible;pointer-events:auto;max-height:min(280px,55vh);overflow-y:auto;padding:12px 16px 14px;border-radius:0 0 12px 12px}
-@media(prefers-reduced-motion:reduce){.help-category-faq-list--overlay .faq-a{transition:none}}
+.help-category-faq-list .faq-item.open .faq-a{padding:0 16px 12px}
 .help-category-card-body .help-faq-grid,.help-category-card-body .faq-grid{grid-template-columns:1fr;gap:0}
 .help-empty-hint{font-size:14px;color:var(--muted);margin:0}
 .help-empty-hint--block{text-align:center;padding:24px 16px;background:#fff;border:1px dashed var(--ghost);border-radius:12px}

@@ -20,7 +20,7 @@ export function HelpCenterPage() {
   const location = useLocation();
   const [searchQ, setSearchQ] = useState('');
   const [openCategoryId, setOpenCategoryId] = useState<string | null>(null);
-  const [categoryFaqOpen, setCategoryFaqOpen] = useState<string | null>(null);
+  const [categoryFaqOpen, setCategoryFaqOpen] = useState<Record<string, string | null>>({});
   const [landingFaqOpen, setLandingFaqOpen] = useState<string | null>(null);
   const [visibleCategoryCount, setVisibleCategoryCount] = useState(HELP_CATEGORY_PAGE_SIZE);
 
@@ -55,7 +55,7 @@ export function HelpCenterPage() {
 
   const toggleCategory = (id: string) => {
     setOpenCategoryId((prev) => (prev === id ? null : id));
-    setCategoryFaqOpen(null);
+    setCategoryFaqOpen({});
   };
 
   return (
@@ -145,8 +145,13 @@ export function HelpCenterPage() {
                       <FaqAccordion
                         layout="stack"
                         items={questions}
-                        openId={categoryFaqOpen}
-                        onToggle={(id) => setCategoryFaqOpen(id || null)}
+                        openId={categoryFaqOpen[category.id] ?? null}
+                        onToggle={(faqId) =>
+                          setCategoryFaqOpen((prev) => ({
+                            ...prev,
+                            [category.id]: faqId || null,
+                          }))
+                        }
                       />
                     </div>
                   ) : null}
