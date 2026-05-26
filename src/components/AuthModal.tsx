@@ -221,7 +221,7 @@ export function AuthModal() {
             <p className="auth-api-status is-error" role="status">
               {productionApiSetupError() ??
                 (import.meta.env.PROD
-                  ? 'Cannot reach the TOBC API. Deploy the API on Render (or similar), then set VITE_API_URL on Vercel and CLIENT_ORIGIN on the API. See docs/DEPLOY.md.'
+                  ? 'Cannot reach the TOBC API. Deploy the API (see docs/DEPLOY.md), then set VITE_API_URL on Vercel and CLIENT_ORIGIN on the API.'
                   : 'Cannot reach the auth API. Stop the dev server, then run npm run dev again (needs both web and api). Check the terminal for [api] on port 3001.')}
             </p>
           )}

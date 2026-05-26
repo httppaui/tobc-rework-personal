@@ -5,7 +5,7 @@
 | Part | Host example | Build / start |
 |------|----------------|---------------|
 | Frontend | Vercel, Netlify | `npm run build` → `dist/` |
-| API | Render, Railway, Fly.io | `npm run start:api` |
+| API | Railway, Fly.io, VPS | `npm run start:api` |
 
 The browser must call the API with **cookies** (`credentials: 'include'`). When frontend and API are on **different domains**, configure CORS and cookies as below.
 
@@ -32,20 +32,20 @@ DATABASE_PATH=/data/tobc.db
 On Vercel (or your static host), set at **build** time:
 
 ```env
-VITE_API_URL=https://your-api.onrender.com
+VITE_API_URL=https://your-api.example.com
 ```
 
 Rebuild after changing. In local dev, leave `VITE_API_URL` empty; Vite proxies `/api` to port 3001.
 
 ---
 
-## 3. Render example (API)
+## 3. API hosting
 
-1. New **Web Service** → connect repo.
-2. **Build command:** `npm install`
-3. **Start command:** `npm run start:api`
+1. Deploy the repo (or API-only build) on your Node host.
+2. **Install:** `npm install`
+3. **Start:** `npm run start:api`
 4. Add env vars from section 1.
-5. Add a **disk** mount at `/data` if you use `DATABASE_PATH=/data/tobc.db`.
+5. Persist SQLite: set `DATABASE_PATH` to a writable path (e.g. mounted volume at `/data/tobc.db`).
 
 Health check path: `/api/health`
 
@@ -55,7 +55,7 @@ Health check path: `/api/health`
 
 1. Import repo; framework **Vite**.
 2. Build: `npm run build` · Output: `dist`
-3. **Environment variable (required for login/booking):** `VITE_API_URL` = your API URL (e.g. `https://tobc-api.onrender.com`). Apply to **Production** (and Preview if you test PRs).
+3. **Environment variable (required for login/booking):** `VITE_API_URL` = your API URL (e.g. `https://api.yoursite.com`). Apply to **Production** (and Preview if you test PRs).
 4. **When the API is ready:** also set `VITE_AUTH_ENABLED=true` (sign-in is off in production by default until then).
 5. Redeploy after saving env vars (Vite bakes `VITE_*` at build time).
 
@@ -70,12 +70,12 @@ COOKIE_SAME_SITE=none
 
 ---
 
-## 5. Quick checklist (Vercel + Render)
+## 5. Quick checklist (Vercel + API)
 
 | Step | Where | What |
 |------|--------|------|
-| 1 | Render | Web service running `npm run start:api`, disk at `/data`, env from section 1 |
-| 2 | Render | Open `https://YOUR-SERVICE.onrender.com/api/health` → `{"ok":true,"service":"tobc-api",...}` |
+| 1 | API host | Service running `npm run start:api`, persistent DB path, env from section 1 |
+| 2 | API host | Open `https://YOUR-API/api/health` → `{"ok":true,"service":"tobc-api",...}` |
 | 3 | Vercel | `VITE_API_URL` = same API origin (no trailing slash) |
 | 4 | Vercel | Redeploy production |
 | 5 | Live app | Create account → refresh → still logged in |
@@ -84,7 +84,7 @@ COOKIE_SAME_SITE=none
 
 ## 6. Smoke test (production)
 
-1. Open `https://your-api.onrender.com/api/health` → `{ "ok": true }`
+1. Open `https://your-api.example.com/api/health` → `{ "ok": true }`
 2. Open the live app → **Create account** → refresh → still logged in
 3. Book a course → **My Bookings** shows the record
 4. Add wishlist → sign out → sign in → wishlist restored

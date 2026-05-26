@@ -121,7 +121,7 @@ flowchart TD
 |------|---------|
 | concurrently | `npm run dev` — web + API together |
 | Vercel | Frontend static deploy (`vercel.json`) |
-| Render (blueprint) | API example — `render.yaml`, [DEPLOY.md](./DEPLOY.md) |
+| API host | Backend — [DEPLOY.md](./DEPLOY.md) |
 
 ### 4.4 APIs (REST)
 
@@ -172,7 +172,7 @@ flowchart LR
   end
   subgraph Prod
     CDN[Vercel / static host]
-    APIHost[Render / Railway API]
+    APIHost[Railway / Fly / VPS API]
   end
   UI -->|/api proxy dev| Vite
   Vite --> API

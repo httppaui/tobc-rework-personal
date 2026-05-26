@@ -16,7 +16,7 @@ Living backlog for what to build or polish next. Update this file when prioritie
 | Wishlist / cart | **Synced per user** via API; merges guest localStorage on login |
 | Live chat | **Persisted per user** when logged in; guest mode still uses local demo |
 | Profile / Settings | **Profile** (name), **Settings** (password + legal links) |
-| Deploy | See **[DEPLOY.md](./DEPLOY.md)** + `render.yaml` blueprint |
+| Deploy | See **[DEPLOY.md](./DEPLOY.md)** |
 
 ---
 
@@ -58,7 +58,7 @@ Living backlog for what to build or polish next. Update this file when prioritie
 
 **Done when:**
 
-- [x] Deploy guide + Render blueprint (`docs/DEPLOY.md`, `render.yaml`)
+- [x] Deploy guide (`docs/DEPLOY.md`)
 - [x] Env: `JWT_SECRET`, `CLIENT_ORIGIN`, `COOKIE_SAME_SITE`, `DATABASE_PATH`
 - [x] Frontend: `VITE_API_URL` documented
 - [ ] **You:** deploy API + frontend and run smoke test on live URL

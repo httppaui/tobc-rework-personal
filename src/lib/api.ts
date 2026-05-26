@@ -11,7 +11,7 @@ export function productionApiSetupError(): string | null {
   if (import.meta.env.PROD && !API_BASE) {
     return (
       'This deployment is not connected to the TOBC API. In Vercel, set VITE_API_URL to your hosted API URL ' +
-      '(for example https://tobc-api.onrender.com), then redeploy. See docs/DEPLOY.md.'
+      '(for example https://api.yoursite.com), then redeploy. See docs/DEPLOY.md.'
     );
   }
   return null;

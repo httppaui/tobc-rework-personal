@@ -57,12 +57,12 @@ Frontend output is in `dist/`. The API is not bundled into `dist/`—deploy it s
 
 **Frontend** (e.g. Vercel): static `dist/` as today.
 
-**API** (e.g. Railway, Render, Fly.io):
+**API** (e.g. Railway, Fly.io, VPS):
 
 1. Run `npm run start:api` with env vars from `.env.example`.
 2. Set `CLIENT_ORIGIN` to your production site URL (e.g. `https://your-app.vercel.app`).
 3. Set `JWT_SECRET` to a strong secret.
-4. On the frontend host, set `VITE_API_URL` to your API origin (e.g. `https://tobc-api.onrender.com`) and rebuild.
+4. On the frontend host, set `VITE_API_URL` to your API origin (e.g. `https://api.yoursite.com`) and rebuild.
 
 Google Sign-In is optional later; see **[docs/GOOGLE-SIGNIN.md](docs/GOOGLE-SIGNIN.md)**.
 
