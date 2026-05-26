@@ -42,11 +42,7 @@ If you see *“Cannot reach the server”*, ensure `npm run dev` is running (bot
 | `npm run dev:web` | Vite only |
 | `npm run dev:api` | API only |
 | `npm run start:api` | API without file watch |
-| `npm run ci` | Same checks as GitHub Actions CI (typecheck + build) |
-
-## CI/CD
-
-GitHub Actions runs typecheck, build, and an API health smoke test on every push/PR to `master`. Optional deploy to Vercel + Render after CI passes — see [docs/CI-CD.md](docs/CI-CD.md).
+| `npm run ci` | Typecheck (client + server) and production build |
 
 ## Build
 
