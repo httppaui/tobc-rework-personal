@@ -22,6 +22,8 @@ import { ResultsSkeleton } from '../components/ResultsSkeleton';
 
 type PartnerSortKey = 'name' | 'courses-desc' | 'courses-asc';
 
+const PAGE_SIZE = 12;
+
 export function PartnersPage() {
   const { navigateTo } = useApp();
   const navigate = useNavigate();
@@ -35,7 +37,7 @@ export function PartnersPage() {
   const [sidebar, setSidebar] = useState<PartnerSidebarFilters>(initialFromUrl.sidebar);
   const [filtering, setFiltering] = useState(false);
   const [view, setView] = useState<'grid' | 'list'>('grid');
-  const [visibleCount, setVisibleCount] = useState(12);
+  const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
     const next = partnerFiltersFromSearchParams(params);
@@ -51,7 +53,7 @@ export function PartnersPage() {
   }, [searchQ, toolbarCategory, toolbarType, sidebar, sort, location]);
 
   useEffect(() => {
-    setVisibleCount(12);
+    setCurrentPage(1);
   }, [searchQ, toolbarCategory, toolbarType, sidebar, sort, location, params]);
 
   const filtered = useMemo(() => {
@@ -72,10 +74,16 @@ export function PartnersPage() {
     });
   }, [searchQ, toolbarCategory, toolbarType, sidebar, sort, params]);
 
-  const shown = useMemo(
-    () => filtered.slice(0, Math.min(filtered.length, visibleCount)),
-    [filtered, visibleCount],
-  );
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const page = Math.min(currentPage, totalPages);
+  const pageStart = (page - 1) * PAGE_SIZE;
+  const pagePartners = filtered.slice(pageStart, pageStart + PAGE_SIZE);
+
+  const goToPage = (next: number) => {
+    const clamped = Math.max(1, Math.min(next, totalPages));
+    setCurrentPage(clamped);
+    document.getElementById('partnersResultsPanel')?.scrollIntoView({ behavior: 'auto', block: 'nearest' });
+  };
 
   const clearFilters = () => {
     setSearchQ('');
@@ -84,6 +92,7 @@ export function PartnersPage() {
     setLocation('');
     setSort('name');
     setSidebar(DEFAULT_PARTNER_FILTERS);
+    setCurrentPage(1);
     if (params.toString()) navigate(PAGE_PATHS.partners, { replace: true });
   };
 
@@ -238,9 +247,23 @@ export function PartnersPage() {
             <CatalogLayoutToolbar
               onClearFilters={clearFilters}
               resultsCount={
-                <>
-                  Showing <strong>{filtered.length}</strong> of <strong>{PARTNERS_TOTAL}</strong> partners
-                </>
+                filtered.length > 0 ? (
+                  <>
+                    Showing <strong>{pageStart + 1}</strong>–
+                    <strong>{pageStart + pagePartners.length}</strong> of{' '}
+                    <strong>{filtered.length}</strong> partners
+                    {filtered.length < PARTNERS_TOTAL && (
+                      <>
+                        {' '}
+                        (<strong>{PARTNERS_TOTAL}</strong> in catalog)
+                      </>
+                    )}
+                  </>
+                ) : (
+                  <>
+                    Showing <strong>0</strong> of <strong>{PARTNERS_TOTAL}</strong> partners
+                  </>
+                )
               }
               viewToggle={
                 <div className="view-toggle">
@@ -274,7 +297,7 @@ export function PartnersPage() {
             >
               {!filtering && filtered.length > 0 ? (
                 <div className={gridClass} id="partnersGrid">
-                  {shown.map((p) => (
+                  {pagePartners.map((p) => (
                     <PartnerCard key={p.id} partner={p} listMode={view === 'list'} />
                   ))}
                 </div>
@@ -297,14 +320,46 @@ export function PartnersPage() {
                 />
               ) : null}
 
-              {!filtering && filtered.length > 0 && shown.length < filtered.length ? (
-                <div className="partners-load-more">
+              {!filtering && filtered.length > 0 ? (
+                <div className="pagination">
                   <button
                     type="button"
-                    className="btn btn-secondary"
-                    onClick={() => setVisibleCount((c) => Math.min(filtered.length, c + 12))}
+                    className="page-btn nav-pg"
+                    disabled={page <= 1}
+                    aria-label="First page"
+                    onClick={() => goToPage(1)}
                   >
-                    Load More Partners
+                    <i className="bi bi-chevron-double-left" aria-hidden />
+                  </button>
+                  <button
+                    type="button"
+                    className="page-btn nav-pg"
+                    disabled={page <= 1}
+                    aria-label="Previous page"
+                    onClick={() => goToPage(page - 1)}
+                  >
+                    <i className="bi bi-chevron-left" aria-hidden />
+                  </button>
+                  <span className="page-info">
+                    Page <strong>{page}</strong> of <strong>{totalPages}</strong>
+                  </span>
+                  <button
+                    type="button"
+                    className="page-btn nav-pg"
+                    disabled={page >= totalPages}
+                    aria-label="Next page"
+                    onClick={() => goToPage(page + 1)}
+                  >
+                    <i className="bi bi-chevron-right" aria-hidden />
+                  </button>
+                  <button
+                    type="button"
+                    className="page-btn nav-pg"
+                    disabled={page >= totalPages}
+                    aria-label="Last page"
+                    onClick={() => goToPage(totalPages)}
+                  >
+                    <i className="bi bi-chevron-double-right" aria-hidden />
                   </button>
                 </div>
               ) : null}

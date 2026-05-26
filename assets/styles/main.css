@@ -710,7 +710,6 @@ input[type="search"].help-center-search::-ms-clear{display:none}
 .partner-card:not(.list-mode) .partner-visit-btn{margin-top:auto;align-self:flex-start}
 .partner-card.list-mode .partner-visit-btn{margin:0;width:auto;min-width:108px}
 .skeleton-partner-card--list{min-height:88px;width:100%}
-.partners-load-more{text-align:center;margin-top:32px}
 
 /* ═══════════════════════════════════════
    ██████  ABOUT PAGE
