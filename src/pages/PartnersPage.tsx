@@ -34,6 +34,7 @@ export function PartnersPage() {
   const [sidebar, setSidebar] = useState<PartnerSidebarFilters>(initialFromUrl.sidebar);
   const [filtering, setFiltering] = useState(false);
   const [view, setView] = useState<'grid' | 'list'>('grid');
+  const [visibleCount, setVisibleCount] = useState(12);
 
   useEffect(() => {
     const next = partnerFiltersFromSearchParams(params);
@@ -47,6 +48,10 @@ export function PartnersPage() {
     const t = window.setTimeout(() => setFiltering(false), 220);
     return () => window.clearTimeout(t);
   }, [searchQ, toolbarCategory, toolbarType, sidebar, sort, location]);
+
+  useEffect(() => {
+    setVisibleCount(12);
+  }, [searchQ, toolbarCategory, toolbarType, sidebar, sort, location, params]);
 
   const filtered = useMemo(() => {
     const partnerId = params.get('partner');
@@ -65,6 +70,11 @@ export function PartnersPage() {
       }
     });
   }, [searchQ, toolbarCategory, toolbarType, sidebar, sort, params]);
+
+  const shown = useMemo(
+    () => filtered.slice(0, Math.min(filtered.length, visibleCount)),
+    [filtered, visibleCount],
+  );
 
   const clearFilters = () => {
     setSearchQ('');
@@ -260,7 +270,7 @@ export function PartnersPage() {
 
               {!filtering && filtered.length > 0 ? (
                 <div className={gridClass} id="partnersGrid">
-                  {filtered.map((p) => (
+                  {shown.map((p) => (
                     <PartnerCard key={p.id} partner={p} listMode={view === 'list'} />
                   ))}
                 </div>
@@ -283,9 +293,13 @@ export function PartnersPage() {
                 />
               ) : null}
 
-              {!filtering && filtered.length > 0 ? (
+              {!filtering && filtered.length > 0 && shown.length < filtered.length ? (
                 <div className="partners-load-more">
-                  <button type="button" className="btn btn-secondary">
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    onClick={() => setVisibleCount((c) => Math.min(filtered.length, c + 12))}
+                  >
                     Load More Partners
                   </button>
                 </div>

@@ -13,6 +13,8 @@ import {
   filterCategoryQuestions,
 } from '../data/helpCenter';
 
+const HELP_CATEGORY_PAGE_SIZE = 3;
+
 export function HelpCenterPage() {
   const { navigateTo, openLegalModal } = useApp();
   const location = useLocation();
@@ -20,11 +22,21 @@ export function HelpCenterPage() {
   const [openCategoryId, setOpenCategoryId] = useState<string | null>(null);
   const [categoryFaqOpen, setCategoryFaqOpen] = useState<string | null>(null);
   const [landingFaqOpen, setLandingFaqOpen] = useState<string | null>(null);
+  const [visibleCategoryCount, setVisibleCategoryCount] = useState(HELP_CATEGORY_PAGE_SIZE);
 
   const filteredCategories = useMemo(
     () => HELP_CATEGORIES.filter((c) => categoryMatchesQuery(c, searchQ)),
     [searchQ],
   );
+
+  const shownCategories = useMemo(() => {
+    if (searchQ.trim()) return filteredCategories;
+    return filteredCategories.slice(0, Math.min(filteredCategories.length, visibleCategoryCount));
+  }, [filteredCategories, visibleCategoryCount, searchQ]);
+
+  useEffect(() => {
+    setVisibleCategoryCount(HELP_CATEGORY_PAGE_SIZE);
+  }, [searchQ]);
 
   useEffect(() => {
     const hash = location.hash.replace('#', '');
@@ -66,7 +78,7 @@ export function HelpCenterPage() {
           <div className="help-center-search-wrap">
             <i className="bi bi-search help-center-search-icon" aria-hidden />
             <input
-              type="search"
+              type="text"
               className="help-center-search"
               placeholder="Search topics (e.g. booking, refund, account, payment)…"
               value={searchQ}
@@ -105,7 +117,7 @@ export function HelpCenterPage() {
           ) : null}
 
           <div className="help-category-grid">
-            {filteredCategories.map((category) => {
+            {shownCategories.map((category) => {
               const isOpen = openCategoryId === category.id;
               const questions = filterCategoryQuestions(category, searchQ);
               return (
@@ -131,6 +143,7 @@ export function HelpCenterPage() {
                   {isOpen ? (
                     <div className="help-category-card-body">
                       <FaqAccordion
+                        layout="stack"
                         items={questions}
                         openId={categoryFaqOpen}
                         onToggle={(id) => setCategoryFaqOpen(id || null)}
@@ -141,6 +154,22 @@ export function HelpCenterPage() {
               );
             })}
           </div>
+
+          {!searchQ.trim() && shownCategories.length < filteredCategories.length ? (
+            <div className="help-category-load-more">
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={() =>
+                  setVisibleCategoryCount((n) =>
+                    Math.min(filteredCategories.length, n + HELP_CATEGORY_PAGE_SIZE),
+                  )
+                }
+              >
+                Load more topics
+              </button>
+            </div>
+          ) : null}
         </div>
       </section>
 
@@ -183,7 +212,12 @@ export function HelpCenterPage() {
               </div>
               <h3>Live chat</h3>
               <p>Chat with support when signed in. Best for booking and schedule questions.</p>
-              <button type="button" className="btn btn-primary" onClick={() => navigateTo('messages')}>
+              <button
+                type="button"
+                className="btn btn-primary btn--sm"
+                style={{ alignSelf: 'flex-start' }}
+                onClick={() => navigateTo('messages')}
+              >
                 Open Messages
               </button>
             </div>

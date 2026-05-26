@@ -106,6 +106,8 @@ This file is the **source of truth** for UI/UX direction for the TOBC site (**Re
 
 _Add a bullet with **YYYY-MM-DD** when you ship a meaningful UI/UX change (what changed, files touched)._
 
+- **2026-05-26 — Help Center topics single column + load more:** One-column category list, 3 topics initially, “Load more topics” button; nested FAQ answers overlay; category header hover uses teal (`--teal-600`). Files: `HelpCenterPage.tsx`, `FaqAccordion.tsx`, `assets/styles/main.css`, `UI-UX-PLAN.md`.
+- **2026-05-26 — Fix Partners load more + Help Center UI nits:** Implemented functional “Load More Partners” pagination, removed duplicate native search clear “X” in Help Center, tightened Help “Open Messages” button width, and updated footer social hover color. Files: `PartnersPage.tsx`, `HelpCenterPage.tsx`, `FaqAccordion.tsx`, `assets/styles/main.css`, `UI-UX-PLAN.md`.
 - **2026-05-26 — Mobile bottom nav: remove duplicate hamburger:** Bottom “More” hamburger replaced with Profile shortcut (header hamburger remains for drawer). Files: `MobileBottomNav.tsx`, `UI-UX-PLAN.md`.
 - **2026-05-22 — Guest cart & wishlist:** localStorage lists without login; header icons open shelf pages; sign-in gate removed from Cart/Wishlist pages. Files: `AppProvider.tsx`, `SiteHeader.tsx`, `CartPage.tsx`, `WishlistPage.tsx`, `UI-UX-PLAN.md`.
 - **2026-05-22 — Book Now without sign-in:** `beginBooking` opens booking modal directly (no auth gate); guest/demo confirmation when API or auth unavailable. Files: `AppProvider.tsx`, `BookingModal.tsx`, `booking.ts`, `UI-UX-PLAN.md`.
