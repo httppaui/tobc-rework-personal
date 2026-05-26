@@ -498,7 +498,21 @@ input[type="search"].help-center-search::-ms-clear{display:none}
 .cs-select:focus{border-color:var(--teal-500)}
 
 /* Courses layout — minmax(0,1fr) lets the results column shrink so list view fits the viewport */
-.courses-layout{display:grid;grid-template-columns:280px minmax(0,1fr);gap:28px;padding-top:28px;min-width:0}
+.courses-layout{display:grid;grid-template-columns:280px minmax(0,1fr);column-gap:28px;row-gap:16px;padding-top:28px;min-width:0;align-items:start}
+.courses-layout-toolbar{grid-column:1/-1;display:grid;grid-template-columns:280px minmax(0,1fr);column-gap:28px;align-items:center}
+.courses-layout-toolbar .sidebar-header{margin-bottom:0}
+.courses-layout-toolbar .results-header{margin-bottom:0;min-width:0}
+.courses-layout>.sidebar{grid-column:1}
+.courses-layout>.courses-results-panel{grid-column:2}
+@media(max-width:1024px){
+  .courses-layout{column-gap:20px;row-gap:14px}
+  .courses-layout-toolbar{grid-template-columns:min(240px,30vw) minmax(0,1fr);column-gap:20px}
+}
+@media(max-width:768px){
+  .courses-layout-toolbar{grid-template-columns:1fr}
+  .courses-layout-toolbar .sidebar-header{display:none}
+  .courses-layout>.courses-results-panel{grid-column:1}
+}
 
 /* ── Sidebar Filters ── */
 .sidebar{flex-shrink:0;width:280px;max-width:100%}
@@ -563,10 +577,10 @@ input[type="search"].help-center-search::-ms-clear{display:none}
 .active-filter-chip{display:flex;align-items:center;gap:6px;background:var(--teal-100);color:var(--teal-800);border-radius:20px;padding:5px 12px;font-size:12px;font-weight:600}
 .active-filter-chip button{background:none;border:none;cursor:pointer;font-size:12px;color:var(--teal-700);padding:0;line-height:1}
 
-.courses-results-panel{min-width:0}
+.courses-results-panel{min-width:0;margin-top:0}
 
 /* ── Results header ── */
-.results-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:12px}
+.results-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:12px;width:100%}
 .results-header-actions{display:flex;align-items:center;gap:10px}
 .results-count{font-size:14px;color:var(--muted)}
 .results-count strong{color:var(--ink)}

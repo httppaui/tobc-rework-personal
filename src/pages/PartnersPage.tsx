@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { PartnerCard } from '../components/partners/PartnerCard';
+import { CatalogLayoutToolbar } from '../components/layout/CatalogLayoutToolbar';
 import { PartnersFilters } from '../components/partners/PartnersFilters';
 import {
   PARTNER_BUSINESS_TYPES,
@@ -234,40 +235,43 @@ export function PartnersPage() {
       <div className="partners-page-body">
         <div className="container">
           <div className="courses-layout partners-layout">
-            <PartnersFilters filters={sidebar} onFiltersChange={handleSidebarChange} onClear={clearFilters} />
+            <CatalogLayoutToolbar
+              onClearFilters={clearFilters}
+              resultsCount={
+                <>
+                  Showing <strong>{filtered.length}</strong> of <strong>{PARTNERS_TOTAL}</strong> partners
+                </>
+              }
+              viewToggle={
+                <div className="view-toggle">
+                  <button
+                    type="button"
+                    className={`view-btn${view === 'grid' ? ' active' : ''}`}
+                    title="Grid view"
+                    aria-pressed={view === 'grid'}
+                    onClick={() => setView('grid')}
+                  >
+                    <i className="bi bi-grid-3x3-gap-fill" aria-hidden />
+                  </button>
+                  <button
+                    type="button"
+                    className={`view-btn${view === 'list' ? ' active' : ''}`}
+                    title="List view"
+                    aria-pressed={view === 'list'}
+                    onClick={() => setView('list')}
+                  >
+                    <i className="bi bi-list-ul" aria-hidden />
+                  </button>
+                </div>
+              }
+            />
+
+            <PartnersFilters filters={sidebar} onFiltersChange={handleSidebarChange} />
 
             <div
               className={`courses-results-panel${filtering ? ' is-filtering' : ''}`}
               id="partnersResultsPanel"
             >
-              <div className="results-header">
-                <div className="results-count">
-                  Showing <strong>{filtered.length}</strong> of <strong>{PARTNERS_TOTAL}</strong> partners
-                </div>
-                <div className="results-header-actions">
-                  <div className="view-toggle">
-                    <button
-                      type="button"
-                      className={`view-btn${view === 'grid' ? ' active' : ''}`}
-                      title="Grid view"
-                      aria-pressed={view === 'grid'}
-                      onClick={() => setView('grid')}
-                    >
-                      <i className="bi bi-grid-3x3-gap-fill" aria-hidden />
-                    </button>
-                    <button
-                      type="button"
-                      className={`view-btn${view === 'list' ? ' active' : ''}`}
-                      title="List view"
-                      aria-pressed={view === 'list'}
-                      onClick={() => setView('list')}
-                    >
-                      <i className="bi bi-list-ul" aria-hidden />
-                    </button>
-                  </div>
-                </div>
-              </div>
-
               {!filtering && filtered.length > 0 ? (
                 <div className={gridClass} id="partnersGrid">
                   {shown.map((p) => (

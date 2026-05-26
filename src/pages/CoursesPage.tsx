@@ -5,6 +5,7 @@ import { CourseCard } from '../components/CourseCard';
 import { EmptyResults } from '../components/EmptyResults';
 import { ResultsSkeleton } from '../components/ResultsSkeleton';
 import { CoursesFilters } from '../components/courses/CoursesFilters';
+import { CatalogLayoutToolbar } from '../components/layout/CatalogLayoutToolbar';
 import { COURSES, COURSES_TOTAL } from '../data/courses';
 import {
   DEFAULT_SIDEBAR_FILTERS,
@@ -213,59 +214,60 @@ export function CoursesPage() {
 
       <div className="container">
         <div className="courses-layout">
-          <CoursesFilters filters={sidebar} onFiltersChange={handleSidebarChange} onClear={clearFilters} />
+          <CatalogLayoutToolbar
+            onClearFilters={clearFilters}
+            resultsCount={
+              filtered.length > 0 ? (
+                <>
+                  Showing <strong id="resultCount">{pageStart + 1}</strong>–
+                  <strong>{pageStart + pageCourses.length}</strong> of{' '}
+                  <strong>{filtered.length}</strong> results
+                  {filtered.length < COURSES_TOTAL && (
+                    <>
+                      {' '}
+                      (<strong>{COURSES_TOTAL}</strong> in catalog)
+                    </>
+                  )}
+                </>
+              ) : (
+                <>
+                  Showing <strong id="resultCount">0</strong> of{' '}
+                  <strong>{COURSES_TOTAL}</strong> courses
+                </>
+              )
+            }
+            viewToggle={
+              <div className="view-toggle">
+                <button
+                  type="button"
+                  className={`view-btn${view === 'grid' ? ' active' : ''}`}
+                  id="gridViewBtn"
+                  title="Grid view"
+                  aria-pressed={view === 'grid'}
+                  onClick={() => setView('grid')}
+                >
+                  <i className="bi bi-grid-3x3-gap-fill" aria-hidden />
+                </button>
+                <button
+                  type="button"
+                  className={`view-btn${view === 'list' ? ' active' : ''}`}
+                  id="listViewBtn"
+                  title="List view"
+                  aria-pressed={view === 'list'}
+                  onClick={() => setView('list')}
+                >
+                  <i className="bi bi-list-ul" aria-hidden />
+                </button>
+              </div>
+            }
+          />
+
+          <CoursesFilters filters={sidebar} onFiltersChange={handleSidebarChange} />
 
           <div
             className={`courses-results-panel${filtering ? ' is-filtering' : ''}`}
             id="coursesResultsPanel"
           >
-            <div className="results-header">
-              <div className="results-count">
-                {filtered.length > 0 ? (
-                  <>
-                    Showing <strong id="resultCount">{pageStart + 1}</strong>–
-                    <strong>{pageStart + pageCourses.length}</strong> of{' '}
-                    <strong>{filtered.length}</strong> results
-                    {filtered.length < COURSES_TOTAL && (
-                      <>
-                        {' '}
-                        (<strong>{COURSES_TOTAL}</strong> in catalog)
-                      </>
-                    )}
-                  </>
-                ) : (
-                  <>
-                    Showing <strong id="resultCount">0</strong> of{' '}
-                    <strong>{COURSES_TOTAL}</strong> courses
-                  </>
-                )}
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                <div className="view-toggle">
-                  <button
-                    type="button"
-                    className={`view-btn${view === 'grid' ? ' active' : ''}`}
-                    id="gridViewBtn"
-                    title="Grid view"
-                    aria-pressed={view === 'grid'}
-                    onClick={() => setView('grid')}
-                  >
-                    <i className="bi bi-grid-3x3-gap-fill" aria-hidden />
-                  </button>
-                  <button
-                    type="button"
-                    className={`view-btn${view === 'list' ? ' active' : ''}`}
-                    id="listViewBtn"
-                    title="List view"
-                    aria-pressed={view === 'list'}
-                    onClick={() => setView('list')}
-                  >
-                    <i className="bi bi-list-ul" aria-hidden />
-                  </button>
-                </div>
-              </div>
-            </div>
-
             {!filtering && filtered.length > 0 ? (
             <div className={gridClass} id="coursesGrid">
               {pageCourses.map((c) => (

@@ -70,10 +70,9 @@ function countBy(key: 'profession' | 'country' | 'region' | 'city', value: strin
 type PartnersFiltersProps = {
   filters: PartnerSidebarFilters;
   onFiltersChange: (next: PartnerSidebarFilters) => void;
-  onClear: () => void;
 };
 
-export function PartnersFilters({ filters, onFiltersChange, onClear }: PartnersFiltersProps) {
+export function PartnersFilters({ filters, onFiltersChange }: PartnersFiltersProps) {
   const patch = (partial: Partial<PartnerSidebarFilters>) => {
     onFiltersChange({ ...filters, ...partial });
   };
@@ -81,13 +80,6 @@ export function PartnersFilters({ filters, onFiltersChange, onClear }: PartnersF
   return (
     <aside className="sidebar">
       <div className="sidebar-sticky">
-        <div className="sidebar-header">
-          <h3>Filters</h3>
-          <button type="button" className="clear-filters-btn" onClick={onClear}>
-            Clear All
-          </button>
-        </div>
-
         <div className="sidebar-filters-scroll">
           <FilterGroup title="Partner Category" defaultOpen>
             {PARTNER_CATEGORIES.map(({ id, label }) => (

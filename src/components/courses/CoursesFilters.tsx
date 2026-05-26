@@ -47,10 +47,9 @@ function FilterCheckbox({ label, count, checked, onChange }: FilterCheckboxProps
 type CoursesFiltersProps = {
   filters: SidebarFilters;
   onFiltersChange: (next: SidebarFilters) => void;
-  onClear: () => void;
 };
 
-export function CoursesFilters({ filters, onFiltersChange, onClear }: CoursesFiltersProps) {
+export function CoursesFilters({ filters, onFiltersChange }: CoursesFiltersProps) {
   const patch = (partial: Partial<SidebarFilters>) => {
     onFiltersChange({ ...filters, ...partial });
   };
@@ -58,13 +57,6 @@ export function CoursesFilters({ filters, onFiltersChange, onClear }: CoursesFil
   return (
     <aside className="sidebar">
       <div className="sidebar-sticky">
-        <div className="sidebar-header">
-          <h3>Filters</h3>
-          <button type="button" className="clear-filters-btn" onClick={onClear}>
-            Clear All
-          </button>
-        </div>
-
         <div className="active-filters" id="activeFilters" />
 
         <div className="sidebar-filters-scroll">
